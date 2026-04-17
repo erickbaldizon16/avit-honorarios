@@ -1621,7 +1621,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       <button class="modal-close" onclick="cerrarNube()">×</button>
     </div>
     <p style="font-size:12px;color:var(--text-2);margin-bottom:1rem;line-height:1.6">
-      Guarda tus datos en <strong>Netlify Blobs</strong> para acceder desde cualquier dispositivo o navegador. Tus datos se identifican por una clave personal que solo tú conoces.
+      Guarda tus datos en la nube para acceder desde cualquier dispositivo o navegador. Tus datos se identifican por una clave personal que solo tú conoces.
     </p>
     <div style="margin-bottom:.75rem">
       <label class="lbl">Tu clave personal (no la olvides)</label>
@@ -1636,7 +1636,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     <div style="background:var(--bg);border-radius:var(--r-md);padding:.85rem 1rem;margin-top:.75rem">
       <p style="font-size:11px;font-weight:500;margin-bottom:.35rem">¿Cómo funciona?</p>
       <p style="font-size:10px;color:var(--text-3);line-height:1.6;margin:0">
-        Los datos se guardan en <strong>Netlify Blobs</strong> (almacenamiento gratuito incluido en tu plan Free). Al subir, reemplaza lo que esté en la nube. Al bajar, reemplaza lo que tengas en este navegador. Siempre exporta un respaldo local antes de sincronizar.
+        Al subir, tus datos se guardan en la nube asociados a tu clave. Al bajar, se cargan en este navegador. Siempre exportá un respaldo local antes de sincronizar.
       </p>
     </div>
   </div>
@@ -1685,10 +1685,9 @@ function importarJSON(evt){
   reader.readAsText(file);
 }
 
-// ═══════ OPCIÓN 2: NETLIFY BLOBS ═══════
-// Esta función hace peticiones a la Netlify Function /.netlify/functions/blobs
-// que debes tener desplegada junto al HTML en Netlify.
-// Si no está desplegado en Netlify, mostrará un aviso claro.
+// ═══════ OPCIÓN 2: NUBE CON JSONBIN.IO ═══════
+const JSONBIN_API_KEY = '$2a$10$6NAO1NtNR26nw01ypOgYEu/7cL5HiLBoSsJw64u4qT60ZXKIw9kbS';
+const JSONBIN_BASE = 'https://api.jsonbin.io/v3';
 
 function togglePanelNube(){
   const p=document.getElementById('panelNube');
@@ -1697,35 +1696,81 @@ function togglePanelNube(){
 }
 function cerrarNube(){document.getElementById('panelNube').style.display='none';}
 
+// Busca el bin que corresponde a la clave del usuario
+async function getBinId(key){
+  const resp=await fetch(`${JSONBIN_BASE}/b?meta=false`,{
+    headers:{
+      'X-Master-Key':JSONBIN_API_KEY,
+      'X-Bin-Meta':'false'
+    }
+  });
+  // Buscamos en los bins guardados uno cuyo nombre sea la clave
+  const r2=await fetch(`${JSONBIN_BASE}/c?meta=false`,{
+    headers:{'X-Master-Key':JSONBIN_API_KEY}
+  });
+  // Usamos colecciones con nombre = key como identificador único
+  const allBins=await fetch(`${JSONBIN_BASE}/b?meta=true`,{
+    headers:{'X-Master-Key':JSONBIN_API_KEY}
+  });
+  const list=await allBins.json();
+  if(Array.isArray(list)){
+    const found=list.find(b=>b.metadata&&b.metadata.name===('avit-'+key));
+    if(found) return found.metadata.id;
+  }
+  return null;
+}
+
 async function subirNube(){
   const key=document.getElementById('nubeKey').value.trim();
   if(!key){alert('Escribe tu clave personal primero.');return;}
   const msg=document.getElementById('nubeMsg');
+  msg.style.color='var(--text-2)';
   msg.textContent='Subiendo…';
   try{
     const datos={
       avit_cots:localStorage.getItem('avit_cots')||'[]',
       avit_sprint_tracker:localStorage.getItem('avit_sprint_tracker')||'{}'
     };
-    const resp=await fetch('/.netlify/functions/blobs',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({key,datos})
-    });
+
+    // Intentar encontrar bin existente
+    const binId=await getBinId(key);
+
+    let resp;
+    if(binId){
+      // Actualizar bin existente
+      resp=await fetch(`${JSONBIN_BASE}/b/${binId}`,{
+        method:'PUT',
+        headers:{
+          'Content-Type':'application/json',
+          'X-Master-Key':JSONBIN_API_KEY
+        },
+        body:JSON.stringify(datos)
+      });
+    } else {
+      // Crear bin nuevo con nombre = 'avit-' + key
+      resp=await fetch(`${JSONBIN_BASE}/b`,{
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json',
+          'X-Master-Key':JSONBIN_API_KEY,
+          'X-Bin-Name':'avit-'+key,
+          'X-Bin-Private':'true'
+        },
+        body:JSON.stringify(datos)
+      });
+    }
+
     if(!resp.ok){
       const t=await resp.text();
       throw new Error(t||resp.statusText);
     }
+
     msg.style.color='var(--green)';
     msg.textContent='✓ Datos subidos correctamente a la nube';
     document.getElementById('syncStatus').textContent='☁ Subido '+new Date().toLocaleDateString('es-GT');
   }catch(err){
     msg.style.color='var(--red,#c0392b)';
-    if(err.message.includes('Failed to fetch')||err.message.includes('NetworkError')){
-      msg.textContent='⚠ No se pudo conectar. ¿Estás en Netlify? Fuera de Netlify la nube no funciona.';
-    } else {
-      msg.textContent='✗ Error: '+err.message;
-    }
+    msg.textContent='✗ Error: '+err.message;
   }
 }
 
@@ -1733,23 +1778,36 @@ async function bajarNube(){
   const key=document.getElementById('nubeKey').value.trim();
   if(!key){alert('Escribe tu clave personal primero.');return;}
   const msg=document.getElementById('nubeMsg');
+  msg.style.color='var(--text-2)';
   msg.textContent='Bajando…';
   try{
-    const resp=await fetch(`/.netlify/functions/blobs?key=${encodeURIComponent(key)}`);
-    if(resp.status===404){
+    const binId=await getBinId(key);
+    if(!binId){
       msg.style.color='var(--text-2)';
       msg.textContent='⚠ No se encontraron datos en la nube con esa clave.';
       return;
     }
+
+    const resp=await fetch(`${JSONBIN_BASE}/b/${binId}/latest`,{
+      headers:{
+        'X-Master-Key':JSONBIN_API_KEY
+      }
+    });
+
     if(!resp.ok){
       const t=await resp.text();
       throw new Error(t||resp.statusText);
     }
-    const {datos}=await resp.json();
+
+    const result=await resp.json();
+    const datos=result.record||result;
     const n=JSON.parse(datos.avit_cots||'[]').length;
+
     if(!confirm(`¿Bajar ${n} cotización(es) de la nube? Esto reemplazará los datos de este navegador.`))return;
+
     localStorage.setItem('avit_cots',datos.avit_cots||'[]');
     if(datos.avit_sprint_tracker) localStorage.setItem('avit_sprint_tracker',datos.avit_sprint_tracker);
+
     msg.style.color='var(--green)';
     msg.textContent=`✓ ${n} cotizaciones cargadas desde la nube`;
     document.getElementById('syncStatus').textContent='☁ Bajado '+new Date().toLocaleDateString('es-GT');
@@ -1757,11 +1815,7 @@ async function bajarNube(){
     if(document.getElementById('pg-est').classList.contains('active'))renderEstatus();
   }catch(err){
     msg.style.color='var(--red,#c0392b)';
-    if(err.message.includes('Failed to fetch')||err.message.includes('NetworkError')){
-      msg.textContent='⚠ No se pudo conectar. ¿Estás en Netlify? Fuera de Netlify la nube no funciona.';
-    } else {
-      msg.textContent='✗ Error: '+err.message;
-    }
+    msg.textContent='✗ Error: '+err.message;
   }
 }
 </script>
