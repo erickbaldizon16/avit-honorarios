@@ -1,8 +1,8 @@
 {
   "name": "avit-honorarios",
   "version": "1.0.0",
-  "description": "Herramienta de honorarios para Estudio AVIT",
   "dependencies": {
     "@netlify/blobs": "^7.0.0"
   }
 }
+
