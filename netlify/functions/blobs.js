@@ -1,88 +1,71 @@
 // netlify/functions/blobs.js
-// Netlify Function para guardar y recuperar datos de AVIT usando Netlify Blobs.
-// Documentación: https://docs.netlify.com/blobs/overview/
+// Usa el formato de Netlify Functions v2 con ES Modules
+// para que Netlify Blobs funcione sin configuración extra.
 
-const { getStore } = require('@netlify/blobs');
+import { getStore } from “@netlify/blobs”;
 
-exports.handler = async (event) => {
-  const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Content-Type': 'application/json',
-  };
+export default async (request, context) => {
+const headers = {
+“Access-Control-Allow-Origin”: “*”,
+“Content-Type”: “application/json”,
+};
 
-  // CORS preflight
-  if (event.httpMethod === 'OPTIONS') {
-    return { statusCode: 200, headers, body: '' };
+if (request.method === “OPTIONS”) {
+return new Response(””, { status: 200, headers });
+}
+
+try {
+const store = getStore(“avit-datos”);
+
+```
+// SUBIR datos (POST)
+if (request.method === "POST") {
+  const { key, datos } = await request.json();
+  if (!key || !datos) {
+    return new Response(
+      JSON.stringify({ error: "Faltan key o datos" }),
+      { status: 400, headers }
+    );
   }
+  await store.setJSON(key, datos);
+  return new Response(JSON.stringify({ ok: true }), { status: 200, headers });
+}
 
-  try {
-    // El store 'avit-datos' es donde guardamos todos los datos.
-    // Cada usuario tiene su propia key (definida por él mismo).
-    const store = getStore('avit-datos');
-
-    // ── SUBIR DATOS (POST) ──────────────────────────────────────────
-    if (event.httpMethod === 'POST') {
-      const { key, datos } = JSON.parse(event.body);
-
-      if (!key || !datos) {
-        return {
-          statusCode: 400,
-          headers,
-          body: JSON.stringify({ error: 'Faltan key o datos' }),
-        };
-      }
-
-      // Guardamos el objeto datos serializado como string JSON
-      await store.setJSON(key, datos);
-
-      return {
-        statusCode: 200,
-        headers,
-        body: JSON.stringify({ ok: true }),
-      };
-    }
-
-    // ── BAJAR DATOS (GET) ───────────────────────────────────────────
-    if (event.httpMethod === 'GET') {
-      const key = event.queryStringParameters?.key;
-
-      if (!key) {
-        return {
-          statusCode: 400,
-          headers,
-          body: JSON.stringify({ error: 'Falta el parámetro key' }),
-        };
-      }
-
-      const datos = await store.getJSON(key);
-
-      if (datos === null) {
-        return {
-          statusCode: 404,
-          headers,
-          body: JSON.stringify({ error: 'No hay datos para esa key' }),
-        };
-      }
-
-      return {
-        statusCode: 200,
-        headers,
-        body: JSON.stringify({ datos }),
-      };
-    }
-
-    return {
-      statusCode: 405,
-      headers,
-      body: JSON.stringify({ error: 'Método no permitido' }),
-    };
-
-  } catch (err) {
-    console.error('Error en blobs.js:', err);
-    return {
-      statusCode: 500,
-      headers,
-      body: JSON.stringify({ error: err.message }),
-    };
+// BAJAR datos (GET)
+if (request.method === "GET") {
+  const url = new URL(request.url);
+  const key = url.searchParams.get("key");
+  if (!key) {
+    return new Response(
+      JSON.stringify({ error: "Falta el parámetro key" }),
+      { status: 400, headers }
+    );
   }
+  const datos = await store.getJSON(key);
+  if (datos === null) {
+    return new Response(
+      JSON.stringify({ error: "No hay datos para esa key" }),
+      { status: 404, headers }
+    );
+  }
+  return new Response(JSON.stringify({ datos }), { status: 200, headers });
+}
+
+return new Response(
+  JSON.stringify({ error: "Método no permitido" }),
+  { status: 405, headers }
+);
+```
+
+} catch (err) {
+console.error(“Error en blobs.js:”, err);
+return new Response(
+JSON.stringify({ error: err.message }),
+{ status: 500, headers }
+);
+}
+};
+
+export const config = {
+path: “/.netlify/functions/blobs”
 };
