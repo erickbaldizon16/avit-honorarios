@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="es">
 <head>
 <meta charset="UTF-8">
@@ -27,21 +28,21 @@ html{scroll-behavior:smooth}
 body{background:var(--bg);font-family:system-ui,-apple-system,sans-serif;color:var(--text);font-size:14px;line-height:1.55;min-height:100vh}
 
 /* ── NAV ── */
-.topbar{position:sticky;top:0;z-index:100;background:var(--surface);border-bottom:0.5px solid var(--border);height:var(--nav-h);display:flex;align-items:center;padding:0 1.25rem;gap:1rem}
-.topbar-logo{font-size:13px;font-weight:500;letter-spacing:.3px;color:var(--text);display:flex;align-items:center;gap:8px;min-width:120px}
-.topbar-logo span{font-size:11px;color:var(--text-3);font-weight:400}
+.topbar{position:sticky;top:0;z-index:100;background:var(–surface);border-bottom:0.5px solid var(–border);height:var(–nav-h);display:flex;align-items:center;padding:0 1.25rem;gap:1rem}
+.topbar-logo{font-size:13px;font-weight:500;letter-spacing:.3px;color:var(–text);display:flex;align-items:center;gap:8px;min-width:120px}
+.topbar-logo span{font-size:11px;color:var(–text-3);font-weight:400}
 .nav-tabs{display:flex;gap:2px;flex:1;justify-content:center}
-.ntab{padding:6px 18px;font-size:13px;border:none;border-radius:var(--r-md);background:transparent;color:var(--text-2);cursor:pointer;font-family:inherit;transition:all .15s;font-weight:400}
-.ntab:hover{background:var(--bg);color:var(--text)}
-.ntab.active{background:var(--blue-lt);color:var(--blue-dk);font-weight:500}
+.ntab{padding:6px 18px;font-size:13px;border:none;border-radius:var(–r-md);background:transparent;color:var(–text-2);cursor:pointer;font-family:inherit;transition:all .15s;font-weight:400}
+.ntab:hover{background:var(–bg);color:var(–text)}
+.ntab.active{background:var(–blue-lt);color:var(–blue-dk);font-weight:500}
 .topbar-actions{min-width:120px;display:flex;justify-content:flex-end}
-.btn-print{padding:7px 16px;font-size:12px;font-weight:500;border:none;border-radius:var(--r-md);background:var(--text);color:var(--bg);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px}
+.btn-print{padding:7px 16px;font-size:12px;font-weight:500;border:none;border-radius:var(–r-md);background:var(–text);color:var(–bg);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px}
 .btn-print:hover{opacity:.85}
-.btn-data{padding:6px 11px;font-size:11px;font-weight:500;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:var(--surface);color:var(--text);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:5px;white-space:nowrap}
-.btn-data:hover{background:var(--bg)}
-.btn-data.verde{background:var(--green);color:#fff;border-color:transparent}
+.btn-data{padding:6px 11px;font-size:11px;font-weight:500;border:0.5px solid var(–border-2);border-radius:var(–r-md);background:var(–surface);color:var(–text);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:5px;white-space:nowrap}
+.btn-data:hover{background:var(–bg)}
+.btn-data.verde{background:var(–green);color:#fff;border-color:transparent}
 .btn-data.verde:hover{opacity:.88}
-.sync-status{font-size:10px;color:var(--text-3);margin-top:2px;text-align:right}
+.sync-status{font-size:10px;color:var(–text-3);margin-top:2px;text-align:right}
 .sync-badge{background:#EAF3DE;color:#27500A;font-size:10px;padding:2px 7px;border-radius:20px;font-weight:500}
 
 /* ── LAYOUT ── */
@@ -49,74 +50,74 @@ body{background:var(--bg);font-family:system-ui,-apple-system,sans-serif;color:v
 .page.active{display:block}
 
 /* ── CARDS ── */
-.sc{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r-lg);padding:1.25rem;margin-bottom:.9rem}
-.sc-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:.9rem}
+.sc{background:var(–surface);border:0.5px solid var(–border);border-radius:var(–r-lg);padding:1.25rem;margin-bottom:.9rem}
+.sc-title{font-size:13px;font-weight:500;color:var(–text);margin-bottom:.9rem}
 .pl{display:inline-block;font-size:10px;padding:2px 9px;border-radius:20px;font-weight:500}
-.p0{background:var(--purple-lt);color:var(--purple-dk)}
-.p1{background:var(--blue-lt);color:var(--blue-dk)}
-.p2{background:var(--green-lt);color:var(--green-dk)}
-.p3{background:var(--amber-lt);color:var(--amber)}
-.p4{background:var(--pink-lt);color:var(--pink-dk)}
-.p5{background:var(--teal-lt);color:var(--teal-dk)}
-.p6{background:var(--red-lt);color:var(--red)}
+.p0{background:var(–purple-lt);color:var(–purple-dk)}
+.p1{background:var(–blue-lt);color:var(–blue-dk)}
+.p2{background:var(–green-lt);color:var(–green-dk)}
+.p3{background:var(–amber-lt);color:var(–amber)}
+.p4{background:var(–pink-lt);color:var(–pink-dk)}
+.p5{background:var(–teal-lt);color:var(–teal-dk)}
+.p6{background:var(–red-lt);color:var(–red)}
 
 /* ── FORMS ── */
-.lbl{font-size:12px;color:var(--text-2);margin-bottom:3px;display:block}
+.lbl{font-size:12px;color:var(–text-2);margin-bottom:3px;display:block}
 .fg{margin-bottom:.75rem}.fg:last-child{margin-bottom:0}
 .r2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
 .r3{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);gap:10px}
 .fr{display:flex;align-items:center;gap:8px}
-input[type=range]{flex:1;accent-color:var(--blue);height:4px}
-.fv{font-size:13px;font-weight:500;color:var(--text);min-width:60px;text-align:right}
+input[type=range]{flex:1;accent-color:var(–blue);height:4px}
+.fv{font-size:13px;font-weight:500;color:var(–text);min-width:60px;text-align:right}
 input[type=text],input[type=date],input[type=number],textarea,select{
-  border:0.5px solid var(--border-2);border-radius:var(--r-md);
-  padding:7px 10px;font-size:13px;width:100%;
-  background:var(--surface);color:var(--text);font-family:inherit}
+border:0.5px solid var(–border-2);border-radius:var(–r-md);
+padding:7px 10px;font-size:13px;width:100%;
+background:var(–surface);color:var(–text);font-family:inherit}
 textarea{resize:vertical;min-height:64px;line-height:1.5}
 input.narrow{width:88px}input.mid{width:108px}
-.sep{border:none;border-top:0.5px solid var(--border);margin:.75rem 0}
+.sep{border:none;border-top:0.5px solid var(–border);margin:.75rem 0}
 
 /* ── TOGGLE ── */
 .tog{position:relative;width:34px;height:19px;cursor:pointer;flex-shrink:0}
 .tog input{opacity:0;width:0;height:0}
-.tog-sl{position:absolute;inset:0;background:var(--border-2);border-radius:20px;transition:background .2s}
-.tog input:checked+.tog-sl{background:var(--blue)}
-.tog-sl:before{content:"";position:absolute;width:13px;height:13px;left:3px;top:3px;background:white;border-radius:50%;transition:transform .2s}
+.tog-sl{position:absolute;inset:0;background:var(–border-2);border-radius:20px;transition:background .2s}
+.tog input:checked+.tog-sl{background:var(–blue)}
+.tog-sl:before{content:””;position:absolute;width:13px;height:13px;left:3px;top:3px;background:white;border-radius:50%;transition:transform .2s}
 .tog input:checked+.tog-sl:before{transform:translateX(15px)}
 
 /* ── METRIC CARDS ── */
-.metric{background:var(--bg);border-radius:var(--r-md);padding:.8rem 1rem;text-align:center}
-.metric .ml{font-size:11px;color:var(--text-2);margin-bottom:3px}
-.metric .mv{font-size:17px;font-weight:500;color:var(--text)}
-.metric .ms{font-size:10px;color:var(--text-3);margin-top:2px}
+.metric{background:var(–bg);border-radius:var(–r-md);padding:.8rem 1rem;text-align:center}
+.metric .ml{font-size:11px;color:var(–text-2);margin-bottom:3px}
+.metric .mv{font-size:17px;font-weight:500;color:var(–text)}
+.metric .ms{font-size:10px;color:var(–text-3);margin-top:2px}
 
 /* ── PLANOS ── */
-.plano-hdr{display:grid;grid-template-columns:minmax(0,1fr) 58px 100px;gap:8px;font-size:10px;color:var(--text-3);padding-bottom:5px;border-bottom:0.5px solid var(--border);margin-bottom:2px}
-.plano-row{display:grid;grid-template-columns:minmax(0,1fr) 58px 100px;gap:8px;align-items:center;padding:4px 0;border-bottom:0.5px solid var(--border);font-size:12px;color:var(--text-2)}
+.plano-hdr{display:grid;grid-template-columns:minmax(0,1fr) 58px 100px;gap:8px;font-size:10px;color:var(–text-3);padding-bottom:5px;border-bottom:0.5px solid var(–border);margin-bottom:2px}
+.plano-row{display:grid;grid-template-columns:minmax(0,1fr) 58px 100px;gap:8px;align-items:center;padding:4px 0;border-bottom:0.5px solid var(–border);font-size:12px;color:var(–text-2)}
 .plano-row:last-child{border-bottom:none}
 .plano-row input{text-align:center}
 
 /* ── COLAB ── */
-.colab-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:0.5px solid var(--border);font-size:12px}
+.colab-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:0.5px solid var(–border);font-size:12px}
 .colab-row:last-child{border-bottom:none}
 .colab-r{display:flex;align-items:center;gap:7px}
-.colab-pct{border:0.5px solid var(--border-2);border-radius:var(--r-md);padding:3px 6px;font-size:12px;width:60px;background:var(--surface);color:var(--text);text-align:center}
-.colab-amt{font-size:12px;font-weight:500;color:var(--text);min-width:84px;text-align:right}
+.colab-pct{border:0.5px solid var(–border-2);border-radius:var(–r-md);padding:3px 6px;font-size:12px;width:60px;background:var(–surface);color:var(–text);text-align:center}
+.colab-amt{font-size:12px;font-weight:500;color:var(–text);min-width:84px;text-align:right}
 
 /* ── COST ROWS ── */
-.cost-row{display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:0.5px solid var(--border);font-size:12px}
+.cost-row{display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:0.5px solid var(–border);font-size:12px}
 .cost-row:last-child{border-bottom:none}
 
 /* ── SUMMARY ── */
-.sum-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.35rem;font-size:12px;color:var(--text-2)}
-.sv{font-weight:500;color:var(--text)}.sv-r{font-weight:500;color:var(--red)}.sv-g{font-weight:500;color:#0F6E56}
-.sum-badge{font-size:10px;padding:2px 7px;border-radius:20px;background:var(--amber-lt);color:var(--amber);font-weight:500}
-.grand-row{display:flex;justify-content:space-between;align-items:baseline;padding-top:.65rem;border-top:0.5px solid var(--border);margin-top:.4rem}
-.grand-val{font-size:21px;font-weight:500;color:var(--blue)}
+.sum-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.35rem;font-size:12px;color:var(–text-2)}
+.sv{font-weight:500;color:var(–text)}.sv-r{font-weight:500;color:var(–red)}.sv-g{font-weight:500;color:#0F6E56}
+.sum-badge{font-size:10px;padding:2px 7px;border-radius:20px;background:var(–amber-lt);color:var(–amber);font-weight:500}
+.grand-row{display:flex;justify-content:space-between;align-items:baseline;padding-top:.65rem;border-top:0.5px solid var(–border);margin-top:.4rem}
+.grand-val{font-size:21px;font-weight:500;color:var(–blue)}
 
 /* ── PAGOS ── */
 .pago-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-top:.65rem}
-.pago-box{border-radius:var(--r-md);padding:.85rem}
+.pago-box{border-radius:var(–r-md);padding:.85rem}
 .pa{background:#f0faf5;border:0.5px solid #9FE1CB}
 .pm{background:#EEF4FF;border:0.5px solid #B5D4F4}
 .ps{background:#fdf2f2;border:0.5px solid #F7C1C1}
@@ -124,133 +125,134 @@ input.narrow{width:88px}input.mid{width:108px}
 .pa .pago-lbl{color:#085041}.pm .pago-lbl{color:#0C447C}.ps .pago-lbl{color:#791F1F}
 .pago-amt{font-size:17px;font-weight:500}
 .pa .pago-amt{color:#0F6E56}.pm .pago-amt{color:#185FA5}.ps .pago-amt{color:#A32D2D}
-.pago-sub{font-size:10px;color:var(--text-3);margin-top:2px}
+.pago-sub{font-size:10px;color:var(–text-3);margin-top:2px}
 .pct-bar{display:flex;height:5px;border-radius:3px;overflow:hidden;margin:.6rem 0}
 .pct-a{background:#1D9E75}.pct-m{background:#185FA5}.pct-s{background:#E24B4A}
-.pago-warn{font-size:11px;color:var(--red);padding:5px 8px;background:var(--red-lt);border-radius:var(--r-md);display:none;margin-top:6px}
+.pago-warn{font-size:11px;color:var(–red);padding:5px 8px;background:var(–red-lt);border-radius:var(–r-md);display:none;margin-top:6px}
 
 /* ── CUR BTNS ── */
 .cur-row{display:flex;gap:5px;margin-bottom:.85rem}
-.cur-btn{padding:4px 12px;font-size:12px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text-2);cursor:pointer}
-.cur-btn.active{background:var(--blue-lt);color:var(--blue-dk);border-color:transparent}
+.cur-btn{padding:4px 12px;font-size:12px;border:0.5px solid var(–border-2);border-radius:var(–r-md);background:transparent;color:var(–text-2);cursor:pointer}
+.cur-btn.active{background:var(–blue-lt);color:var(–blue-dk);border-color:transparent}
 
 /* ── SYNC BANNER ── */
-.sync-banner{background:var(--blue-lt);border:0.5px solid #B5D4F4;border-radius:var(--r-md);padding:8px 12px;font-size:12px;color:var(--blue-dk);display:flex;align-items:center;gap:8px;margin-bottom:.9rem}
+.sync-banner{background:var(–blue-lt);border:0.5px solid #B5D4F4;border-radius:var(–r-md);padding:8px 12px;font-size:12px;color:var(–blue-dk);display:flex;align-items:center;gap:8px;margin-bottom:.9rem}
 
 /* ── SPRINT EDITOR ── */
-.sprint-card{border:0.5px solid var(--border);border-radius:var(--r-md);padding:.9rem;margin-bottom:7px;position:relative}
-.sprint-card.f1{border-left:3px solid var(--blue)}
-.sprint-card.f2{border-left:3px solid var(--green)}
-.sprint-card.hito{border-left:3px solid var(--amber)}
+.sprint-card{border:0.5px solid var(–border);border-radius:var(–r-md);padding:.9rem;margin-bottom:7px;position:relative}
+.sprint-card.f1{border-left:3px solid var(–blue)}
+.sprint-card.f2{border-left:3px solid var(–green)}
+.sprint-card.hito{border-left:3px solid var(–amber)}
 .sprint-head{display:flex;align-items:center;gap:7px;margin-bottom:7px}
 .sprint-num{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;flex-shrink:0}
-.f1 .sprint-num{background:var(--blue-lt);color:var(--blue-dk)}
-.f2 .sprint-num{background:var(--green-lt);color:var(--green-dk)}
-.hito .sprint-num{background:var(--amber-lt);color:var(--amber)}
-.sprint-title-inp{font-size:13px;font-weight:500;border:none;background:transparent;color:var(--text);width:100%;padding:0;outline:none;font-family:inherit}
-.sprint-title-inp:focus{border-bottom:1px solid var(--blue)}
+.f1 .sprint-num{background:var(–blue-lt);color:var(–blue-dk)}
+.f2 .sprint-num{background:var(–green-lt);color:var(–green-dk)}
+.hito .sprint-num{background:var(–amber-lt);color:var(–amber)}
+.sprint-title-inp{font-size:13px;font-weight:500;border:none;background:transparent;color:var(–text);width:100%;padding:0;outline:none;font-family:inherit}
+.sprint-title-inp:focus{border-bottom:1px solid var(–blue)}
 .type-badge{font-size:10px;padding:2px 7px;border-radius:20px;white-space:nowrap;flex-shrink:0}
-.badge-f1{background:var(--blue-lt);color:var(--blue-dk)}
-.badge-f2{background:var(--green-lt);color:var(--green-dk)}
-.badge-hito{background:var(--amber-lt);color:var(--amber)}
+.badge-f1{background:var(–blue-lt);color:var(–blue-dk)}
+.badge-f2{background:var(–green-lt);color:var(–green-dk)}
+.badge-hito{background:var(–amber-lt);color:var(–amber)}
 .ent-wrap{margin-top:6px}
-.ent-tag{display:inline-flex;align-items:center;gap:3px;background:var(--bg);border:0.5px solid var(--border);border-radius:20px;padding:2px 7px;font-size:10px;color:var(--text-2);cursor:pointer;margin:2px}
-.ent-tag.on{background:var(--blue-lt);border-color:transparent;color:var(--blue-dk)}
-.ent-tag.f2-on{background:var(--green-lt);border-color:transparent;color:var(--green-dk)}
-.client-note{font-size:12px;border:0.5px solid var(--border);border-radius:var(--r-md);padding:5px 8px;width:100%;background:var(--surface);color:var(--text);font-family:inherit;margin-top:6px;resize:none;min-height:34px;line-height:1.4}
+.ent-tag{display:inline-flex;align-items:center;gap:3px;background:var(–bg);border:0.5px solid var(–border);border-radius:20px;padding:2px 7px;font-size:10px;color:var(–text-2);cursor:pointer;margin:2px}
+.ent-tag.on{background:var(–blue-lt);border-color:transparent;color:var(–blue-dk)}
+.ent-tag.f2-on{background:var(–green-lt);border-color:transparent;color:var(–green-dk)}
+.client-note{font-size:12px;border:0.5px solid var(–border);border-radius:var(–r-md);padding:5px 8px;width:100%;background:var(–surface);color:var(–text);font-family:inherit;margin-top:6px;resize:none;min-height:34px;line-height:1.4}
 .sprint-meta{display:flex;gap:8px;align-items:center;margin-top:7px;flex-wrap:wrap}
-.feedback-btn{background:var(--amber-lt);color:var(--amber);font-size:10px;padding:2px 8px;border-radius:20px;border:none;cursor:pointer;font-family:inherit}
-.feedback-btn.on{background:var(--green-lt);color:var(--green-dk)}
-.del-btn{position:absolute;top:9px;right:9px;width:18px;height:18px;border:none;background:transparent;cursor:pointer;color:var(--text-3);font-size:15px;line-height:1;display:flex;align-items:center;justify-content:center;border-radius:4px}
-.del-btn:hover{background:var(--red-lt);color:var(--red)}
-.add-sp-btn{width:100%;padding:7px;border:0.5px dashed var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text-2);font-size:12px;cursor:pointer;margin-bottom:7px}
-.add-sp-btn:hover{background:var(--bg)}
+.feedback-btn{background:var(–amber-lt);color:var(–amber);font-size:10px;padding:2px 8px;border-radius:20px;border:none;cursor:pointer;font-family:inherit}
+.feedback-btn.on{background:var(–green-lt);color:var(–green-dk)}
+.del-btn{position:absolute;top:9px;right:9px;width:18px;height:18px;border:none;background:transparent;cursor:pointer;color:var(–text-3);font-size:15px;line-height:1;display:flex;align-items:center;justify-content:center;border-radius:4px}
+.del-btn:hover{background:var(–red-lt);color:var(–red)}
+.add-sp-btn{width:100%;padding:7px;border:0.5px dashed var(–border-2);border-radius:var(–r-md);background:transparent;color:var(–text-2);font-size:12px;cursor:pointer;margin-bottom:7px}
+.add-sp-btn:hover{background:var(–bg)}
 
 /* ── TIMELINE ── */
-.view-tabs{display:flex;gap:3px;margin-bottom:.9rem;background:var(--bg);border-radius:var(--r-md);padding:3px}
-.vtab{flex:1;padding:6px 0;font-size:12px;font-weight:500;text-align:center;border:none;border-radius:6px;cursor:pointer;background:transparent;color:var(--text-2);transition:all .15s;font-family:inherit}
-.vtab.active{background:var(--surface);color:var(--text)}
-.tl-name{font-size:11px;font-weight:500;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:8px}
-.tl-dates{font-size:10px;color:var(--text-3)}
+.view-tabs{display:flex;gap:3px;margin-bottom:.9rem;background:var(–bg);border-radius:var(–r-md);padding:3px}
+.vtab{flex:1;padding:6px 0;font-size:12px;font-weight:500;text-align:center;border:none;border-radius:6px;cursor:pointer;background:transparent;color:var(–text-2);transition:all .15s;font-family:inherit}
+.vtab.active{background:var(–surface);color:var(–text)}
+.tl-name{font-size:11px;font-weight:500;color:var(–text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:8px}
+.tl-dates{font-size:10px;color:var(–text-3)}
 .tl-bar{position:absolute;height:18px;top:5px;border-radius:3px;display:flex;align-items:center;padding:0 5px;font-size:9px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:3px}
-.tl-f1{background:var(--blue);color:#fff}
-.tl-f2{background:var(--green);color:#fff}
-.tl-hito{background:var(--amber);border-radius:50%!important;width:10px!important;padding:0!important;min-width:10px!important}
+.tl-f1{background:var(–blue);color:#fff}
+.tl-f2{background:var(–green);color:#fff}
+.tl-hito{background:var(–amber);border-radius:50%!important;width:10px!important;padding:0!important;min-width:10px!important}
 .tl-tag{font-size:9px;padding:1px 5px;border-radius:20px;display:inline-block;margin:1px 1px 0}
-.tl-feedback{background:var(--green-lt);color:var(--green-dk)}
-.tl-hito-tag{background:var(--amber-lt);color:var(--amber)}
-.empty{text-align:center;padding:2rem;color:var(--text-3);font-size:12px}
+.tl-feedback{background:var(–green-lt);color:var(–green-dk)}
+.tl-hito-tag{background:var(–amber-lt);color:var(–amber)}
+.empty{text-align:center;padding:2rem;color:var(–text-3);font-size:12px}
 
 /* ── CLIENT VIEW ── */
-.cv-header{background:#111;padding:18px 22px;border-radius:var(--r-lg) var(--r-lg) 0 0;display:flex;justify-content:space-between;align-items:center}
+.cv-header{background:#111;padding:18px 22px;border-radius:var(–r-lg) var(–r-lg) 0 0;display:flex;justify-content:space-between;align-items:center}
 .cv-header h2{color:#fff;font-size:13px;font-weight:400;letter-spacing:.2px}
 .cv-meta{color:#888;font-size:10px;text-align:right;line-height:1.8}
-.cv-body{background:var(--surface);border:0.5px solid var(--border);border-top:none;border-radius:0 0 var(--r-lg) var(--r-lg);padding:18px 22px}
-.cv-row{display:flex;gap:10px;align-items:flex-start;padding:7px 0;border-bottom:0.5px solid var(--border)}
+.cv-body{background:var(–surface);border:0.5px solid var(–border);border-top:none;border-radius:0 0 var(–r-lg) var(–r-lg);padding:18px 22px}
+.cv-row{display:flex;gap:10px;align-items:flex-start;padding:7px 0;border-bottom:0.5px solid var(–border)}
 .cv-row:last-child{border-bottom:none}
 .cv-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px}
-.cv-dot-f1{background:var(--blue)}.cv-dot-f2{background:var(--green)}.cv-dot-hito{background:var(--amber)}
-.cv-title{font-size:12px;font-weight:500;color:var(--text)}
-.cv-dates{font-size:10px;color:var(--text-3);margin-top:1px}
-.cv-note{font-size:11px;color:var(--text-2);margin-top:3px;line-height:1.5}
+.cv-dot-f1{background:var(–blue)}.cv-dot-f2{background:var(–green)}.cv-dot-hito{background:var(–amber)}
+.cv-title{font-size:12px;font-weight:500;color:var(–text)}
+.cv-dates{font-size:10px;color:var(–text-3);margin-top:1px}
+.cv-note{font-size:11px;color:var(–text-2);margin-top:3px;line-height:1.5}
 .cv-tags{display:flex;flex-wrap:wrap;gap:3px;margin-top:4px}
 .cv-tag{font-size:9px;padding:1px 6px;border-radius:20px}
-.cv-ent{background:var(--blue-lt);color:var(--blue-dk)}
-.cv-ent-f2{background:var(--green-lt);color:var(--green-dk)}
-.cv-fb{background:var(--green-lt);color:var(--green-dk)}
-.cv-hito{background:var(--amber-lt);color:var(--amber)}
-.cv-foot{font-size:9px;color:var(--text-3);margin-top:12px;padding-top:10px;border-top:0.5px solid var(--border);line-height:1.6}
+.cv-ent{background:var(–blue-lt);color:var(–blue-dk)}
+.cv-ent-f2{background:var(–green-lt);color:var(–green-dk)}
+.cv-fb{background:var(–green-lt);color:var(–green-dk)}
+.cv-hito{background:var(–amber-lt);color:var(–amber)}
+.cv-foot{font-size:9px;color:var(–text-3);margin-top:12px;padding-top:10px;border-top:0.5px solid var(–border);line-height:1.6}
 
 /* ── PRINT ── */
 @media print{
-  .topbar,.page:not(.active){display:none!important}
-  .page.active{display:block!important;padding:0;max-width:none}
-  body{background:white}
+.topbar,.page:not(.active){display:none!important}
+.page.active{display:block!important;padding:0;max-width:none}
+body{background:white}
 }
-.nt{font-size:10px;color:var(--text-3);margin-top:3px}
+.nt{font-size:10px;color:var(–text-3);margin-top:3px}
 /* Ingresos */
 .estado-badge{font-size:10px;padding:2px 7px;border-radius:20px;font-weight:500}
-.est-aprobada{background:var(--blue-lt);color:var(--blue-dk)}
-.est-en_progreso{background:var(--amber-lt);color:var(--amber)}
-.est-parcial{background:var(--purple-lt);color:var(--purple-dk)}
-.est-completada{background:var(--green-lt);color:var(--green-dk)}
-.ing-mes-row{border-bottom:0.5px solid var(--border);padding:.6rem 0}
+.est-aprobada{background:var(–blue-lt);color:var(–blue-dk)}
+.est-en_progreso{background:var(–amber-lt);color:var(–amber)}
+.est-parcial{background:var(–purple-lt);color:var(–purple-dk)}
+.est-completada{background:var(–green-lt);color:var(–green-dk)}
+.ing-mes-row{border-bottom:0.5px solid var(–border);padding:.6rem 0}
 .ing-mes-row:last-child{border-bottom:none}
-.ing-bar-track{height:6px;background:var(--border);border-radius:3px;margin-top:5px;overflow:hidden;display:flex;gap:1px}
-.ing-bar-cobrado{background:var(--green);height:100%}
+.ing-bar-track{height:6px;background:var(–border);border-radius:3px;margin-top:5px;overflow:hidden;display:flex;gap:1px}
+.ing-bar-cobrado{background:var(–green);height:100%}
 .ing-bar-pendiente{background:#B5D4F4;height:100%}
-.cot-card{border:0.5px solid var(--border);border-radius:var(--r-md);padding:.9rem;margin-bottom:7px}
+.cot-card{border:0.5px solid var(–border);border-radius:var(–r-md);padding:.9rem;margin-bottom:7px}
 .cot-card-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
 .cot-actions{display:flex;gap:5px}
 /* Kanban Trello */
 .kanban-board{display:flex;gap:10px;padding-bottom:.5rem;align-items:flex-start;min-height:200px;overflow-x:auto}
-.kanban-col{background:var(--bg);border-radius:var(--r-lg);padding:.75rem .8rem;min-width:190px;flex:0 0 190px;border-top:3px solid #ccc}
+.kanban-col{background:var(–bg);border-radius:var(–r-lg);padding:.75rem .8rem;min-width:190px;flex:0 0 190px;border-top:3px solid #ccc}
 .kanban-col.kcol-emitida{border-top-color:#999}
-.kanban-col.kcol-proceso{border-top-color:var(--blue)}
+.kanban-col.kcol-proceso{border-top-color:var(–blue)}
 .kanban-col.kcol-f1entregada{border-top-color:#D4820B}
 .kanban-col.kcol-cobradaf1{border-top-color:#2055B5}
 .kanban-col.kcol-f2entregada{border-top-color:#6D3CC7}
-.kanban-col.kcol-cobrada{border-top-color:var(--green)}
+.kanban-col.kcol-cobrada{border-top-color:var(–green)}
 .kanban-col-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem;gap:6px}
-.kanban-col-title{font-size:11px;font-weight:600;letter-spacing:.15px;color:var(--text);flex:1;min-width:0}
-.kanban-badge{font-size:10px;font-weight:700;background:rgba(0,0,0,.07);border-radius:20px;padding:2px 7px;color:var(--text-2);flex-shrink:0}
-.kanban-card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r-md);padding:.65rem .75rem;margin-bottom:6px;transition:box-shadow .15s}
+.kanban-col-title{font-size:11px;font-weight:600;letter-spacing:.15px;color:var(–text);flex:1;min-width:0}
+.kanban-badge{font-size:10px;font-weight:700;background:rgba(0,0,0,.07);border-radius:20px;padding:2px 7px;color:var(–text-2);flex-shrink:0}
+.kanban-card{background:var(–surface);border:0.5px solid var(–border);border-radius:var(–r-md);padding:.65rem .75rem;margin-bottom:6px;transition:box-shadow .15s}
 .kanban-card:hover{box-shadow:0 2px 10px rgba(0,0,0,.1)}
 .kanban-card-client{font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.kanban-card-proj{font-size:10px;color:var(--text-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px}
+.kanban-card-proj{font-size:10px;color:var(–text-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px}
 .kanban-card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:5px;gap:4px}
-.kanban-card-amt{font-size:11px;font-weight:500;color:var(--text)}
+.kanban-card-amt{font-size:11px;font-weight:500;color:var(–text)}
 .kanban-card-cob{font-size:10px;color:#0F6E56}
-.kanban-empty{font-size:11px;color:var(--text-3);padding:.5rem 0;text-align:center}
-.kanban-state-select{width:100%;margin-top:6px;padding:3px 5px;font-size:10px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:var(--surface);color:var(--text);cursor:pointer}
+.kanban-empty{font-size:11px;color:var(–text-3);padding:.5rem 0;text-align:center}
+.kanban-state-select{width:100%;margin-top:6px;padding:3px 5px;font-size:10px;border:0.5px solid var(–border-2);border-radius:var(–r-md);background:var(–surface);color:var(–text);cursor:pointer}
 /* Modal edición */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;display:flex;align-items:center;justify-content:center;padding:1rem}
-.modal-box{background:var(--surface);border-radius:var(--r-lg);padding:1.4rem;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.18)}
+.modal-box{background:var(–surface);border-radius:var(–r-lg);padding:1.4rem;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.18)}
 .modal-title{font-size:14px;font-weight:600;margin-bottom:1rem;display:flex;justify-content:space-between;align-items:center}
-.modal-close{border:none;background:transparent;cursor:pointer;font-size:20px;color:var(--text-3);line-height:1}
-.btn-ver{padding:4px 10px;font-size:11px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--blue);cursor:pointer}
-.btn-editar{padding:4px 10px;font-size:11px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text);cursor:pointer}
+.modal-close{border:none;background:transparent;cursor:pointer;font-size:20px;color:var(–text-3);line-height:1}
+.btn-ver{padding:4px 10px;font-size:11px;border:0.5px solid var(–border-2);border-radius:var(–r-md);background:transparent;color:var(–blue);cursor:pointer}
+.btn-editar{padding:4px 10px;font-size:11px;border:0.5px solid var(–border-2);border-radius:var(–r-md);background:transparent;color:var(–text);cursor:pointer}
 </style>
+
 </head>
 <body>
 
@@ -277,6 +279,7 @@ input.narrow{width:88px}input.mid{width:108px}
 </div>
 
 <!-- ═══════════════════════════════════════════════ PÁGINA: HONORARIOS -->
+
 <div class="page" id="pg-calc">
 
 <div class="sc">
@@ -469,6 +472,7 @@ input.narrow{width:88px}input.mid{width:108px}
 </div>
 
 <!-- Botón de acceso a Tiempos al final del Cotizador -->
+
 <button id="btnVerTiempos" onclick="toggleTiempos()" style="display:flex;align-items:center;justify-content:space-between;width:100%;padding:13px 18px;font-size:14px;font-weight:500;border:0.5px solid var(--border-2);border-radius:var(--r-lg);background:var(--surface);color:var(--text);cursor:pointer;margin-top:.75rem">
   <span style="display:flex;align-items:center;gap:9px">
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2a6 6 0 100 12A6 6 0 008 2zM8 5v3l2 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -478,6 +482,7 @@ input.narrow{width:88px}input.mid{width:108px}
 </button>
 
 <!-- Sección Tiempos — embebida en el Cotizador -->
+
 <div id="secTiempos" style="display:none;margin-top:.75rem">
 
 <div class="sync-banner">
@@ -538,12 +543,12 @@ input.narrow{width:88px}input.mid{width:108px}
 
 </div><!-- /pg-calc -->
 
-
 <!-- ═══════════════════════════════════════════════ PÁGINA: CALENDARIO (legacy container — kept for JS compatibility) -->
+
 <div class="page" id="pg-cal" style="display:none!important"></div>
 
-
 <!-- ═══════════════════════════════════════════════ PÁGINA: INGRESOS -->
+
 <div class="page active" id="pg-ing">
 
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem">
@@ -630,8 +635,8 @@ input.narrow{width:88px}input.mid{width:108px}
 
 </div><!-- /pg-ing -->
 
-
 <!-- ═══════════════════════════════════════════════ PÁGINA: ESTATUS -->
+
 <div class="page" id="pg-est">
 
 <div class="sc">
@@ -645,7 +650,6 @@ input.narrow{width:88px}input.mid{width:108px}
 <div id="est-colab"></div>
 
 </div><!-- /pg-est -->
-
 
 <script>
 // ═══════ ESTADO GLOBAL ═══════
@@ -876,131 +880,123 @@ function renderEditor(){
       </div>
       ${opts.length?`<div class="ent-wrap"><p class="nt" style="margin-bottom:5px">Entregables:</p><div style="display:flex;flex-wrap:wrap">${entTags}</div></div>`:''}
       <textarea class="client-note" rows="2" oninput="updNote(${s.id},this.value)" placeholder="Nota para el cliente...">${s.clientNote}</textarea>
-      <div class="sprint-meta">
-        ${s.type!=='hito'?`<div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-3)">Duración:<select style="width:auto;padding:2px 6px;font-size:11px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:var(--surface);color:var(--text)" onchange="sprints.find(x=>x.id===${s.id}).weeks=parseInt(this.value);renderAll()">${wkOpts}</select></div>`:''}
-        <button class="feedback-btn ${s.needsFeedback?'on':''}" onclick="toggleFb(${s.id})">${s.needsFeedback?'✓ Requiere aprobación':'+ Marcar aprobación cliente'}</button>
-      </div>
-    </div>`;
-  }).join('');
+
+```
+  <div class="sprint-meta">
+    ${s.type!=='hito'?`<div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-3)">Duración:<select style="width:auto;padding:2px 6px;font-size:11px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:var(--surface);color:var(--text)" onchange="sprints.find(x=>x.id===${s.id}).weeks=parseInt(this.value);renderAll()">${wkOpts}</select></div>`:''}
+    <button class="feedback-btn ${s.needsFeedback?'on':''}" onclick="toggleFb(${s.id})">${s.needsFeedback?'✓ Requiere aprobación':'+ Marcar aprobación cliente'}</button>
+  </div>
+</div>`;
+```
+
+}).join(’’);
 }
 
 function renderTimeline(){
-  const dates=getSprintDates();
-  const sv=document.getElementById('projStart').value;
-  const f1on=document.getElementById('fase1On').checked,f2on=document.getElementById('fase2On').checked;
-  if(!sv){document.getElementById('timelineContent').innerHTML='<p class="empty">Selecciona una fecha de inicio para ver la línea de tiempo.</p>';return}
-  let tw=0;sprints.forEach(s=>{tw+=s.type==='hito'?0:(s.weeks||2)});tw=Math.max(tw,1);
-  const ps=new Date(sv+'T12:00:00'),pe=addDays(ps,tw*7);
-  const WL=Array.from({length:tw},(_,w)=>fmtS(addDays(ps,w*7)));
-  const IW=28,BW=72;
-  const rows=sprints.map((s,i)=>{
-    if(s.type==='f1'&&!f1on)return'';
-    if(s.type==='f2'&&!f2on)return'';
-    const d=dates[i];if(!d)return'';
-    const off=Math.max(0,(d.start-ps)/(7*24*3600*1000));
-    const dw=s.type==='hito'?.4:(d.end-d.start)/(7*24*3600*1000)+1;
-    const l=(off/tw*100).toFixed(1),w=(dw/tw*100).toFixed(1);
-    const bc=s.type==='hito'?'tl-hito':s.type==='f1'?'tl-f1':'tl-f2';
-    const ds=s.type==='hito'?fmtS(d.start):`${fmtS(d.start)}–${fmtS(d.end)}`;
-    const tags=[s.needsFeedback?'<span class="tl-tag tl-feedback">Aprobación</span>':'',s.type==='hito'?'<span class="tl-tag tl-hito-tag">Hito</span>':''].join('');
-    return`<div style="display:grid;grid-template-columns:${IW}% ${BW}%;padding:5px 0;border-bottom:0.5px solid var(--border);align-items:center">
-      <div style="padding-right:8px">
-        <div class="tl-name">${s.title.length>26?s.title.slice(0,24)+'…':s.title}</div>
-        <div class="tl-dates">${ds}</div>
-        <div>${tags}</div>
-      </div>
-      <div style="position:relative;height:28px">
-        ${Array.from({length:tw},(_,w)=>`<div style="position:absolute;left:${(w/tw*100).toFixed(1)}%;top:0;bottom:0;width:${(100/tw).toFixed(1)}%;border-left:0.5px solid var(--border)"></div>`).join('')}
-        <div class="tl-bar ${bc}" style="left:${l}%;width:${w}%">${s.type!=='hito'&&dw>1?s.title.slice(0,18):''}</div>
-      </div>
-    </div>`;
-  }).join('');
-  const hdr=`<div style="display:grid;grid-template-columns:${IW}% ${BW}%;margin-bottom:4px"><div></div><div style="position:relative;height:18px">${WL.map((l,w)=>`<span style="position:absolute;left:${(w/tw*100).toFixed(1)}%;font-size:9px;color:var(--text-3);white-space:nowrap">${l}</span>`).join('')}</div></div>`;
-  const leg=`<div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap">
-    <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text-2)"><div style="width:10px;height:10px;border-radius:2px;background:var(--blue)"></div>Fase 1</div>
-    <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text-2)"><div style="width:10px;height:10px;border-radius:2px;background:var(--green)"></div>Fase 2</div>
-    <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text-2)"><div style="width:8px;height:8px;border-radius:50%;background:var(--amber)"></div>Hito</div>
-    <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text-2)"><span class="tl-tag tl-feedback" style="margin:0">Aprobación</span>Requiere OK</div>
+const dates=getSprintDates();
+const sv=document.getElementById(‘projStart’).value;
+const f1on=document.getElementById(‘fase1On’).checked,f2on=document.getElementById(‘fase2On’).checked;
+if(!sv){document.getElementById(‘timelineContent’).innerHTML=’<p class="empty">Selecciona una fecha de inicio para ver la línea de tiempo.</p>’;return}
+let tw=0;sprints.forEach(s=>{tw+=s.type===‘hito’?0:(s.weeks||2)});tw=Math.max(tw,1);
+const ps=new Date(sv+‘T12:00:00’),pe=addDays(ps,tw*7);
+const WL=Array.from({length:tw},(_,w)=>fmtS(addDays(ps,w*7)));
+const IW=28,BW=72;
+const rows=sprints.map((s,i)=>{
+if(s.type===‘f1’&&!f1on)return’’;
+if(s.type===‘f2’&&!f2on)return’’;
+const d=dates[i];if(!d)return’’;
+const off=Math.max(0,(d.start-ps)/(7*24*3600*1000));
+const dw=s.type===‘hito’?.4:(d.end-d.start)/(7*24*3600*1000)+1;
+const l=(off/tw*100).toFixed(1),w=(dw/tw*100).toFixed(1);
+const bc=s.type===‘hito’?‘tl-hito’:s.type===‘f1’?‘tl-f1’:‘tl-f2’;
+const ds=s.type===‘hito’?fmtS(d.start):`${fmtS(d.start)}–${fmtS(d.end)}`;
+const tags=[s.needsFeedback?’<span class="tl-tag tl-feedback">Aprobación</span>’:’’,s.type===‘hito’?’<span class="tl-tag tl-hito-tag">Hito</span>’:’’].join(’’);
+return`<div style="display:grid;grid-template-columns:${IW}% ${BW}%;padding:5px 0;border-bottom:0.5px solid var(--border);align-items:center"> <div style="padding-right:8px"> <div class="tl-name">${s.title.length>26?s.title.slice(0,24)+'…':s.title}</div> <div class="tl-dates">${ds}</div> <div>${tags}</div> </div> <div style="position:relative;height:28px"> ${Array.from({length:tw},(_,w)=>`<div style="position:absolute;left:${(w/tw*100).toFixed(1)}%;top:0;bottom:0;width:${(100/tw).toFixed(1)}%;border-left:0.5px solid var(--border)"></div>`).join('')} <div class="tl-bar ${bc}" style="left:${l}%;width:${w}%">${s.type!=='hito'&&dw>1?s.title.slice(0,18):''}</div> </div> </div>`;
+}).join(’’);
+const hdr=`<div style="display:grid;grid-template-columns:${IW}% ${BW}%;margin-bottom:4px"><div></div><div style="position:relative;height:18px">${WL.map((l,w)=>`<span style="position:absolute;left:${(w/tw*100).toFixed(1)}%;font-size:9px;color:var(--text-3);white-space:nowrap">${l}</span>`).join('')}</div></div>`;
+const leg=`<div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap">
+<div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text-2)"><div style="width:10px;height:10px;border-radius:2px;background:var(--blue)"></div>Fase 1</div>
+<div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text-2)"><div style="width:10px;height:10px;border-radius:2px;background:var(--green)"></div>Fase 2</div>
+<div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text-2)"><div style="width:8px;height:8px;border-radius:50%;background:var(--amber)"></div>Hito</div>
+<div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text-2)"><span class="tl-tag tl-feedback" style="margin:0">Aprobación</span>Requiere OK</div>
+
   </div>`;
   document.getElementById('timelineContent').innerHTML=`<div style="overflow-x:auto"><div style="min-width:500px">${hdr}${rows||'<p class="empty">Activa una fase para ver el timeline.</p>'}</div></div>${leg}<p class="nt" style="margin-top:6px">${tw} semanas · ${fmtL(ps)} → ${fmtL(pe)}</p>`;
 }
 
 function renderClienteView(){
-  const dates=getSprintDates();
-  const f1on=document.getElementById('fase1On').checked,f2on=document.getElementById('fase2On').checked;
-  const pn=document.getElementById('calProjName').value||'Proyecto de diseño arquitectónico';
-  const cn=document.getElementById('calClientName').value||'Cliente';
-  const today=new Date().toLocaleDateString('es-GT',{day:'2-digit',month:'long',year:'numeric'});
-  const sv=document.getElementById('projStart').value;
-  const rows=sprints.filter((s,i)=>{
-    if(s.type==='f1'&&!f1on)return false;
-    if(s.type==='f2'&&!f2on)return false;
-    return dates[i];
-  }).map(s=>{
-    const i=sprints.indexOf(s);const d=dates[i];
-    const ds=s.type==='hito'?fmtL(d.start):`${fmtS(d.start)} – ${fmtS(d.end)}`;
-    const entCls=s.type==='f2'?'cv-tag cv-ent-f2':'cv-tag cv-ent';
-    const entTags=s.entregables.map(e=>`<span class="${entCls}">${e}</span>`).join('');
-    const fb=s.needsFeedback?'<span class="cv-tag cv-fb">Requiere su aprobación</span>':'';
-    const ht=s.type==='hito'?'<span class="cv-tag cv-hito">Hito</span>':'';
-    return`<div class="cv-row"><div class="cv-dot cv-dot-${s.type}"></div><div style="flex:1">
-      <div class="cv-title">${s.title}</div>
-      <div class="cv-dates">${ds}</div>
-      ${s.clientNote?`<div class="cv-note">${s.clientNote}</div>`:''}
-      <div class="cv-tags">${entTags}${fb}${ht}</div>
-    </div></div>`;
-  }).join('');
-  const noDate=!sv?'<p class="nt" style="margin-bottom:10px">Define una fecha de inicio para ver fechas exactas.</p>':'';
-  document.getElementById('clienteContent').innerHTML=`<div>
-    <div class="cv-header"><div><h2>${pn}</h2><p style="color:#aaa;font-size:10px;margin-top:1px">Plan de entregas</p></div><div class="cv-meta"><div>${cn}</div><div>${today}</div></div></div>
-    <div class="cv-body">${noDate}${rows||'<p class="empty" style="padding:.75rem 0">Activa una fase para ver el plan.</p>'}
-      <div class="cv-foot">Este plan describe las etapas y entregas acordadas. Las fechas están sujetas a la aprobación oportuna de cada etapa. Los ítems marcados como "Requiere su aprobación" necesitan confirmación escrita antes de continuar.</div>
-    </div>
+const dates=getSprintDates();
+const f1on=document.getElementById(‘fase1On’).checked,f2on=document.getElementById(‘fase2On’).checked;
+const pn=document.getElementById(‘calProjName’).value||‘Proyecto de diseño arquitectónico’;
+const cn=document.getElementById(‘calClientName’).value||‘Cliente’;
+const today=new Date().toLocaleDateString(‘es-GT’,{day:‘2-digit’,month:‘long’,year:‘numeric’});
+const sv=document.getElementById(‘projStart’).value;
+const rows=sprints.filter((s,i)=>{
+if(s.type===‘f1’&&!f1on)return false;
+if(s.type===‘f2’&&!f2on)return false;
+return dates[i];
+}).map(s=>{
+const i=sprints.indexOf(s);const d=dates[i];
+const ds=s.type===‘hito’?fmtL(d.start):`${fmtS(d.start)} – ${fmtS(d.end)}`;
+const entCls=s.type===‘f2’?‘cv-tag cv-ent-f2’:‘cv-tag cv-ent’;
+const entTags=s.entregables.map(e=>`<span class="${entCls}">${e}</span>`).join(’’);
+const fb=s.needsFeedback?’<span class="cv-tag cv-fb">Requiere su aprobación</span>’:’’;
+const ht=s.type===‘hito’?’<span class="cv-tag cv-hito">Hito</span>’:’’;
+return`<div class="cv-row"><div class="cv-dot cv-dot-${s.type}"></div><div style="flex:1"> <div class="cv-title">${s.title}</div> <div class="cv-dates">${ds}</div> ${s.clientNote?`<div class="cv-note">${s.clientNote}</div>`:''} <div class="cv-tags">${entTags}${fb}${ht}</div> </div></div>`;
+}).join(’’);
+const noDate=!sv?’<p class="nt" style="margin-bottom:10px">Define una fecha de inicio para ver fechas exactas.</p>’:’’;
+document.getElementById(‘clienteContent’).innerHTML=`<div>
+<div class="cv-header"><div><h2>${pn}</h2><p style="color:#aaa;font-size:10px;margin-top:1px">Plan de entregas</p></div><div class="cv-meta"><div>${cn}</div><div>${today}</div></div></div>
+<div class="cv-body">${noDate}${rows||’<p class="empty" style="padding:.75rem 0">Activa una fase para ver el plan.</p>’}
+<div class="cv-foot">Este plan describe las etapas y entregas acordadas. Las fechas están sujetas a la aprobación oportuna de cada etapa. Los ítems marcados como “Requiere su aprobación” necesitan confirmación escrita antes de continuar.</div>
+</div>
+
   </div>`;
 }
 
 function switchView(v){
-  calView=v;
-  ['tl','cv'].forEach(t=>{
-    document.getElementById('tab-'+t).classList.toggle('active',t===v);
-    document.getElementById('view-'+t).style.display=t===v?'block':'none';
-  });
+calView=v;
+[‘tl’,‘cv’].forEach(t=>{
+document.getElementById(‘tab-’+t).classList.toggle(‘active’,t===v);
+document.getElementById(‘view-’+t).style.display=t===v?‘block’:‘none’;
+});
 }
 
 function renderAll(){
-  const dur=parseInt(document.getElementById('sprintDur').value)||2;
-  document.getElementById('sprintDurV').textContent=dur+' sem';
-  renderEditor();renderTimeline();renderClienteView();
+const dur=parseInt(document.getElementById(‘sprintDur’).value)||2;
+document.getElementById(‘sprintDurV’).textContent=dur+’ sem’;
+renderEditor();renderTimeline();renderClienteView();
 }
 
 // ═══════ COTIZACIÓN ═══════
 function genCotizacion(){
-  const s=window._st||{};
-  const f=n=>s.cur+' '+Math.round(n).toLocaleString();
-  const cn=svEl('clientName')||'Cliente';
-  const pt=svEl('projTitle')||'Proyecto de diseño arquitectónico';
-  const pd=svEl('projDesc')||'';
-  const today=new Date();
-  const fecha=today.toLocaleDateString('es-GT',{day:'2-digit',month:'long',year:'numeric'});
-  const cotNum='COT-'+today.getFullYear()+String(today.getMonth()+1).padStart(2,'0')+String(today.getDate()).padStart(2,'0');
-  let planosText='';
-  if(s.f2){const PNAMES=['Cimientos y columnas','Plantas constructivas','Vigas y losas','Secciones constructivas','Elevaciones constructivas','Acabados','Detalles constructivos','Planos eléctricos','Planos hidráulicos'];PNAMES.forEach((n,i)=>{const q=parseFloat(document.getElementById('qp'+(i+1)).value)||0;if(q>0)planosText+=n+(q>1?` (${q})`:'') +', ';});planosText=planosText.replace(/, $/,'')}
-  // calendar section
-  const svDate=document.getElementById('projStart').value;
-  const dates=getSprintDates();
-  const f1on=document.getElementById('fase1On').checked,f2on=document.getElementById('fase2On').checked;
-  let calRows='';
-  if(svDate){
-    sprints.filter((sp,i)=>{if(sp.type==='f1'&&!f1on)return false;if(sp.type==='f2'&&!f2on)return false;return dates[i];}).forEach(sp=>{
-      const i=sprints.indexOf(sp);const d=dates[i];
-      const ds=sp.type==='hito'?fmtL(d.start):`${fmtS(d.start)} – ${fmtS(d.end)}`;
-      const dotC=sp.type==='f1'?'#185FA5':sp.type==='f2'?'#1D9E75':'#BA7517';
-      const entTags=sp.entregables.map(e=>`<span style="font-size:9px;padding:1px 5px;border-radius:20px;background:${sp.type==='f2'?'#EAF3DE':'#E6F1FB'};color:${sp.type==='f2'?'#27500A':'#0C447C'};margin:1px">${e}</span>`).join('');
-      const fb=sp.needsFeedback?'<span style="font-size:9px;padding:1px 5px;border-radius:20px;background:#EAF3DE;color:#27500A;margin:1px">Requiere aprobación</span>':'';
-      calRows+=`<tr><td style="padding:6px 10px 6px 0;vertical-align:top;width:14px"><div style="width:8px;height:8px;border-radius:50%;background:${dotC};margin-top:4px"></div></td><td style="padding:6px 8px"><div style="font-size:12px;font-weight:500;color:#1a1a18">${sp.title}</div><div style="font-size:10px;color:#888;margin-top:1px">${ds}</div>${sp.clientNote?`<div style="font-size:11px;color:#555;margin-top:3px;line-height:1.5">${sp.clientNote}</div>`:''}<div style="margin-top:4px">${entTags}${fb}</div></td></tr>`;
-    });
-  }
-  const html=`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Cotización ${cotNum} — Estudio AVIT</title>
+const s=window._st||{};
+const f=n=>s.cur+’ ‘+Math.round(n).toLocaleString();
+const cn=svEl(‘clientName’)||‘Cliente’;
+const pt=svEl(‘projTitle’)||‘Proyecto de diseño arquitectónico’;
+const pd=svEl(‘projDesc’)||’’;
+const today=new Date();
+const fecha=today.toLocaleDateString(‘es-GT’,{day:‘2-digit’,month:‘long’,year:‘numeric’});
+const cotNum=‘COT-’+today.getFullYear()+String(today.getMonth()+1).padStart(2,‘0’)+String(today.getDate()).padStart(2,‘0’);
+let planosText=’’;
+if(s.f2){const PNAMES=[‘Cimientos y columnas’,‘Plantas constructivas’,‘Vigas y losas’,‘Secciones constructivas’,‘Elevaciones constructivas’,‘Acabados’,‘Detalles constructivos’,‘Planos eléctricos’,‘Planos hidráulicos’];PNAMES.forEach((n,i)=>{const q=parseFloat(document.getElementById(‘qp’+(i+1)).value)||0;if(q>0)planosText+=n+(q>1?` (${q})`:’’) +’, ‘;});planosText=planosText.replace(/, $/,’’)}
+// calendar section
+const svDate=document.getElementById(‘projStart’).value;
+const dates=getSprintDates();
+const f1on=document.getElementById(‘fase1On’).checked,f2on=document.getElementById(‘fase2On’).checked;
+let calRows=’’;
+if(svDate){
+sprints.filter((sp,i)=>{if(sp.type===‘f1’&&!f1on)return false;if(sp.type===‘f2’&&!f2on)return false;return dates[i];}).forEach(sp=>{
+const i=sprints.indexOf(sp);const d=dates[i];
+const ds=sp.type===‘hito’?fmtL(d.start):`${fmtS(d.start)} – ${fmtS(d.end)}`;
+const dotC=sp.type===‘f1’?’#185FA5’:sp.type===‘f2’?’#1D9E75’:’#BA7517’;
+const entTags=sp.entregables.map(e=>`<span style="font-size:9px;padding:1px 5px;border-radius:20px;background:${sp.type==='f2'?'#EAF3DE':'#E6F1FB'};color:${sp.type==='f2'?'#27500A':'#0C447C'};margin:1px">${e}</span>`).join(’’);
+const fb=sp.needsFeedback?’<span style="font-size:9px;padding:1px 5px;border-radius:20px;background:#EAF3DE;color:#27500A;margin:1px">Requiere aprobación</span>’:’’;
+calRows+=`<tr><td style="padding:6px 10px 6px 0;vertical-align:top;width:14px"><div style="width:8px;height:8px;border-radius:50%;background:${dotC};margin-top:4px"></div></td><td style="padding:6px 8px"><div style="font-size:12px;font-weight:500;color:#1a1a18">${sp.title}</div><div style="font-size:10px;color:#888;margin-top:1px">${ds}</div>${sp.clientNote?`<div style="font-size:11px;color:#555;margin-top:3px;line-height:1.5">${sp.clientNote}</div>`:''}<div style="margin-top:4px">${entTags}${fb}</div></td></tr>`;
+});
+}
+const html=`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Cotización ${cotNum} — Estudio AVIT</title>
+
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#1a1a18;background:#fff;font-size:12px;line-height:1.7}
@@ -1047,6 +1043,7 @@ body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#1a1a18;backg
 .ft p{font-size:9.5px;color:#bbb;line-height:1.6}
 @media print{body{background:white}.page{padding:0}.lh{-webkit-print-color-adjust:exact;print-color-adjust:exact}.pb-a,.pb-m,.pb-s{-webkit-print-color-adjust:exact;print-color-adjust:exact}@page{margin:0;size:A4}}
 </style></head><body><div class="page">
+
 <div class="lh"><img src="data:image/png;base64,${LOGO_B64}" alt="Estudio AVIT"><div class="lh-r"><div class="cn">${cotNum}</div><div>${fecha}</div></div></div>
 <div class="bw">
 <div class="cb"><div><div class="cl">Presentado a</div><div class="cn2">${cn}</div><div class="pn">${pt}</div></div><div class="badge">${s.m2||150} m²</div></div>
@@ -1075,545 +1072,405 @@ ${calRows?`<div class="sec"><div class="sl">Plan de entregas</div><table style="
 }
 
 // ═══════ INGRESOS ═══════
-const MESES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-const MESES_FULL = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const MESES = [‘Ene’,‘Feb’,‘Mar’,‘Abr’,‘May’,‘Jun’,‘Jul’,‘Ago’,‘Sep’,‘Oct’,‘Nov’,‘Dic’];
+const MESES_FULL = [‘Enero’,‘Febrero’,‘Marzo’,‘Abril’,‘Mayo’,‘Junio’,‘Julio’,‘Agosto’,‘Septiembre’,‘Octubre’,‘Noviembre’,‘Diciembre’];
 
-function loadCots(){try{return JSON.parse(localStorage.getItem('avit_cots')||'[]')}catch{return[]}}
-function saveCots(arr){localStorage.setItem('avit_cots',JSON.stringify(arr))}
+function loadCots(){try{return JSON.parse(localStorage.getItem(‘avit_cots’)||’[]’)}catch{return[]}}
+function saveCots(arr){localStorage.setItem(‘avit_cots’,JSON.stringify(arr))}
 
-function fmtCur(n,c){return(c||'GTQ')+' '+Math.round(n).toLocaleString()}
+function fmtCur(n,c){return(c||‘GTQ’)+’ ’+Math.round(n).toLocaleString()}
 
 function showFormCot(){
-  // Pre-fill from current calc if available
-  const s=window._st||{};
-  if(s.tot){
-    document.getElementById('fc-f1').value=Math.round(s.fee1||0);
-    document.getElementById('fc-f2').value=Math.round(s.fee2||0);
-    document.getElementById('fc-oh').value=Math.round(s.oh||0);
-    document.getElementById('fc-colab').value=Math.round(s.cTot||0);
-    document.getElementById('fc-iva').value=Math.round(s.ia||0);
-    document.getElementById('fc-antic').value=Math.round(s.aA||0);
-    document.getElementById('fc-mid').value=Math.round(s.mA||0);
-    document.getElementById('fc-cur').value=s.cur||'GTQ';
-    const cn=document.getElementById('clientName').value;
-    const pt=document.getElementById('projTitle').value;
-    if(cn) document.getElementById('fc-cliente').value=cn;
-    if(pt) document.getElementById('fc-proyecto').value=pt;
-    // carry collaborator name into the form note field
-    if(s.colNombre) document.getElementById('fc-proyecto').dataset.colNombre=s.colNombre;
-  }
-  document.getElementById('fc-fecha').value=new Date().toISOString().split('T')[0];
-  document.getElementById('formCot').style.display='block';
-  calcFormTotals();
+// Pre-fill from current calc if available
+const s=window._st||{};
+if(s.tot){
+document.getElementById(‘fc-f1’).value=Math.round(s.fee1||0);
+document.getElementById(‘fc-f2’).value=Math.round(s.fee2||0);
+document.getElementById(‘fc-oh’).value=Math.round(s.oh||0);
+document.getElementById(‘fc-colab’).value=Math.round(s.cTot||0);
+document.getElementById(‘fc-iva’).value=Math.round(s.ia||0);
+document.getElementById(‘fc-antic’).value=Math.round(s.aA||0);
+document.getElementById(‘fc-mid’).value=Math.round(s.mA||0);
+document.getElementById(‘fc-cur’).value=s.cur||‘GTQ’;
+const cn=document.getElementById(‘clientName’).value;
+const pt=document.getElementById(‘projTitle’).value;
+if(cn) document.getElementById(‘fc-cliente’).value=cn;
+if(pt) document.getElementById(‘fc-proyecto’).value=pt;
+// carry collaborator name into the form note field
+if(s.colNombre) document.getElementById(‘fc-proyecto’).dataset.colNombre=s.colNombre;
 }
-function hideFormCot(){document.getElementById('formCot').style.display='none'}
+document.getElementById(‘fc-fecha’).value=new Date().toISOString().split(‘T’)[0];
+document.getElementById(‘formCot’).style.display=‘block’;
+calcFormTotals();
+}
+function hideFormCot(){document.getElementById(‘formCot’).style.display=‘none’}
 
 function calcFormTotals(){
-  const f1=parseFloat(document.getElementById('fc-f1').value)||0;
-  const f2=parseFloat(document.getElementById('fc-f2').value)||0;
-  const oh=parseFloat(document.getElementById('fc-oh').value)||0;
-  const colab=parseFloat(document.getElementById('fc-colab').value)||0;
-  const iva=parseFloat(document.getElementById('fc-iva').value)||0;
-  const antic=parseFloat(document.getElementById('fc-antic').value)||0;
-  const mid=parseFloat(document.getElementById('fc-mid').value)||0;
-  const cur=document.getElementById('fc-cur').value;
-  const sub=f1+f2;
-  const tot=sub+iva;
-  const util=tot-oh-colab;
-  const margen=tot>0?Math.round(util/tot*100):0;
-  const saldo=Math.max(0,tot-antic-mid);
-  document.getElementById('fc-total').textContent=fmtCur(tot,cur);
-  document.getElementById('fc-util').textContent=fmtCur(util,cur);
-  document.getElementById('fc-margen').textContent=margen+'%';
-  document.getElementById('fc-saldo').value=Math.round(saldo);
+const f1=parseFloat(document.getElementById(‘fc-f1’).value)||0;
+const f2=parseFloat(document.getElementById(‘fc-f2’).value)||0;
+const oh=parseFloat(document.getElementById(‘fc-oh’).value)||0;
+const colab=parseFloat(document.getElementById(‘fc-colab’).value)||0;
+const iva=parseFloat(document.getElementById(‘fc-iva’).value)||0;
+const antic=parseFloat(document.getElementById(‘fc-antic’).value)||0;
+const mid=parseFloat(document.getElementById(‘fc-mid’).value)||0;
+const cur=document.getElementById(‘fc-cur’).value;
+const sub=f1+f2;
+const tot=sub+iva;
+const util=tot-oh-colab;
+const margen=tot>0?Math.round(util/tot*100):0;
+const saldo=Math.max(0,tot-antic-mid);
+document.getElementById(‘fc-total’).textContent=fmtCur(tot,cur);
+document.getElementById(‘fc-util’).textContent=fmtCur(util,cur);
+document.getElementById(‘fc-margen’).textContent=margen+’%’;
+document.getElementById(‘fc-saldo’).value=Math.round(saldo);
 }
 
 function saveCot(){
-  const cliente=document.getElementById('fc-cliente').value.trim()||'Sin nombre';
-  const proyecto=document.getElementById('fc-proyecto').value.trim()||'Sin título';
-  const f1=parseFloat(document.getElementById('fc-f1').value)||0;
-  const f2=parseFloat(document.getElementById('fc-f2').value)||0;
-  const oh=parseFloat(document.getElementById('fc-oh').value)||0;
-  const colab=parseFloat(document.getElementById('fc-colab').value)||0;
-  const iva=parseFloat(document.getElementById('fc-iva').value)||0;
-  const antic=parseFloat(document.getElementById('fc-antic').value)||0;
-  const mid=parseFloat(document.getElementById('fc-mid').value)||0;
-  const cur=document.getElementById('fc-cur').value;
-  const fecha=document.getElementById('fc-fecha').value||new Date().toISOString().split('T')[0];
-  const estado=document.getElementById('fc-estado').value;
-  const sub=f1+f2,tot=sub+iva,util=tot-oh-colab,saldo=Math.max(0,tot-antic-mid);
-  const cobrado=(()=>{
-    if(estado==='cobrado_total'||estado==='completada') return tot;
-    if(estado==='cobrado_f1') return antic+mid;
-    if(estado==='f1_entregada'||estado==='f2_entregada'||estado==='en_progreso'||estado==='parcial') return antic;
-    return 0;
-  })();
-  const colNombre3D=(window._st?window._st.colNombre3D:'')||'';
-  const colNombreRend=(window._st?window._st.colNombreRend:'')||'';
-  const colNombrePlanos=(window._st?window._st.colNombrePlanos:'')||'';
-  const cots=loadCots();
-  cots.push({id:Date.now(),cliente,proyecto,f1,f2,oh,colab,iva,sub,tot,util,antic,mid,saldo,cobrado,cur,fecha,estado,colNombre3D,colNombreRend,colNombrePlanos});
-  saveCots(cots);
-  hideFormCot();
-  // reset form mini
-  ['fc-f1','fc-f2','fc-oh','fc-colab','fc-iva','fc-antic','fc-mid'].forEach(id=>document.getElementById(id).value=0);
-  document.getElementById('fc-cliente').value='';document.getElementById('fc-proyecto').value='';
-  // Limpiar el Cotizador completo para nueva cotización
-  document.getElementById('clientName').value='';
-  document.getElementById('projTitle').value='';
-  document.getElementById('projDesc').value='';
-  document.getElementById('m2S').value=150;
-  document.getElementById('m2Rate').value=80;
-  document.getElementById('p1Extra').value=0;
-  document.getElementById('colNombre3D').value='';
-  document.getElementById('colNombreRend').value='';
-  document.getElementById('colNombrePlanos').value='';
-  document.getElementById('col3D').value=25;
-  document.getElementById('colRend').value=0;
-  document.getElementById('colPlanos').value=0;
-  ['cRevit','cD5','cCanva','cElec','cGas','cViat'].forEach(id=>document.getElementById(id).value=25);
-  document.getElementById('ivaOn').checked=false;
-  document.getElementById('pctAntic').value=30;
-  document.getElementById('pctF1pay').value=40;
-  document.getElementById('fase1On').checked=true;
-  document.getElementById('fase2On').checked=true;
-  // Resets de planos a valores por defecto
-  [1,2,3,4,5,6,7,8,9].forEach(i=>{
-    document.getElementById('qp'+i).value=[1,1,1,2,4,1,3,0,0][i-1];
-    document.getElementById('cp'+i).value=600;
-  });
-  toggleFase1();toggleFase2();syncToCalendar();calc();
-  renderIngresos();
+const cliente=document.getElementById(‘fc-cliente’).value.trim()||‘Sin nombre’;
+const proyecto=document.getElementById(‘fc-proyecto’).value.trim()||‘Sin título’;
+const f1=parseFloat(document.getElementById(‘fc-f1’).value)||0;
+const f2=parseFloat(document.getElementById(‘fc-f2’).value)||0;
+const oh=parseFloat(document.getElementById(‘fc-oh’).value)||0;
+const colab=parseFloat(document.getElementById(‘fc-colab’).value)||0;
+const iva=parseFloat(document.getElementById(‘fc-iva’).value)||0;
+const antic=parseFloat(document.getElementById(‘fc-antic’).value)||0;
+const mid=parseFloat(document.getElementById(‘fc-mid’).value)||0;
+const cur=document.getElementById(‘fc-cur’).value;
+const fecha=document.getElementById(‘fc-fecha’).value||new Date().toISOString().split(‘T’)[0];
+const estado=document.getElementById(‘fc-estado’).value;
+const sub=f1+f2,tot=sub+iva,util=tot-oh-colab,saldo=Math.max(0,tot-antic-mid);
+const cobrado=(()=>{
+if(estado===‘cobrado_total’||estado===‘completada’) return tot;
+if(estado===‘cobrado_f1’) return antic+mid;
+if(estado===‘f1_entregada’||estado===‘f2_entregada’||estado===‘en_progreso’||estado===‘parcial’) return antic;
+return 0;
+})();
+const colNombre3D=(window._st?window._st.colNombre3D:’’)||’’;
+const colNombreRend=(window._st?window._st.colNombreRend:’’)||’’;
+const colNombrePlanos=(window._st?window._st.colNombrePlanos:’’)||’’;
+const cots=loadCots();
+cots.push({id:Date.now(),cliente,proyecto,f1,f2,oh,colab,iva,sub,tot,util,antic,mid,saldo,cobrado,cur,fecha,estado,colNombre3D,colNombreRend,colNombrePlanos});
+saveCots(cots);
+hideFormCot();
+// reset form mini
+[‘fc-f1’,‘fc-f2’,‘fc-oh’,‘fc-colab’,‘fc-iva’,‘fc-antic’,‘fc-mid’].forEach(id=>document.getElementById(id).value=0);
+document.getElementById(‘fc-cliente’).value=’’;document.getElementById(‘fc-proyecto’).value=’’;
+// Limpiar el Cotizador completo para nueva cotización
+document.getElementById(‘clientName’).value=’’;
+document.getElementById(‘projTitle’).value=’’;
+document.getElementById(‘projDesc’).value=’’;
+document.getElementById(‘m2S’).value=150;
+document.getElementById(‘m2Rate’).value=80;
+document.getElementById(‘p1Extra’).value=0;
+document.getElementById(‘colNombre3D’).value=’’;
+document.getElementById(‘colNombreRend’).value=’’;
+document.getElementById(‘colNombrePlanos’).value=’’;
+document.getElementById(‘col3D’).value=25;
+document.getElementById(‘colRend’).value=0;
+document.getElementById(‘colPlanos’).value=0;
+[‘cRevit’,‘cD5’,‘cCanva’,‘cElec’,‘cGas’,‘cViat’].forEach(id=>document.getElementById(id).value=25);
+document.getElementById(‘ivaOn’).checked=false;
+document.getElementById(‘pctAntic’).value=30;
+document.getElementById(‘pctF1pay’).value=40;
+document.getElementById(‘fase1On’).checked=true;
+document.getElementById(‘fase2On’).checked=true;
+// Resets de planos a valores por defecto
+[1,2,3,4,5,6,7,8,9].forEach(i=>{
+document.getElementById(‘qp’+i).value=[1,1,1,2,4,1,3,0,0][i-1];
+document.getElementById(‘cp’+i).value=600;
+});
+toggleFase1();toggleFase2();syncToCalendar();calc();
+renderIngresos();
 }
 
 function updateEstado(id,estado){
-  const cots=loadCots();
-  const c=cots.find(x=>x.id===id);
-  if(!c)return;
-  c.estado=estado;
-  // Calcular cobrado automáticamente según el nuevo estado
-  if(estado==='cobrado_total'||estado==='completada') c.cobrado=c.tot;
-  else if(estado==='cobrado_f1') c.cobrado=(c.antic||0)+(c.mid||0);
-  else if(estado==='f1_entregada'||estado==='f2_entregada'||estado==='en_progreso') c.cobrado=(c.antic||0);
-  else if(estado==='parcial') c.cobrado=(c.antic||0);
-  else c.cobrado=0;
-  saveCots(cots);renderIngresos();if(document.getElementById('pg-est').classList.contains('active'))renderEstatus();
+const cots=loadCots();
+const c=cots.find(x=>x.id===id);
+if(!c)return;
+c.estado=estado;
+// Calcular cobrado automáticamente según el nuevo estado
+if(estado===‘cobrado_total’||estado===‘completada’) c.cobrado=c.tot;
+else if(estado===‘cobrado_f1’) c.cobrado=(c.antic||0)+(c.mid||0);
+else if(estado===‘f1_entregada’||estado===‘f2_entregada’||estado===‘en_progreso’) c.cobrado=(c.antic||0);
+else if(estado===‘parcial’) c.cobrado=(c.antic||0);
+else c.cobrado=0;
+saveCots(cots);renderIngresos();if(document.getElementById(‘pg-est’).classList.contains(‘active’))renderEstatus();
 }
 
 function deleteCot(id){
-  saveCots(loadCots().filter(x=>x.id!==id));
-  renderIngresos();
+saveCots(loadCots().filter(x=>x.id!==id));
+renderIngresos();
 }
 
 function renderIngresos(){
-  const cots=loadCots();
-  const yearSel=document.getElementById('ing-year');
-  // populate years
-  const years=[...new Set(cots.map(c=>new Date(c.fecha).getFullYear()))];
-  const currentYear=new Date().getFullYear();
-  if(!years.includes(currentYear)) years.push(currentYear);
-  years.sort((a,b)=>b-a);
-  const selYear=parseInt(yearSel.value)||currentYear;
-  yearSel.innerHTML=years.map(y=>`<option value="${y}" ${y===selYear?'selected':''}>${y}</option>`).join('');
+const cots=loadCots();
+const yearSel=document.getElementById(‘ing-year’);
+// populate years
+const years=[…new Set(cots.map(c=>new Date(c.fecha).getFullYear()))];
+const currentYear=new Date().getFullYear();
+if(!years.includes(currentYear)) years.push(currentYear);
+years.sort((a,b)=>b-a);
+const selYear=parseInt(yearSel.value)||currentYear;
+yearSel.innerHTML=years.map(y=>`<option value="${y}" ${y===selYear?'selected':''}>${y}</option>`).join(’’);
 
-  const yearCots=cots.filter(c=>new Date(c.fecha).getFullYear()===selYear);
-  const totalTot=yearCots.reduce((a,c)=>a+c.tot,0);
-  const totalCobrado=yearCots.reduce((a,c)=>a+c.cobrado,0);
-  const totalPendiente=totalTot-totalCobrado;
-  const totalUtil=yearCots.reduce((a,c)=>a+c.util,0);
-  const cur=yearCots.length>0?yearCots[yearCots.length-1].cur:'GTQ';
+const yearCots=cots.filter(c=>new Date(c.fecha).getFullYear()===selYear);
+const totalTot=yearCots.reduce((a,c)=>a+c.tot,0);
+const totalCobrado=yearCots.reduce((a,c)=>a+c.cobrado,0);
+const totalPendiente=totalTot-totalCobrado;
+const totalUtil=yearCots.reduce((a,c)=>a+c.util,0);
+const cur=yearCots.length>0?yearCots[yearCots.length-1].cur:‘GTQ’;
 
-  // KPIs
-  document.getElementById('ing-kpis').innerHTML=`
-    <div class="metric"><p class="ml">Facturado ${selYear}</p><p class="mv">${fmtCur(totalTot,cur)}</p><p class="ms">${yearCots.length} proyecto${yearCots.length!==1?'s':''}</p></div>
-    <div class="metric"><p class="ml">Ya cobrado</p><p class="mv" style="color:#0F6E56">${fmtCur(totalCobrado,cur)}</p></div>
-    <div class="metric"><p class="ml">Por cobrar</p><p class="mv" style="color:#185FA5">${fmtCur(totalPendiente,cur)}</p></div>
-    <div class="metric"><p class="ml">Utilidad estimada</p><p class="mv" style="color:#0F6E56">${fmtCur(totalUtil,cur)}</p><p class="ms">${totalTot>0?Math.round(totalUtil/totalTot*100):0}% margen</p></div>`;
+// KPIs
+document.getElementById(‘ing-kpis’).innerHTML=` <div class="metric"><p class="ml">Facturado ${selYear}</p><p class="mv">${fmtCur(totalTot,cur)}</p><p class="ms">${yearCots.length} proyecto${yearCots.length!==1?'s':''}</p></div> <div class="metric"><p class="ml">Ya cobrado</p><p class="mv" style="color:#0F6E56">${fmtCur(totalCobrado,cur)}</p></div> <div class="metric"><p class="ml">Por cobrar</p><p class="mv" style="color:#185FA5">${fmtCur(totalPendiente,cur)}</p></div> <div class="metric"><p class="ml">Utilidad estimada</p><p class="mv" style="color:#0F6E56">${fmtCur(totalUtil,cur)}</p><p class="ms">${totalTot>0?Math.round(totalUtil/totalTot*100):0}% margen</p></div>`;
 
-  // Monthly breakdown — respect month filter
-  const selMonth=document.getElementById('ing-month').value;
-  const byMonth=Array.from({length:12},(_,m)=>{
-    const mc=yearCots.filter(c=>new Date(c.fecha).getMonth()===m);
-    return{mes:m,cots:mc,tot:mc.reduce((a,c)=>a+c.tot,0),cobrado:mc.reduce((a,c)=>a+c.cobrado,0),util:mc.reduce((a,c)=>a+c.util,0),f1:mc.reduce((a,c)=>a+c.f1,0),f2:mc.reduce((a,c)=>a+c.f2,0)};
-  });
-  const maxTot=Math.max(...byMonth.map(m=>m.tot),1);
-  const activeMeses=selMonth==='all'?byMonth.filter(m=>m.tot>0):[byMonth[parseInt(selMonth)]].filter(m=>m&&m.tot>0);
+// Monthly breakdown — respect month filter
+const selMonth=document.getElementById(‘ing-month’).value;
+const byMonth=Array.from({length:12},(_,m)=>{
+const mc=yearCots.filter(c=>new Date(c.fecha).getMonth()===m);
+return{mes:m,cots:mc,tot:mc.reduce((a,c)=>a+c.tot,0),cobrado:mc.reduce((a,c)=>a+c.cobrado,0),util:mc.reduce((a,c)=>a+c.util,0),f1:mc.reduce((a,c)=>a+c.f1,0),f2:mc.reduce((a,c)=>a+c.f2,0)};
+});
+const maxTot=Math.max(…byMonth.map(m=>m.tot),1);
+const activeMeses=selMonth===‘all’?byMonth.filter(m=>m.tot>0):[byMonth[parseInt(selMonth)]].filter(m=>m&&m.tot>0);
 
-  if(!activeMeses.length){
-    document.getElementById('ing-mensual').innerHTML='<p class="empty" style="padding:.75rem 0">No hay cotizaciones registradas para '+selYear+'. Agrega una con el botón de arriba.</p>';
-  } else {
-    document.getElementById('ing-mensual').innerHTML=activeMeses.map(m=>`
-      <div class="ing-mes-row">
-        <div style="display:grid;grid-template-columns:60px 1fr 1fr 1fr 1fr;gap:8px;align-items:center">
-          <span style="font-size:12px;font-weight:500;color:var(--text)">${MESES[m.mes]}</span>
-          <div><p class="lbl" style="margin:0">Facturado</p><p style="font-size:13px;font-weight:500">${fmtCur(m.tot,cur)}</p></div>
-          <div><p class="lbl" style="margin:0">Cobrado</p><p style="font-size:13px;font-weight:500;color:#0F6E56">${fmtCur(m.cobrado,cur)}</p></div>
-          <div><p class="lbl" style="margin:0">F1 / F2</p><p style="font-size:11px;color:var(--text-2)">${fmtCur(m.f1,cur)} <span style="color:var(--text-3)">/</span> ${fmtCur(m.f2,cur)}</p></div>
-          <div><p class="lbl" style="margin:0">Utilidad</p><p style="font-size:12px;font-weight:500;color:#0F6E56">${fmtCur(m.util,cur)}</p></div>
-        </div>
-        <div class="ing-bar-track">
-          <div class="ing-bar-cobrado" style="width:${Math.round(m.cobrado/maxTot*100)}%"></div>
-          <div class="ing-bar-pendiente" style="width:${Math.round((m.tot-m.cobrado)/maxTot*100)}%"></div>
-        </div>
-      </div>`).join('');
-  }
+if(!activeMeses.length){
+document.getElementById(‘ing-mensual’).innerHTML=’<p class="empty" style="padding:.75rem 0">No hay cotizaciones registradas para ‘+selYear+’. Agrega una con el botón de arriba.</p>’;
+} else {
+document.getElementById(‘ing-mensual’).innerHTML=activeMeses.map(m=>` <div class="ing-mes-row"> <div style="display:grid;grid-template-columns:60px 1fr 1fr 1fr 1fr;gap:8px;align-items:center"> <span style="font-size:12px;font-weight:500;color:var(--text)">${MESES[m.mes]}</span> <div><p class="lbl" style="margin:0">Facturado</p><p style="font-size:13px;font-weight:500">${fmtCur(m.tot,cur)}</p></div> <div><p class="lbl" style="margin:0">Cobrado</p><p style="font-size:13px;font-weight:500;color:#0F6E56">${fmtCur(m.cobrado,cur)}</p></div> <div><p class="lbl" style="margin:0">F1 / F2</p><p style="font-size:11px;color:var(--text-2)">${fmtCur(m.f1,cur)} <span style="color:var(--text-3)">/</span> ${fmtCur(m.f2,cur)}</p></div> <div><p class="lbl" style="margin:0">Utilidad</p><p style="font-size:12px;font-weight:500;color:#0F6E56">${fmtCur(m.util,cur)}</p></div> </div> <div class="ing-bar-track"> <div class="ing-bar-cobrado" style="width:${Math.round(m.cobrado/maxTot*100)}%"></div> <div class="ing-bar-pendiente" style="width:${Math.round((m.tot-m.cobrado)/maxTot*100)}%"></div> </div> </div>`).join(’’);
+}
 
-  // Lista de cotizaciones
-  // Estados dinámicos según fases de la cotización
-  function getEstadoOpts(c){
-    const hasF1=c.f1>0, hasF2=c.f2>0;
-    let opts=[{v:'emitida',l:'Cotización emitida'},{v:'en_progreso',l:'Aprobado y en proceso'}];
-    if(hasF1){opts.push({v:'f1_entregada',l:'Fase 1 entregada'});}
-    if(hasF1&&hasF2){opts.push({v:'cobrado_f1',l:'Cobrada Fase 1'});}
-    if(hasF2){opts.push({v:'f2_entregada',l:'Fase 2 entregada'});}
-    opts.push({v:'cobrado_total',l:'Cobrado'});
-    return opts;
-  }
-  function estadoLabel(c){
-    const opts=getEstadoOpts(c);
-    const found=opts.find(o=>o.v===c.estado);
-    return found?found.l:(c.estado||'—');
-  }
-  if(!cots.length){
-    document.getElementById('ing-lista').innerHTML='<p class="empty" style="padding:.75rem 0">Ninguna cotización registrada aún.</p>';
-  } else {
-    document.getElementById('ing-lista').innerHTML=[...cots].reverse().map(c=>`
-      <div class="cot-card">
-        <div class="cot-card-head">
-          <div>
-            <div style="font-size:13px;font-weight:500">${c.cliente}</div>
-            <div style="font-size:11px;color:var(--text-2)">${c.proyecto}</div>
-            <div style="font-size:10px;color:var(--text-3);margin-top:2px">${new Date(c.fecha+'T12:00:00').toLocaleDateString('es-GT',{day:'2-digit',month:'long',year:'numeric'})}</div>
-          </div>
-          <div style="text-align:right">
-            <div style="font-size:15px;font-weight:500">${fmtCur(c.tot,c.cur)}</div>
-            <span class="estado-badge est-${c.estado}" style="font-size:10px;padding:2px 7px">${estadoLabel(c)}</span>
-          </div>
-        </div>
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:.6rem 0">
-          <div class="metric" style="padding:.5rem .75rem"><p class="ml">F1</p><p style="font-size:12px;font-weight:500">${fmtCur(c.f1,c.cur)}</p></div>
-          <div class="metric" style="padding:.5rem .75rem"><p class="ml">F2</p><p style="font-size:12px;font-weight:500">${fmtCur(c.f2,c.cur)}</p></div>
-          <div class="metric" style="padding:.5rem .75rem"><p class="ml">Cobrado</p><p style="font-size:12px;font-weight:500;color:#0F6E56">${fmtCur(c.cobrado,c.cur)}</p></div>
-          <div class="metric" style="padding:.5rem .75rem"><p class="ml">Utilidad</p><p style="font-size:12px;font-weight:500;color:#0F6E56">${fmtCur(c.util,c.cur)}</p></div>
-        </div>
-        <div class="cot-actions">
-          <select onchange="updateEstado(${c.id},this.value)" style="flex:1;padding:4px 7px;font-size:11px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:var(--surface);color:var(--text)">
-            ${getEstadoOpts(c).map(o=>`<option value="${o.v}" ${c.estado===o.v?'selected':''}>${o.l}</option>`).join('')}
-          </select>
-          <button class="btn-ver" onclick="verCot(${c.id})">Ver</button>
-          <button class="btn-editar" onclick="editCot(${c.id})">Editar</button>
-          <button onclick="deleteCot(${c.id})" style="padding:4px 10px;font-size:11px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--red);cursor:pointer">Eliminar</button>
-        </div>
-      </div>`).join('');
-  }
+// Lista de cotizaciones
+// Estados dinámicos según fases de la cotización
+function getEstadoOpts(c){
+const hasF1=c.f1>0, hasF2=c.f2>0;
+let opts=[{v:‘emitida’,l:‘Cotización emitida’},{v:‘en_progreso’,l:‘Aprobado y en proceso’}];
+if(hasF1){opts.push({v:‘f1_entregada’,l:‘Fase 1 entregada’});}
+if(hasF1&&hasF2){opts.push({v:‘cobrado_f1’,l:‘Cobrada Fase 1’});}
+if(hasF2){opts.push({v:‘f2_entregada’,l:‘Fase 2 entregada’});}
+opts.push({v:‘cobrado_total’,l:‘Cobrado’});
+return opts;
+}
+function estadoLabel(c){
+const opts=getEstadoOpts(c);
+const found=opts.find(o=>o.v===c.estado);
+return found?found.l:(c.estado||’—’);
+}
+if(!cots.length){
+document.getElementById(‘ing-lista’).innerHTML=’<p class="empty" style="padding:.75rem 0">Ninguna cotización registrada aún.</p>’;
+} else {
+document.getElementById(‘ing-lista’).innerHTML=[…cots].reverse().map(c=>` <div class="cot-card"> <div class="cot-card-head"> <div> <div style="font-size:13px;font-weight:500">${c.cliente}</div> <div style="font-size:11px;color:var(--text-2)">${c.proyecto}</div> <div style="font-size:10px;color:var(--text-3);margin-top:2px">${new Date(c.fecha+'T12:00:00').toLocaleDateString('es-GT',{day:'2-digit',month:'long',year:'numeric'})}</div> </div> <div style="text-align:right"> <div style="font-size:15px;font-weight:500">${fmtCur(c.tot,c.cur)}</div> <span class="estado-badge est-${c.estado}" style="font-size:10px;padding:2px 7px">${estadoLabel(c)}</span> </div> </div> <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:.6rem 0"> <div class="metric" style="padding:.5rem .75rem"><p class="ml">F1</p><p style="font-size:12px;font-weight:500">${fmtCur(c.f1,c.cur)}</p></div> <div class="metric" style="padding:.5rem .75rem"><p class="ml">F2</p><p style="font-size:12px;font-weight:500">${fmtCur(c.f2,c.cur)}</p></div> <div class="metric" style="padding:.5rem .75rem"><p class="ml">Cobrado</p><p style="font-size:12px;font-weight:500;color:#0F6E56">${fmtCur(c.cobrado,c.cur)}</p></div> <div class="metric" style="padding:.5rem .75rem"><p class="ml">Utilidad</p><p style="font-size:12px;font-weight:500;color:#0F6E56">${fmtCur(c.util,c.cur)}</p></div> </div> <div class="cot-actions"> <select onchange="updateEstado(${c.id},this.value)" style="flex:1;padding:4px 7px;font-size:11px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:var(--surface);color:var(--text)"> ${getEstadoOpts(c).map(o=>`<option value=”${o.v}” ${c.estado===o.v?‘selected’:’’}>${o.l}</option>`).join('')} </select> <button class="btn-ver" onclick="verCot(${c.id})">Ver</button> <button class="btn-editar" onclick="editCot(${c.id})">Editar</button> <button onclick="deleteCot(${c.id})" style="padding:4px 10px;font-size:11px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--red);cursor:pointer">Eliminar</button> </div> </div>`).join(’’);
+}
 }
 
 // ═══════ ESTATUS ═══════
 function renderEstatus(){
-  const cots=loadCots();
+const cots=loadCots();
 
-  // Función para obtener estados disponibles según fases (misma lógica que en Proyectos)
-  function getEstadoOpts(c){
-    const hasF1=c.f1>0, hasF2=c.f2>0;
-    let opts=[{v:'emitida',l:'Cotización emitida'},{v:'en_progreso',l:'Aprobado y en proceso'}];
-    if(hasF1){opts.push({v:'f1_entregada',l:'Fase 1 entregada'});}
-    if(hasF1&&hasF2){opts.push({v:'cobrado_f1',l:'Cobrada Fase 1'});}
-    if(hasF2){opts.push({v:'f2_entregada',l:'Fase 2 entregada'});}
-    opts.push({v:'cobrado_total',l:'Cobrado'});
-    return opts;
-  }
-  function estadoLabel(c){
-    const opts=getEstadoOpts(c);
-    const found=opts.find(o=>o.v===c.estado);
-    return found?found.l:(c.estado||'Cotización emitida');
-  }
+// Función para obtener estados disponibles según fases (misma lógica que en Proyectos)
+function getEstadoOpts(c){
+const hasF1=c.f1>0, hasF2=c.f2>0;
+let opts=[{v:‘emitida’,l:‘Cotización emitida’},{v:‘en_progreso’,l:‘Aprobado y en proceso’}];
+if(hasF1){opts.push({v:‘f1_entregada’,l:‘Fase 1 entregada’});}
+if(hasF1&&hasF2){opts.push({v:‘cobrado_f1’,l:‘Cobrada Fase 1’});}
+if(hasF2){opts.push({v:‘f2_entregada’,l:‘Fase 2 entregada’});}
+opts.push({v:‘cobrado_total’,l:‘Cobrado’});
+return opts;
+}
+function estadoLabel(c){
+const opts=getEstadoOpts(c);
+const found=opts.find(o=>o.v===c.estado);
+return found?found.l:(c.estado||‘Cotización emitida’);
+}
 
-  // Definición de columnas del Kanban — incluir solo las que apliquen globalmente
-  // Detectar si algún proyecto tiene F1 y F2
-  const anyF1=cots.some(c=>c.f1>0);
-  const anyF2=cots.some(c=>c.f2>0);
-  const anyBoth=cots.some(c=>c.f1>0&&c.f2>0);
+// Definición de columnas del Kanban — incluir solo las que apliquen globalmente
+// Detectar si algún proyecto tiene F1 y F2
+const anyF1=cots.some(c=>c.f1>0);
+const anyF2=cots.some(c=>c.f2>0);
+const anyBoth=cots.some(c=>c.f1>0&&c.f2>0);
 
-  const COLS=[
-    {v:'emitida',l:'Cotización emitida',cls:'kcol-emitida'},
-    {v:'en_progreso',l:'Aprobado y en proceso',cls:'kcol-proceso'},
-    ...(anyF1?[{v:'f1_entregada',l:'Fase 1 entregada',cls:'kcol-f1entregada'}]:[]),
-    ...(anyBoth?[{v:'cobrado_f1',l:'Cobrada Fase 1',cls:'kcol-cobradaf1'}]:[]),
-    ...(anyF2?[{v:'f2_entregada',l:'Fase 2 entregada',cls:'kcol-f2entregada'}]:[]),
-    {v:'cobrado_total',l:'Cobrado',cls:'kcol-cobrada'},
-  ];
+const COLS=[
+{v:‘emitida’,l:‘Cotización emitida’,cls:‘kcol-emitida’},
+{v:‘en_progreso’,l:‘Aprobado y en proceso’,cls:‘kcol-proceso’},
+…(anyF1?[{v:‘f1_entregada’,l:‘Fase 1 entregada’,cls:‘kcol-f1entregada’}]:[]),
+…(anyBoth?[{v:‘cobrado_f1’,l:‘Cobrada Fase 1’,cls:‘kcol-cobradaf1’}]:[]),
+…(anyF2?[{v:‘f2_entregada’,l:‘Fase 2 entregada’,cls:‘kcol-f2entregada’}]:[]),
+{v:‘cobrado_total’,l:‘Cobrado’,cls:‘kcol-cobrada’},
+];
 
-  // Normalizar estados legacy
-  function normalizeEstado(c){
-    if(!c.estado||c.estado==='aprobada'||c.estado==='emitida') return 'emitida';
-    if(c.estado==='en_progreso'||c.estado==='parcial') return 'en_progreso';
-    if(c.estado==='completada'||c.estado==='cobrado_total') return 'cobrado_total';
-    return c.estado;
-  }
+// Normalizar estados legacy
+function normalizeEstado(c){
+if(!c.estado||c.estado===‘aprobada’||c.estado===‘emitida’) return ‘emitida’;
+if(c.estado===‘en_progreso’||c.estado===‘parcial’) return ‘en_progreso’;
+if(c.estado===‘completada’||c.estado===‘cobrado_total’) return ‘cobrado_total’;
+return c.estado;
+}
 
-  // Construir el tablero Kanban
-  const kanbanHTML='<div class="kanban-board">'+COLS.map(col=>{
-    const items=cots.filter(c=>normalizeEstado(c)===col.v||(c.estado===col.v));
-    const tot=items.reduce((a,c)=>a+c.tot,0);
-    const cur2=items.length>0?items[0].cur:'GTQ';
-    return `<div class="kanban-col ${col.cls}">
-      <div class="kanban-col-header">
-        <span class="kanban-col-title">${col.l}</span>
-        <span class="kanban-badge">${items.length}</span>
-      </div>
-      ${items.length>0?`<div style="font-size:10px;color:var(--text-3);margin-bottom:6px">${fmtCur(tot,cur2)}</div>`:''}
-      ${items.length===0?'<div class="kanban-empty">Sin proyectos</div>':''}
-      ${items.map(c=>{
-        const opts=getEstadoOpts(c);
-        const colabs=[c.colNombre3D,c.colNombreRend,c.colNombrePlanos].filter(Boolean);
-        const uniqColabs=[...new Set(colabs)];
-        return`<div class="kanban-card">
-          <div class="kanban-card-client">${c.cliente}</div>
-          <div class="kanban-card-proj">${c.proyecto}</div>
-          ${uniqColabs.length?`<div style="margin-top:4px;display:flex;gap:3px;flex-wrap:wrap">${uniqColabs.map(n=>`<span style="font-size:9px;background:var(--purple-lt);color:var(--purple-dk);padding:1px 5px;border-radius:20px">👤 ${n}</span>`).join('')}</div>`:''}
-          <div class="kanban-card-footer">
-            <span class="kanban-card-amt">${fmtCur(c.tot,c.cur)}</span>
-            <span class="kanban-card-cob">cob. ${fmtCur(c.cobrado,c.cur)}</span>
-          </div>
-          <select class="kanban-state-select" onchange="updateEstado(${c.id},this.value)">
-            ${opts.map(o=>`<option value="${o.v}" ${(c.estado||'emitida')===o.v?'selected':''}>${o.l}</option>`).join('')}
-          </select>
-        </div>`;
-      }).join('')}
-    </div>`;
-  }).join('')+'</div>';
+// Construir el tablero Kanban
+const kanbanHTML=’<div class="kanban-board">’+COLS.map(col=>{
+const items=cots.filter(c=>normalizeEstado(c)===col.v||(c.estado===col.v));
+const tot=items.reduce((a,c)=>a+c.tot,0);
+const cur2=items.length>0?items[0].cur:‘GTQ’;
+return `<div class="kanban-col ${col.cls}"> <div class="kanban-col-header"> <span class="kanban-col-title">${col.l}</span> <span class="kanban-badge">${items.length}</span> </div> ${items.length>0?`<div style="font-size:10px;color:var(--text-3);margin-bottom:6px">${fmtCur(tot,cur2)}</div>`:''} ${items.length===0?'<div class="kanban-empty">Sin proyectos</div>':''} ${items.map(c=>{ const opts=getEstadoOpts(c); const colabs=[c.colNombre3D,c.colNombreRend,c.colNombrePlanos].filter(Boolean); const uniqColabs=[...new Set(colabs)]; return`<div class="kanban-card">
+<div class="kanban-card-client">${c.cliente}</div>
+<div class="kanban-card-proj">${c.proyecto}</div>
+${uniqColabs.length?`<div style="margin-top:4px;display:flex;gap:3px;flex-wrap:wrap">${uniqColabs.map(n=>`<span style="font-size:9px;background:var(--purple-lt);color:var(--purple-dk);padding:1px 5px;border-radius:20px">👤 ${n}</span>`).join('')}</div>`:’’}
+<div class="kanban-card-footer">
+<span class="kanban-card-amt">${fmtCur(c.tot,c.cur)}</span>
+<span class="kanban-card-cob">cob. ${fmtCur(c.cobrado,c.cur)}</span>
+</div>
+<select class="kanban-state-select" onchange="updateEstado(${c.id},this.value)">
+${opts.map(o=>`<option value="${o.v}" ${(c.estado||'emitida')===o.v?'selected':''}>${o.l}</option>`).join(’’)}
+</select>
+</div>`; }).join('')} </div>`;
+}).join(’’)+’</div>’;
 
-  document.getElementById('est-kanban').innerHTML=kanbanHTML;
+document.getElementById(‘est-kanban’).innerHTML=kanbanHTML;
 
-  // Colaboradores con trabajo activo
-  const conColab=cots.filter(c=>{
-    const norm=normalizeEstado(c);
-    return norm!=='cobrado_total'&&norm!=='completada'&&(c.colNombre3D||c.colNombreRend||c.colNombrePlanos);
-  });
-  let colabHTML='';
-  if(conColab.length){
-    const byColab={};
-    conColab.forEach(c=>{
-      [{n:c.colNombre3D,t:'Modelado 3D'},{n:c.colNombreRend,t:'Renderización'},{n:c.colNombrePlanos,t:'Planos constructivos'}]
-        .filter(x=>x.n&&x.n.trim()).forEach(x=>{
-          const key=x.n.trim();
-          if(!byColab[key])byColab[key]=[];
-          byColab[key].push({...c,tarea:x.t});
-        });
-    });
-    if(Object.keys(byColab).length){
-      colabHTML=`<div class="sc" style="margin-top:.75rem">
-        <div class="sc-title">Colaboradores con trabajo activo</div>
-        ${Object.entries(byColab).map(([nombre,tareas])=>`
-          <div style="padding:.6rem 0;border-bottom:0.5px solid var(--border)">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
-              <span style="font-size:13px;font-weight:500">👤 ${nombre}</span>
-              <span style="font-size:10px;color:var(--text-3)">${tareas.length} tarea${tareas.length!==1?'s':''}</span>
-            </div>
-            ${tareas.map(t=>`<div style="display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--text-2);padding:2px 0">
-              <span><span style="background:var(--amber-lt);color:var(--amber);padding:1px 5px;border-radius:20px;font-size:9px;margin-right:5px">${t.tarea}</span>${t.cliente} — ${t.proyecto}</span>
-              <span style="font-size:9px;color:var(--text-3)">${estadoLabel(t)}</span>
-            </div>`).join('')}
-          </div>`).join('')}
-      </div>`;
-    }
-  }
-  document.getElementById('est-colab').innerHTML=colabHTML;
+// Colaboradores con trabajo activo
+const conColab=cots.filter(c=>{
+const norm=normalizeEstado(c);
+return norm!==‘cobrado_total’&&norm!==‘completada’&&(c.colNombre3D||c.colNombreRend||c.colNombrePlanos);
+});
+let colabHTML=’’;
+if(conColab.length){
+const byColab={};
+conColab.forEach(c=>{
+[{n:c.colNombre3D,t:‘Modelado 3D’},{n:c.colNombreRend,t:‘Renderización’},{n:c.colNombrePlanos,t:‘Planos constructivos’}]
+.filter(x=>x.n&&x.n.trim()).forEach(x=>{
+const key=x.n.trim();
+if(!byColab[key])byColab[key]=[];
+byColab[key].push({…c,tarea:x.t});
+});
+});
+if(Object.keys(byColab).length){
+colabHTML=`<div class="sc" style="margin-top:.75rem"> <div class="sc-title">Colaboradores con trabajo activo</div> ${Object.entries(byColab).map(([nombre,tareas])=>`
+<div style="padding:.6rem 0;border-bottom:0.5px solid var(--border)">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+<span style="font-size:13px;font-weight:500">👤 ${nombre}</span>
+<span style="font-size:10px;color:var(--text-3)">${tareas.length} tarea${tareas.length!==1?‘s’:’’}</span>
+</div>
+${tareas.map(t=>`<div style="display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--text-2);padding:2px 0"> <span><span style="background:var(--amber-lt);color:var(--amber);padding:1px 5px;border-radius:20px;font-size:9px;margin-right:5px">${t.tarea}</span>${t.cliente} — ${t.proyecto}</span> <span style="font-size:9px;color:var(--text-3)">${estadoLabel(t)}</span> </div>`).join(’’)}
+</div>`).join('')} </div>`;
+}
+}
+document.getElementById(‘est-colab’).innerHTML=colabHTML;
 }
 
 function updTracker(id,field,val){
-  const t=JSON.parse(localStorage.getItem('avit_sprint_tracker')||'{}');
-  if(!t[id])t[id]={fase:'',sprint:'',responsable:''};
-  t[id][field]=val;
-  localStorage.setItem('avit_sprint_tracker',JSON.stringify(t));
+const t=JSON.parse(localStorage.getItem(‘avit_sprint_tracker’)||’{}’);
+if(!t[id])t[id]={fase:’’,sprint:’’,responsable:’’};
+t[id][field]=val;
+localStorage.setItem(‘avit_sprint_tracker’,JSON.stringify(t));
 }
 
 // ═══════ VER / EDITAR COTIZACIÓN ═══════
 const STATUS_LABELS_MAP={
-  emitida:'Cotización emitida',aprobada:'Cotización emitida',
-  en_progreso:'Aprobado y en proceso',parcial:'Aprobado y en proceso',
-  f1_entregada:'Fase 1 entregada',cobrado_f1:'Cobrada Fase 1',
-  f2_entregada:'Fase 2 entregada',cobrado_total:'Cobrado',completada:'Cobrado'
+emitida:‘Cotización emitida’,aprobada:‘Cotización emitida’,
+en_progreso:‘Aprobado y en proceso’,parcial:‘Aprobado y en proceso’,
+f1_entregada:‘Fase 1 entregada’,cobrado_f1:‘Cobrada Fase 1’,
+f2_entregada:‘Fase 2 entregada’,cobrado_total:‘Cobrado’,completada:‘Cobrado’
 };
 
 function verCot(id){
-  const cots=loadCots();
-  const c=cots.find(x=>x.id===id);
-  if(!c)return;
-  const f=v=>c.cur+' '+Math.round(v).toLocaleString();
-  const fecha=new Date(c.fecha+'T12:00:00').toLocaleDateString('es-GT',{day:'2-digit',month:'long',year:'numeric'});
-  document.getElementById('modalContent').innerHTML=`
-    <div class="modal-title">
-      <span>${c.cliente} — ${c.proyecto}</span>
-      <button class="modal-close" onclick="closeModal()">×</button>
-    </div>
-    <div style="font-size:10px;color:var(--text-3);margin-bottom:1rem">${fecha} · <span class="estado-badge est-${c.estado}">${STATUS_LABELS_MAP[c.estado]||c.estado}</span></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:.85rem">
-      <div class="metric"><p class="ml">Fase 1</p><p class="mv" style="font-size:14px">${f(c.f1)}</p></div>
-      <div class="metric"><p class="ml">Fase 2</p><p class="mv" style="font-size:14px">${f(c.f2)}</p></div>
-      <div class="metric"><p class="ml">Overhead / costos</p><p class="mv" style="font-size:14px">${f(c.oh)}</p></div>
-      <div class="metric"><p class="ml">Colaborador</p><p class="mv" style="font-size:14px">${f(c.colab)}</p></div>
-      <div class="metric"><p class="ml">IVA</p><p class="mv" style="font-size:14px">${f(c.iva)}</p></div>
-      <div class="metric"><p class="ml">Total cotización</p><p class="mv" style="font-size:14px;color:var(--blue-dk)">${f(c.tot)}</p></div>
-    </div>
-    <div style="background:var(--bg);border-radius:var(--r-md);padding:.85rem 1rem;margin-bottom:.85rem">
-      <p class="lbl" style="margin-bottom:.5rem;font-weight:500">Cuotas de cobro</p>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
-        <div class="metric"><p class="ml">Anticipo</p><p style="font-size:12px;font-weight:500">${f(c.antic)}</p></div>
-        <div class="metric"><p class="ml">Entrega F1</p><p style="font-size:12px;font-weight:500">${f(c.mid)}</p></div>
-        <div class="metric"><p class="ml">Saldo final</p><p style="font-size:12px;font-weight:500">${f(c.saldo)}</p></div>
-      </div>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:.85rem">
-      <div class="metric"><p class="ml">Cobrado</p><p class="mv" style="font-size:14px;color:#0F6E56">${f(c.cobrado)}</p></div>
-      <div class="metric"><p class="ml">Utilidad estimada</p><p class="mv" style="font-size:14px;color:#0F6E56">${f(c.util)}</p></div>
-    </div>
-    ${c.colNombre3D||c.colNombreRend||c.colNombrePlanos?`
-    <div style="background:var(--purple-lt);border-radius:var(--r-md);padding:.75rem 1rem;margin-bottom:.85rem">
-      <p class="lbl" style="margin-bottom:.4rem;font-weight:500;color:var(--purple-dk)">Colaboradores</p>
-      ${c.colNombre3D?`<p style="font-size:12px;margin-bottom:2px">👤 ${c.colNombre3D} — Modelado 3D</p>`:''}
-      ${c.colNombreRend?`<p style="font-size:12px;margin-bottom:2px">👤 ${c.colNombreRend} — Renderización</p>`:''}
-      ${c.colNombrePlanos?`<p style="font-size:12px">👤 ${c.colNombrePlanos} — Planos constructivos</p>`:''}
-    </div>`:''}
-    <button onclick="closeModal();editCot(${c.id})" style="width:100%;padding:9px;font-size:13px;font-weight:500;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text);cursor:pointer">Editar este proyecto</button>`;
-  document.getElementById('cotModal').style.display='flex';
+const cots=loadCots();
+const c=cots.find(x=>x.id===id);
+if(!c)return;
+const f=v=>c.cur+’ ‘+Math.round(v).toLocaleString();
+const fecha=new Date(c.fecha+‘T12:00:00’).toLocaleDateString(‘es-GT’,{day:‘2-digit’,month:‘long’,year:‘numeric’});
+document.getElementById(‘modalContent’).innerHTML=` <div class="modal-title"> <span>${c.cliente} — ${c.proyecto}</span> <button class="modal-close" onclick="closeModal()">×</button> </div> <div style="font-size:10px;color:var(--text-3);margin-bottom:1rem">${fecha} · <span class="estado-badge est-${c.estado}">${STATUS_LABELS_MAP[c.estado]||c.estado}</span></div> <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:.85rem"> <div class="metric"><p class="ml">Fase 1</p><p class="mv" style="font-size:14px">${f(c.f1)}</p></div> <div class="metric"><p class="ml">Fase 2</p><p class="mv" style="font-size:14px">${f(c.f2)}</p></div> <div class="metric"><p class="ml">Overhead / costos</p><p class="mv" style="font-size:14px">${f(c.oh)}</p></div> <div class="metric"><p class="ml">Colaborador</p><p class="mv" style="font-size:14px">${f(c.colab)}</p></div> <div class="metric"><p class="ml">IVA</p><p class="mv" style="font-size:14px">${f(c.iva)}</p></div> <div class="metric"><p class="ml">Total cotización</p><p class="mv" style="font-size:14px;color:var(--blue-dk)">${f(c.tot)}</p></div> </div> <div style="background:var(--bg);border-radius:var(--r-md);padding:.85rem 1rem;margin-bottom:.85rem"> <p class="lbl" style="margin-bottom:.5rem;font-weight:500">Cuotas de cobro</p> <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px"> <div class="metric"><p class="ml">Anticipo</p><p style="font-size:12px;font-weight:500">${f(c.antic)}</p></div> <div class="metric"><p class="ml">Entrega F1</p><p style="font-size:12px;font-weight:500">${f(c.mid)}</p></div> <div class="metric"><p class="ml">Saldo final</p><p style="font-size:12px;font-weight:500">${f(c.saldo)}</p></div> </div> </div> <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:.85rem"> <div class="metric"><p class="ml">Cobrado</p><p class="mv" style="font-size:14px;color:#0F6E56">${f(c.cobrado)}</p></div> <div class="metric"><p class="ml">Utilidad estimada</p><p class="mv" style="font-size:14px;color:#0F6E56">${f(c.util)}</p></div> </div> ${c.colNombre3D||c.colNombreRend||c.colNombrePlanos?`
+<div style="background:var(--purple-lt);border-radius:var(--r-md);padding:.75rem 1rem;margin-bottom:.85rem">
+<p class="lbl" style="margin-bottom:.4rem;font-weight:500;color:var(--purple-dk)">Colaboradores</p>
+${c.colNombre3D?`<p style="font-size:12px;margin-bottom:2px">👤 ${c.colNombre3D} — Modelado 3D</p>`:’’}
+${c.colNombreRend?`<p style="font-size:12px;margin-bottom:2px">👤 ${c.colNombreRend} — Renderización</p>`:’’}
+${c.colNombrePlanos?`<p style="font-size:12px">👤 ${c.colNombrePlanos} — Planos constructivos</p>`:’’}
+</div>`:''} <button onclick="closeModal();editCot(${c.id})" style="width:100%;padding:9px;font-size:13px;font-weight:500;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text);cursor:pointer">Editar este proyecto</button>`;
+document.getElementById(‘cotModal’).style.display=‘flex’;
 }
 
 function editCot(id){
-  const cots=loadCots();
-  const c=cots.find(x=>x.id===id);
-  if(!c)return;
-  document.getElementById('modalContent').innerHTML=`
-    <div class="modal-title">
-      <span>Editar — ${c.cliente}</span>
-      <button class="modal-close" onclick="closeModal()">×</button>
-    </div>
-    <div class="r2" style="margin-bottom:.75rem">
-      <div><label class="lbl">Cliente</label><input type="text" id="ed-cliente" value="${c.cliente}"></div>
-      <div><label class="lbl">Proyecto</label><input type="text" id="ed-proyecto" value="${c.proyecto}"></div>
-    </div>
-    <div class="r2" style="margin-bottom:.75rem">
-      <div><label class="lbl">Honorario Fase 1</label><input type="number" id="ed-f1" value="${c.f1}" min="0" oninput="recalcEdit()"></div>
-      <div><label class="lbl">Honorario Fase 2</label><input type="number" id="ed-f2" value="${c.f2}" min="0" oninput="recalcEdit()"></div>
-    </div>
-    <div class="r2" style="margin-bottom:.75rem">
-      <div><label class="lbl">Overhead</label><input type="number" id="ed-oh" value="${c.oh}" min="0" oninput="recalcEdit()"></div>
-      <div><label class="lbl">Colaborador</label><input type="number" id="ed-colab" value="${c.colab}" min="0" oninput="recalcEdit()"></div>
-    </div>
-    <div class="r2" style="margin-bottom:.75rem">
-      <div><label class="lbl">IVA</label><input type="number" id="ed-iva" value="${c.iva}" min="0" oninput="recalcEdit()"></div>
-      <div><label class="lbl">Moneda</label>
-        <select id="ed-cur">
-          <option value="GTQ" ${c.cur==='GTQ'?'selected':''}>GTQ</option>
-          <option value="USD" ${c.cur==='USD'?'selected':''}>USD</option>
-        </select>
-      </div>
-    </div>
-    <div style="background:var(--bg);border-radius:var(--r-md);padding:.85rem 1rem;margin-bottom:.75rem">
-      <p class="lbl" style="margin-bottom:.5rem;font-weight:500">Cuotas de cobro</p>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
-        <div><label class="lbl">Anticipo</label><input type="number" id="ed-antic" value="${c.antic}" min="0" oninput="recalcEdit()"></div>
-        <div><label class="lbl">Entrega F1</label><input type="number" id="ed-mid" value="${c.mid}" min="0" oninput="recalcEdit()"></div>
-        <div><label class="lbl">Saldo (auto)</label><input type="number" id="ed-saldo" value="${c.saldo}" style="background:var(--bg)" readonly></div>
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:.6rem">
-        <div class="metric"><p class="ml">Total</p><p style="font-size:12px;font-weight:500" id="ed-total">—</p></div>
-        <div class="metric"><p class="ml">Utilidad</p><p style="font-size:12px;font-weight:500;color:#0F6E56" id="ed-util">—</p></div>
-        <div class="metric"><p class="ml">Margen</p><p style="font-size:12px;font-weight:500" id="ed-margen">—</p></div>
-      </div>
-    </div>
-    <div class="r2" style="margin-bottom:.75rem">
-      <div><label class="lbl">Fecha</label><input type="date" id="ed-fecha" value="${c.fecha}"></div>
-      <div><label class="lbl">Estado</label>
-        <select id="ed-estado">
-          <option value="emitida" ${(!c.estado||c.estado==='emitida'||c.estado==='aprobada')?'selected':''}>Cotización emitida</option>
-          <option value="en_progreso" ${(c.estado==='en_progreso'||c.estado==='parcial')?'selected':''}>Aprobado y en proceso</option>
-          ${c.f1>0?`<option value="f1_entregada" ${c.estado==='f1_entregada'?'selected':''}>Fase 1 entregada</option>`:''}
-          ${(c.f1>0&&c.f2>0)?`<option value="cobrado_f1" ${c.estado==='cobrado_f1'?'selected':''}>Cobrada Fase 1</option>`:''}
-          ${c.f2>0?`<option value="f2_entregada" ${c.estado==='f2_entregada'?'selected':''}>Fase 2 entregada</option>`:''}
-          <option value="cobrado_total" ${(c.estado==='cobrado_total'||c.estado==='completada')?'selected':''}>Cobrado</option>
-        </select>
-      </div>
-    </div>
-    <button onclick="saveEditCot(${c.id})" style="width:100%;padding:9px;font-size:13px;font-weight:500;border:none;border-radius:var(--r-md);background:var(--blue);color:#fff;cursor:pointer">Guardar cambios</button>`;
-  document.getElementById('cotModal').style.display='flex';
-  recalcEdit();
+const cots=loadCots();
+const c=cots.find(x=>x.id===id);
+if(!c)return;
+document.getElementById(‘modalContent’).innerHTML=` <div class="modal-title"> <span>Editar — ${c.cliente}</span> <button class="modal-close" onclick="closeModal()">×</button> </div> <div class="r2" style="margin-bottom:.75rem"> <div><label class="lbl">Cliente</label><input type="text" id="ed-cliente" value="${c.cliente}"></div> <div><label class="lbl">Proyecto</label><input type="text" id="ed-proyecto" value="${c.proyecto}"></div> </div> <div class="r2" style="margin-bottom:.75rem"> <div><label class="lbl">Honorario Fase 1</label><input type="number" id="ed-f1" value="${c.f1}" min="0" oninput="recalcEdit()"></div> <div><label class="lbl">Honorario Fase 2</label><input type="number" id="ed-f2" value="${c.f2}" min="0" oninput="recalcEdit()"></div> </div> <div class="r2" style="margin-bottom:.75rem"> <div><label class="lbl">Overhead</label><input type="number" id="ed-oh" value="${c.oh}" min="0" oninput="recalcEdit()"></div> <div><label class="lbl">Colaborador</label><input type="number" id="ed-colab" value="${c.colab}" min="0" oninput="recalcEdit()"></div> </div> <div class="r2" style="margin-bottom:.75rem"> <div><label class="lbl">IVA</label><input type="number" id="ed-iva" value="${c.iva}" min="0" oninput="recalcEdit()"></div> <div><label class="lbl">Moneda</label> <select id="ed-cur"> <option value="GTQ" ${c.cur==='GTQ'?'selected':''}>GTQ</option> <option value="USD" ${c.cur==='USD'?'selected':''}>USD</option> </select> </div> </div> <div style="background:var(--bg);border-radius:var(--r-md);padding:.85rem 1rem;margin-bottom:.75rem"> <p class="lbl" style="margin-bottom:.5rem;font-weight:500">Cuotas de cobro</p> <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px"> <div><label class="lbl">Anticipo</label><input type="number" id="ed-antic" value="${c.antic}" min="0" oninput="recalcEdit()"></div> <div><label class="lbl">Entrega F1</label><input type="number" id="ed-mid" value="${c.mid}" min="0" oninput="recalcEdit()"></div> <div><label class="lbl">Saldo (auto)</label><input type="number" id="ed-saldo" value="${c.saldo}" style="background:var(--bg)" readonly></div> </div> <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:.6rem"> <div class="metric"><p class="ml">Total</p><p style="font-size:12px;font-weight:500" id="ed-total">—</p></div> <div class="metric"><p class="ml">Utilidad</p><p style="font-size:12px;font-weight:500;color:#0F6E56" id="ed-util">—</p></div> <div class="metric"><p class="ml">Margen</p><p style="font-size:12px;font-weight:500" id="ed-margen">—</p></div> </div> </div> <div class="r2" style="margin-bottom:.75rem"> <div><label class="lbl">Fecha</label><input type="date" id="ed-fecha" value="${c.fecha}"></div> <div><label class="lbl">Estado</label> <select id="ed-estado"> <option value="emitida" ${(!c.estado||c.estado==='emitida'||c.estado==='aprobada')?'selected':''}>Cotización emitida</option> <option value="en_progreso" ${(c.estado==='en_progreso'||c.estado==='parcial')?'selected':''}>Aprobado y en proceso</option> ${c.f1>0?`<option value=“f1_entregada” ${c.estado===‘f1_entregada’?‘selected’:’’}>Fase 1 entregada</option>`:''} ${(c.f1>0&&c.f2>0)?`<option value=“cobrado_f1” ${c.estado===‘cobrado_f1’?‘selected’:’’}>Cobrada Fase 1</option>`:''} ${c.f2>0?`<option value=“f2_entregada” ${c.estado===‘f2_entregada’?‘selected’:’’}>Fase 2 entregada</option>`:''} <option value="cobrado_total" ${(c.estado==='cobrado_total'||c.estado==='completada')?'selected':''}>Cobrado</option> </select> </div> </div> <button onclick="saveEditCot(${c.id})" style="width:100%;padding:9px;font-size:13px;font-weight:500;border:none;border-radius:var(--r-md);background:var(--blue);color:#fff;cursor:pointer">Guardar cambios</button>`;
+document.getElementById(‘cotModal’).style.display=‘flex’;
+recalcEdit();
 }
 
 function recalcEdit(){
-  const f1=parseFloat(document.getElementById('ed-f1').value)||0;
-  const f2=parseFloat(document.getElementById('ed-f2').value)||0;
-  const oh=parseFloat(document.getElementById('ed-oh').value)||0;
-  const colab=parseFloat(document.getElementById('ed-colab').value)||0;
-  const iva=parseFloat(document.getElementById('ed-iva').value)||0;
-  const antic=parseFloat(document.getElementById('ed-antic').value)||0;
-  const mid=parseFloat(document.getElementById('ed-mid').value)||0;
-  const sub=f1+f2;
-  const tot=sub+iva;
-  const util=tot-oh-colab;
-  const saldo=Math.max(0,tot-antic-mid);
-  const cur=document.getElementById('ed-cur').value;
-  const f=v=>cur+' '+Math.round(v).toLocaleString();
-  document.getElementById('ed-saldo').value=Math.round(saldo);
-  document.getElementById('ed-total').textContent=f(tot);
-  document.getElementById('ed-util').textContent=f(util);
-  document.getElementById('ed-margen').textContent=(tot>0?Math.round(util/tot*100):0)+'%';
+const f1=parseFloat(document.getElementById(‘ed-f1’).value)||0;
+const f2=parseFloat(document.getElementById(‘ed-f2’).value)||0;
+const oh=parseFloat(document.getElementById(‘ed-oh’).value)||0;
+const colab=parseFloat(document.getElementById(‘ed-colab’).value)||0;
+const iva=parseFloat(document.getElementById(‘ed-iva’).value)||0;
+const antic=parseFloat(document.getElementById(‘ed-antic’).value)||0;
+const mid=parseFloat(document.getElementById(‘ed-mid’).value)||0;
+const sub=f1+f2;
+const tot=sub+iva;
+const util=tot-oh-colab;
+const saldo=Math.max(0,tot-antic-mid);
+const cur=document.getElementById(‘ed-cur’).value;
+const f=v=>cur+’ ‘+Math.round(v).toLocaleString();
+document.getElementById(‘ed-saldo’).value=Math.round(saldo);
+document.getElementById(‘ed-total’).textContent=f(tot);
+document.getElementById(‘ed-util’).textContent=f(util);
+document.getElementById(‘ed-margen’).textContent=(tot>0?Math.round(util/tot*100):0)+’%’;
 }
 
 function saveEditCot(id){
-  const cots=loadCots();
-  const idx=cots.findIndex(x=>x.id===id);
-  if(idx<0)return;
-  const c=cots[idx];
-  const f1=parseFloat(document.getElementById('ed-f1').value)||0;
-  const f2=parseFloat(document.getElementById('ed-f2').value)||0;
-  const oh=parseFloat(document.getElementById('ed-oh').value)||0;
-  const colab=parseFloat(document.getElementById('ed-colab').value)||0;
-  const iva=parseFloat(document.getElementById('ed-iva').value)||0;
-  const antic=parseFloat(document.getElementById('ed-antic').value)||0;
-  const mid=parseFloat(document.getElementById('ed-mid').value)||0;
-  const sub=f1+f2,tot=sub+iva,util=tot-oh-colab,saldo=Math.max(0,tot-antic-mid);
-  const cobrado=cots[idx].cobrado;
-  cots[idx]={...c,
-    cliente:document.getElementById('ed-cliente').value.trim()||c.cliente,
-    proyecto:document.getElementById('ed-proyecto').value.trim()||c.proyecto,
-    f1,f2,oh,colab,iva,sub,tot,util,antic,mid,saldo,
-    cur:document.getElementById('ed-cur').value,
-    fecha:document.getElementById('ed-fecha').value||c.fecha,
-    estado:document.getElementById('ed-estado').value,
-    cobrado:(()=>{
-      const est=document.getElementById('ed-estado').value;
-      if(est==='cobrado_total'||est==='completada') return tot;
-      if(est==='cobrado_f1') return antic+(mid||0);
-      if(est==='f1_entregada'||est==='f2_entregada'||est==='en_progreso'||est==='parcial') return antic;
-      return 0;
-    })()
-  };
-  saveCots(cots);
-  closeModal();
-  renderIngresos();
+const cots=loadCots();
+const idx=cots.findIndex(x=>x.id===id);
+if(idx<0)return;
+const c=cots[idx];
+const f1=parseFloat(document.getElementById(‘ed-f1’).value)||0;
+const f2=parseFloat(document.getElementById(‘ed-f2’).value)||0;
+const oh=parseFloat(document.getElementById(‘ed-oh’).value)||0;
+const colab=parseFloat(document.getElementById(‘ed-colab’).value)||0;
+const iva=parseFloat(document.getElementById(‘ed-iva’).value)||0;
+const antic=parseFloat(document.getElementById(‘ed-antic’).value)||0;
+const mid=parseFloat(document.getElementById(‘ed-mid’).value)||0;
+const sub=f1+f2,tot=sub+iva,util=tot-oh-colab,saldo=Math.max(0,tot-antic-mid);
+const cobrado=cots[idx].cobrado;
+cots[idx]={…c,
+cliente:document.getElementById(‘ed-cliente’).value.trim()||c.cliente,
+proyecto:document.getElementById(‘ed-proyecto’).value.trim()||c.proyecto,
+f1,f2,oh,colab,iva,sub,tot,util,antic,mid,saldo,
+cur:document.getElementById(‘ed-cur’).value,
+fecha:document.getElementById(‘ed-fecha’).value||c.fecha,
+estado:document.getElementById(‘ed-estado’).value,
+cobrado:(()=>{
+const est=document.getElementById(‘ed-estado’).value;
+if(est===‘cobrado_total’||est===‘completada’) return tot;
+if(est===‘cobrado_f1’) return antic+(mid||0);
+if(est===‘f1_entregada’||est===‘f2_entregada’||est===‘en_progreso’||est===‘parcial’) return antic;
+return 0;
+})()
+};
+saveCots(cots);
+closeModal();
+renderIngresos();
 }
 
 function closeModal(){
-  document.getElementById('cotModal').style.display='none';
+document.getElementById(‘cotModal’).style.display=‘none’;
 }
 
 // ═══════ INIT ═══════
-document.addEventListener('DOMContentLoaded',()=>{
-  const t=new Date(),n=new Date(t),dy=t.getDay(),df=dy===1?7:(8-dy)%7||7;
-  n.setDate(t.getDate()+df);
-  document.getElementById('projStart').value=n.toISOString().split('T')[0];
-  document.getElementById('ing-year').value=new Date().getFullYear();
-  calc();renderIngresos();
+document.addEventListener(‘DOMContentLoaded’,()=>{
+const t=new Date(),n=new Date(t),dy=t.getDay(),df=dy===1?7:(8-dy)%7||7;
+n.setDate(t.getDate()+df);
+document.getElementById(‘projStart’).value=n.toISOString().split(‘T’)[0];
+document.getElementById(‘ing-year’).value=new Date().getFullYear();
+calc();renderIngresos();
 });
 </script>
 
 <!-- Modal Ver / Editar cotización -->
+
 <div id="cotModal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal()">
   <div class="modal-box" id="modalContent"></div>
 </div>
 
 <!-- Panel Nube (Netlify Blobs) -->
+
 <div id="panelNube" class="modal-overlay" style="display:none" onclick="if(event.target===this)cerrarNube()">
   <div class="modal-box" style="max-width:420px">
     <div class="modal-title">
@@ -1696,26 +1553,27 @@ function togglePanelNube(){
 }
 function cerrarNube(){document.getElementById('panelNube').style.display='none';}
 
-// Busca el bin que corresponde a la clave del usuario
+// Convierte la clave del usuario en un nombre de bin seguro (máx 32 chars)
+function binName(key){ return ('avit-'+key).substring(0,32); }
+
+// Busca el bin ID buscando en la lista de bins por nombre
 async function getBinId(key){
-  const resp=await fetch(`${JSONBIN_BASE}/b?meta=false`,{
-    headers:{
-      'X-Master-Key':JSONBIN_API_KEY,
-      'X-Bin-Meta':'false'
-    }
-  });
-  // Buscamos en los bins guardados uno cuyo nombre sea la clave
-  const r2=await fetch(`${JSONBIN_BASE}/c?meta=false`,{
+  const nombre = binName(key);
+  // Guardamos el binId en localStorage como caché
+  const cached = localStorage.getItem('avit_bin_'+nombre);
+  if(cached) return cached;
+  // Si no está en caché, buscamos en JSONBin
+  const resp = await fetch(`${JSONBIN_BASE}/b?meta=true`,{
     headers:{'X-Master-Key':JSONBIN_API_KEY}
   });
-  // Usamos colecciones con nombre = key como identificador único
-  const allBins=await fetch(`${JSONBIN_BASE}/b?meta=true`,{
-    headers:{'X-Master-Key':JSONBIN_API_KEY}
-  });
-  const list=await allBins.json();
+  if(!resp.ok) return null;
+  const list = await resp.json();
   if(Array.isArray(list)){
-    const found=list.find(b=>b.metadata&&b.metadata.name===('avit-'+key));
-    if(found) return found.metadata.id;
+    const found = list.find(b => b.metadata && b.metadata.name === nombre);
+    if(found){
+      localStorage.setItem('avit_bin_'+nombre, found.metadata.id);
+      return found.metadata.id;
+    }
   }
   return null;
 }
@@ -1731,10 +1589,8 @@ async function subirNube(){
       avit_cots:localStorage.getItem('avit_cots')||'[]',
       avit_sprint_tracker:localStorage.getItem('avit_sprint_tracker')||'{}'
     };
-
-    // Intentar encontrar bin existente
-    const binId=await getBinId(key);
-
+    const nombre = binName(key);
+    let binId = await getBinId(key);
     let resp;
     if(binId){
       // Actualizar bin existente
@@ -1747,24 +1603,27 @@ async function subirNube(){
         body:JSON.stringify(datos)
       });
     } else {
-      // Crear bin nuevo con nombre = 'avit-' + key
+      // Crear bin nuevo
       resp=await fetch(`${JSONBIN_BASE}/b`,{
         method:'POST',
         headers:{
           'Content-Type':'application/json',
           'X-Master-Key':JSONBIN_API_KEY,
-          'X-Bin-Name':'avit-'+key,
+          'X-Bin-Name':nombre,
           'X-Bin-Private':'true'
         },
         body:JSON.stringify(datos)
       });
+      if(resp.ok){
+        const result=await resp.json();
+        binId=result.metadata&&result.metadata.id;
+        if(binId) localStorage.setItem('avit_bin_'+nombre, binId);
+      }
     }
-
     if(!resp.ok){
       const t=await resp.text();
       throw new Error(t||resp.statusText);
     }
-
     msg.style.color='var(--green)';
     msg.textContent='✓ Datos subidos correctamente a la nube';
     document.getElementById('syncStatus').textContent='☁ Subido '+new Date().toLocaleDateString('es-GT');
@@ -1787,27 +1646,19 @@ async function bajarNube(){
       msg.textContent='⚠ No se encontraron datos en la nube con esa clave.';
       return;
     }
-
     const resp=await fetch(`${JSONBIN_BASE}/b/${binId}/latest`,{
-      headers:{
-        'X-Master-Key':JSONBIN_API_KEY
-      }
+      headers:{'X-Master-Key':JSONBIN_API_KEY}
     });
-
     if(!resp.ok){
       const t=await resp.text();
       throw new Error(t||resp.statusText);
     }
-
     const result=await resp.json();
     const datos=result.record||result;
     const n=JSON.parse(datos.avit_cots||'[]').length;
-
     if(!confirm(`¿Bajar ${n} cotización(es) de la nube? Esto reemplazará los datos de este navegador.`))return;
-
     localStorage.setItem('avit_cots',datos.avit_cots||'[]');
     if(datos.avit_sprint_tracker) localStorage.setItem('avit_sprint_tracker',datos.avit_sprint_tracker);
-
     msg.style.color='var(--green)';
     msg.textContent=`✓ ${n} cotizaciones cargadas desde la nube`;
     document.getElementById('syncStatus').textContent='☁ Bajado '+new Date().toLocaleDateString('es-GT');
