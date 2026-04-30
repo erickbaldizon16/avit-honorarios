@@ -1428,6 +1428,14 @@ input.narrow{width:88px}input.mid{width:108px}
   <div id="ing-lista"></div>
 </div>
 
+<div class="sc" id="sc-terminados" style="display:none">
+  <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="toggleTerminados()">
+    <div class="sc-title" style="margin:0">📁 Proyectos terminados <span id="ing-term-count" style="color:var(--text-3);font-weight:400;letter-spacing:0;text-transform:none;font-family:var(--font-body);font-size:11px;margin-left:8px"></span></div>
+    <span id="ing-term-chev" style="font-size:11px;color:var(--text-3);transition:transform .2s">▶</span>
+  </div>
+  <div id="ing-term-body" style="display:none;margin-top:12px"></div>
+</div>
+
 </div><!-- /pg-ing -->
 
 
@@ -1641,11 +1649,21 @@ function calc(){
   document.getElementById('rAntic').textContent=fmt(aA);
   document.getElementById('rF1pay').textContent=fmt(mA);
   document.getElementById('rSaldo').textContent=fmt(sA);
+  // Capturar cantidades cotizadas por nombre de plano (para que el Kanban sepa qué entregar)
+  const planosQty = {};
+  if(typeof PLANO_NAMES !== 'undefined'){
+    PLANO_NAMES.forEach((nombre, idx) => {
+      const el = document.getElementById('qp'+(idx+1));
+      const q = el ? (parseFloat(el.value) || 0) : 0;
+      if(q > 0) planosQty[nombre] = q;
+    });
+  }
   window._st={m2,cur,f1,f2,fee1,fee2,sub,cTot,oh,iOn,ir,ia,tot,pa,pf,ps,aA,mA,sA,
     colNombre3D:(document.getElementById('colNombre3D')||{}).value||'',
     colNombreRend:(document.getElementById('colNombreRend')||{}).value||'',
     colNombrePlanos:(document.getElementById('colNombrePlanos')||{}).value||'',
-    timbresOn:document.getElementById('timbresOn').checked};
+    timbresOn:document.getElementById('timbresOn').checked,
+    planosQty};
 }
 
 // ═══════ CALENDARIO ═══════
@@ -1833,7 +1851,13 @@ function genCotizacion(){
   const fecha=today.toLocaleDateString('es-GT',{day:'2-digit',month:'long',year:'numeric'});
   const cotNum='COT-'+today.getFullYear()+String(today.getMonth()+1).padStart(2,'0')+String(today.getDate()).padStart(2,'0');
   let planosText='';
-  if(s.f2){const PNAMES=['Cimientos y columnas','Plantas constructivas','Vigas y losas','Secciones constructivas','Elevaciones constructivas','Acabados','Detalles constructivos','Planos eléctricos','Planos hidráulicos'];PNAMES.forEach((n,i)=>{const q=parseFloat(document.getElementById('qp'+(i+1)).value)||0;if(q>0)planosText+=n+(q>1?` (${q})`:'') +', ';});planosText=planosText.replace(/, $/,'')}
+  if(s.f2){
+    PLANO_NAMES.forEach((n,i)=>{
+      const q=parseFloat(document.getElementById('qp'+(i+1)).value)||0;
+      if(q>0) planosText += n + (q>1?` (${q})`:'') + ', ';
+    });
+    planosText = planosText.replace(/, $/,'');
+  }
   // calendar section
   const svDate=document.getElementById('projStart').value;
   const dates=getSprintDates();
@@ -1900,7 +1924,7 @@ body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#1a1a18;backg
 <div class="bw">
 <div class="cb"><div><div class="cl">Presentado a</div><div class="cn2">${cn}</div><div class="pn">${pt}</div></div><div class="badge">${s.m2||150} m²</div></div>
 <p style="font-size:13px;margin-bottom:8px">Estimado/a ${cn},</p>
-<p style="font-size:12px;color:#555;line-height:1.8;margin-bottom:28px">Por medio de la presente, me es grato presentarle la cotización formal de servicios de diseño arquitectónico para el proyecto <strong>${pt}</strong>.${pd?' '+pd+'.':''} A continuación encontrará el detalle de los servicios propuestos y las condiciones de contratación.</p>
+<p style="font-size:12px;color:#555;line-height:1.8;margin-bottom:28px">Por medio de la presente, me es grato presentarle la cotización formal de servicios ${s.f1&&s.f2?'de diseño arquitectónico y planos constructivos':s.f1?'de diseño arquitectónico':'de planos constructivos'} para el proyecto <strong>${pt}</strong>.${pd?' '+pd+'.':''} A continuación encontrará el detalle de los servicios propuestos y las condiciones de contratación.</p>
 ${s.f1?`<div class="sec"><div class="sl">Fase 1 — Anteproyecto</div><p class="sd">Desarrollo integral del diseño arquitectónico para un área de <strong>${s.m2} m²</strong>, incluyendo concepto, modelado 3D, visualización y documentación de planos de presentación.</p><div><div class="svc"><div><div class="sn">Diseño arquitectónico e imagen del proyecto</div><div class="snt">Modelado 3D, renderización y planos de presentación</div></div><div class="sa">${f(s.fee1)}</div></div></div></div>`:''}
 ${s.f2?`<div class="sec"><div class="sl">Fase 2 — Planos constructivos</div><p class="sd">Elaboración del juego completo de planos técnicos: ${planosText}.</p><div><div class="svc"><div><div class="sn">Documentación técnica constructiva</div><div class="snt">Juego completo de planos para ejecución de obra</div></div><div class="sa">${f(s.fee2)}</div></div></div></div>`:''}
 ${calRows?`<div class="sec"><div class="sl">Plan de entregas</div><table style="width:100%;border-collapse:collapse">${calRows}</table></div>`:''}
@@ -2013,8 +2037,9 @@ function saveCot(){
   const colNombre3D=(window._st?window._st.colNombre3D:'')||'';
   const colNombreRend=(window._st?window._st.colNombreRend:'')||'';
   const colNombrePlanos=(window._st?window._st.colNombrePlanos:'')||'';
+  const planosQty=(window._st?window._st.planosQty:null)||{};
   const cots=loadCots();
-  cots.push({id:Date.now(),cliente,proyecto,f1,f2,oh,colab,iva,sub,tot,util,antic,mid,saldo,cobrado,cur,fecha,estado,colNombre3D,colNombreRend,colNombrePlanos});
+  cots.push({id:Date.now(),cliente,proyecto,f1,f2,oh,colab,iva,sub,tot,util,antic,mid,saldo,cobrado,cur,fecha,estado,colNombre3D,colNombreRend,colNombrePlanos,planosQty});
   saveCots(cots);
   hideFormCot();
   // reset form mini
@@ -2053,12 +2078,11 @@ function updateEstado(id,estado){
   const c=cots.find(x=>x.id===id);
   if(!c)return;
   c.estado=estado;
-  // Calcular cobrado automáticamente según el nuevo estado
+  // El cobrado NO se modifica automáticamente al cambiar de columna o estado.
+  // Los cobros se registran solo cuando el usuario marca explícitamente
+  // los checks de milestones en el Kanban (anticipo, entrega F2, cobrado).
+  // Excepción: si el estado pasa a 'cobrado_total', sí marcamos como cobrado al 100%
   if(estado==='cobrado_total'||estado==='completada') c.cobrado=c.tot;
-  else if(estado==='cobrado_f1') c.cobrado=(c.antic||0)+(c.mid||0);
-  else if(estado==='f1_entregada'||estado==='f2_entregada'||estado==='en_progreso') c.cobrado=(c.antic||0);
-  else if(estado==='parcial') c.cobrado=(c.antic||0);
-  else c.cobrado=0;
   saveCots(cots);renderIngresos();if(document.getElementById('pg-est').classList.contains('active'))renderEstatus();
 }
 
@@ -2069,8 +2093,15 @@ function verReciboAnticipo(id){
 }
 
 function deleteCot(id){
+  if(!confirm('¿Eliminar esta cotización? Se borrarán también los avances de sprints. Esta acción no se puede deshacer.')) return;
   saveCots(loadCots().filter(x=>x.id!==id));
+  // Limpiar tracker de sprints asociado
+  try{
+    const tracker = JSON.parse(localStorage.getItem('avit_sprint_tracker')||'{}');
+    if(tracker[id]){ delete tracker[id]; localStorage.setItem('avit_sprint_tracker', JSON.stringify(tracker)); }
+  }catch(e){}
   renderIngresos();
+  if(document.getElementById('pg-est').classList.contains('active')) renderEstatus();
 }
 
 function renderIngresos(){
@@ -2156,36 +2187,94 @@ function renderIngresos(){
   if(!cots.length){
     document.getElementById('ing-lista').innerHTML='<p class="empty" style="padding:.75rem 0">Ninguna cotización registrada aún.</p>';
   } else {
-    document.getElementById('ing-lista').innerHTML=[...cots].reverse().map(c=>`
-      <div class="cot-card">
-        <div class="cot-card-head">
-          <div>
-            <div style="font-size:13px;font-weight:500">${c.cliente}</div>
-            <div style="font-size:11px;color:var(--text-2)">${c.proyecto}</div>
-            <div style="font-size:10px;color:var(--text-3);margin-top:2px">${new Date(c.fecha+'T12:00:00').toLocaleDateString('es-GT',{day:'2-digit',month:'long',year:'numeric'})}</div>
-          </div>
-          <div style="text-align:right">
-            <div style="font-size:15px;font-weight:500">${fmtCur(c.tot,c.cur)}</div>
-            <span class="estado-badge est-${c.estado}" style="font-size:10px;padding:2px 7px">${estadoLabel(c)}</span>
-          </div>
-        </div>
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:.6rem 0">
-          <div class="metric" style="padding:.5rem .75rem"><p class="ml">F1</p><p style="font-size:12px;font-weight:500">${fmtCur(c.f1,c.cur)}</p></div>
-          <div class="metric" style="padding:.5rem .75rem"><p class="ml">F2</p><p style="font-size:12px;font-weight:500">${fmtCur(c.f2,c.cur)}</p></div>
-          <div class="metric" style="padding:.5rem .75rem"><p class="ml">Cobrado</p><p style="font-size:12px;font-weight:500;color:#0F6E56">${fmtCur(c.cobrado,c.cur)}</p></div>
-          <div class="metric" style="padding:.5rem .75rem"><p class="ml">Utilidad</p><p style="font-size:12px;font-weight:500;color:#0F6E56">${fmtCur(c.util,c.cur)}</p></div>
-        </div>
-        <div class="cot-actions">
-          <select onchange="updateEstado(${c.id},this.value)" style="flex:1;padding:4px 7px;font-size:11px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:var(--surface);color:var(--text)">
-            ${getEstadoOpts(c).map(o=>`<option value="${o.v}" ${estadoAOpcion(c)===o.v?'selected':''}>${o.l}</option>`).join('')}
-          </select>
-          <button class="btn-ver" onclick="verCot(${c.id})">Ver</button>
-          <button class="btn-editar" onclick="editCot(${c.id})">Editar</button>
-          <button class="btn-recibo" onclick="verReciboAnticipo(${c.id})" title="Ver recibo del anticipo">🧾 Recibo</button>
-          <button onclick="deleteCot(${c.id})" style="padding:4px 10px;font-size:11px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--red);cursor:pointer">Eliminar</button>
-        </div>
-      </div>`).join('');
+    const activos = cots.filter(c => c.estado !== 'cobrado_total' && c.estado !== 'completada');
+    const terminados = cots.filter(c => c.estado === 'cobrado_total' || c.estado === 'completada');
+
+    // Lista de activos
+    if(!activos.length){
+      document.getElementById('ing-lista').innerHTML='<p class="empty" style="padding:.75rem 0">No hay cotizaciones activas. Las terminadas aparecen abajo en 📁 Proyectos terminados.</p>';
+    } else {
+      document.getElementById('ing-lista').innerHTML=[...activos].reverse().map(c=>cardCot(c, false, getEstadoOpts, estadoAOpcion, estadoLabel)).join('');
+    }
+
+    // Sección de terminados
+    const scTerm = document.getElementById('sc-terminados');
+    if(terminados.length > 0){
+      scTerm.style.display = 'block';
+      document.getElementById('ing-term-count').textContent = `(${terminados.length})`;
+      document.getElementById('ing-term-body').innerHTML = [...terminados].reverse().map(c => cardCot(c, true, getEstadoOpts, estadoAOpcion, estadoLabel)).join('');
+    } else {
+      scTerm.style.display = 'none';
+    }
   }
+}
+
+// Render de tarjeta de cotización (compartido entre activos y terminados)
+function cardCot(c, isTerminado, getEstadoOpts, estadoAOpcion, estadoLabel){
+  return `<div class="cot-card" ${isTerminado?'style="opacity:.85"':''}>
+    <div class="cot-card-head">
+      <div>
+        <div style="font-size:13px;font-weight:500">${c.cliente}${isTerminado?' <span style="color:var(--green);font-size:10px;font-family:var(--font-mono);margin-left:6px">✓ TERMINADO</span>':''}</div>
+        <div style="font-size:11px;color:var(--text-2)">${c.proyecto}</div>
+        <div style="font-size:10px;color:var(--text-3);margin-top:2px">${new Date(c.fecha+'T12:00:00').toLocaleDateString('es-GT',{day:'2-digit',month:'long',year:'numeric'})}</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:15px;font-weight:500">${fmtCur(c.tot,c.cur)}</div>
+        <span class="estado-badge est-${c.estado}" style="font-size:10px;padding:2px 7px">${estadoLabel(c)}</span>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:.6rem 0">
+      <div class="metric" style="padding:.5rem .75rem"><p class="ml">F1</p><p style="font-size:12px;font-weight:500">${fmtCur(c.f1,c.cur)}</p></div>
+      <div class="metric" style="padding:.5rem .75rem"><p class="ml">F2</p><p style="font-size:12px;font-weight:500">${fmtCur(c.f2,c.cur)}</p></div>
+      <div class="metric" style="padding:.5rem .75rem"><p class="ml">Cobrado</p><p style="font-size:12px;font-weight:500;color:#0F6E56">${fmtCur(c.cobrado,c.cur)}</p></div>
+      <div class="metric" style="padding:.5rem .75rem"><p class="ml">Utilidad</p><p style="font-size:12px;font-weight:500;color:#0F6E56">${fmtCur(c.util,c.cur)}</p></div>
+    </div>
+    <div class="cot-actions">
+      ${isTerminado
+        ? `<button class="btn-editar" onclick="reactivarCot(${c.id})" style="border-color:rgba(76,175,114,0.30);color:var(--green)">↺ Reactivar</button>
+           <button class="btn-ver" onclick="verCot(${c.id})">Ver</button>
+           <button class="btn-recibo" onclick="verReciboAnticipo(${c.id})" title="Ver recibo del anticipo">🧾 Recibo</button>
+           <button onclick="deleteCot(${c.id})" style="padding:4px 10px;font-size:11px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--red);cursor:pointer">Eliminar</button>`
+        : `<select onchange="updateEstado(${c.id},this.value)" style="flex:1;padding:4px 7px;font-size:11px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:var(--surface);color:var(--text)">
+             ${getEstadoOpts(c).map(o=>`<option value="${o.v}" ${estadoAOpcion(c)===o.v?'selected':''}>${o.l}</option>`).join('')}
+           </select>
+           <button class="btn-ver" onclick="verCot(${c.id})">Ver</button>
+           <button class="btn-editar" onclick="editCot(${c.id})">Editar</button>
+           <button class="btn-recibo" onclick="verReciboAnticipo(${c.id})" title="Ver recibo del anticipo">🧾 Recibo</button>
+           <button onclick="deleteCot(${c.id})" style="padding:4px 10px;font-size:11px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--red);cursor:pointer">Eliminar</button>`}
+    </div>
+  </div>`;
+}
+
+// Toggle sección Terminados
+function toggleTerminados(){
+  const body = document.getElementById('ing-term-body');
+  const chev = document.getElementById('ing-term-chev');
+  const open = body.style.display === 'none';
+  body.style.display = open ? 'block' : 'none';
+  chev.style.transform = open ? 'rotate(90deg)' : 'rotate(0deg)';
+}
+
+// Reactivar proyecto terminado: vuelve a "f2_entregada" (columna Entrega del Kanban)
+function reactivarCot(id){
+  if(!confirm('¿Reactivar este proyecto? Volverá a la columna Entrega del Kanban.')) return;
+  const cots = loadCots();
+  const c = cots.find(x => x.id === id);
+  if(!c) return;
+  c.estado = 'f2_entregada';
+  // Si tiene sprints, "destildar" el milestone "cobrado" para que pueda volver a marcarse
+  const tracker = JSON.parse(localStorage.getItem('avit_sprint_tracker')||'{}');
+  if(tracker[id] && tracker[id].sprints){
+    tracker[id].sprints.forEach(sp => {
+      sp.items.forEach(it => {
+        if(it.milestone === 'cobrado') it.done = false;
+      });
+    });
+    localStorage.setItem('avit_sprint_tracker', JSON.stringify(tracker));
+  }
+  saveCots(cots);
+  renderIngresos();
+  if(document.getElementById('pg-est').classList.contains('active')) renderEstatus();
 }
 
 // ═══════ ESTATUS ═══════
@@ -2194,7 +2283,7 @@ const KANBAN_COLS = [
   { id:'cotizado',     label:'💬 Cotizado',     cls:'kcol-cotizado',     estados:['emitida'] },
   { id:'anteproyecto', label:'🎨 Anteproyecto', cls:'kcol-anteproyecto', estados:['en_progreso'] },
   { id:'planos',       label:'📐 Planos',       cls:'kcol-planos',       estados:['f1_entregada','cobrado_f1'] },
-  { id:'entrega',      label:'✓ Entrega',       cls:'kcol-cobrado',      estados:['f2_entregada','cobrado_total'] }
+  { id:'entrega',      label:'✓ Entrega',       cls:'kcol-cobrado',      estados:['f2_entregada'] }
 ];
 
 // Normalizar estados legacy
@@ -2306,22 +2395,57 @@ function ensureDefaultSprints(c){
     });
   }
 
-  // ═══ Columna PLANOS — sprints F2 ═══
+  // ═══ Columna PLANOS — un sprint por GRUPO con planos cotizados (cantidad > 0) ═══
   if(hasF2){
+    // Leer cantidades cotizadas desde la cotización (si fueron guardadas) o desde inputs actuales
+    const planosQty = c.planosQty || {};
+    // Helper: ¿este plano fue cotizado?
+    const cotizado = (planoNombre) => {
+      // Si hay registro guardado en planosQty → usar eso. Si no, asumir cotizado (>0) por defecto.
+      if(c.planosQty && Object.keys(c.planosQty).length > 0){
+        return (planosQty[planoNombre] || 0) > 0;
+      }
+      return true;
+    };
+
+    // Sprint Constructivos (solo si hay al menos 1 plano constructivo cotizado)
+    const constructivosCotizados = (typeof PLANOS_CONSTRUCTIVOS !== 'undefined' ? PLANOS_CONSTRUCTIVOS : []).filter(cotizado);
+    if(constructivosCotizados.length > 0){
+      sprints.push({
+        id:'sp_pl_const', col:'planos', type:'f2', title:'Planos constructivos',
+        items: constructivosCotizados.map((nombre, idx) => ({
+          id:'pc'+idx, name:nombre, done:false, colab:''
+        }))
+      });
+    }
+
+    // Sprint Hidráulicos
+    const hidraulicosCotizados = (typeof PLANOS_HIDRAULICOS !== 'undefined' ? PLANOS_HIDRAULICOS : []).filter(cotizado);
+    if(hidraulicosCotizados.length > 0){
+      sprints.push({
+        id:'sp_pl_hidr', col:'planos', type:'f2', title:'Planos hidráulicos',
+        items: hidraulicosCotizados.map((nombre, idx) => ({
+          id:'ph'+idx, name:nombre, done:false, colab:''
+        }))
+      });
+    }
+
+    // Sprint Eléctricos
+    const electricosCotizados = (typeof PLANOS_ELECTRICOS !== 'undefined' ? PLANOS_ELECTRICOS : []).filter(cotizado);
+    if(electricosCotizados.length > 0){
+      sprints.push({
+        id:'sp_pl_elec', col:'planos', type:'f2', title:'Planos eléctricos',
+        items: electricosCotizados.map((nombre, idx) => ({
+          id:'pe'+idx, name:nombre, done:false, colab:''
+        }))
+      });
+    }
+
+    // Sprint final F2 con el milestone "Entrega Fase 2"
     sprints.push({
-      id:'sp_pl1', col:'planos', type:'f2', title:'Estructura y cimientos',
+      id:'sp_pl_entrega', col:'planos', type:'hito', title:'Entrega de planos al cliente',
       items:[
-        {id:'b1', name:'Cimientos',           done:false, colab:''},
-        {id:'b2', name:'Columnas y vigas',    done:false, colab:''}
-      ]
-    });
-    sprints.push({
-      id:'sp_pl2', col:'planos', type:'f2', title:'Planos constructivos',
-      items:[
-        {id:'b1', name:'Planos arquitectónicos',  done:false, colab:'', autoColab:'Planos'},
-        {id:'b2', name:'Planos estructurales',    done:false, colab:'', autoColab:'Planos'},
-        {id:'b3', name:'Planos de instalaciones', done:false, colab:'', autoColab:'Planos'},
-        {id:'b4', name:'Entrega Fase 2',          done:false, colab:'', milestone:'entrega_f2'}
+        {id:'b1', name:'Entrega Fase 2', done:false, colab:'', milestone:'entrega_f2'}
       ]
     });
   }
@@ -2666,17 +2790,26 @@ function kanbanDrop(e, colId){
   if(!cotId) return;
   const col = KANBAN_COLS.find(k => k.id === colId);
   if(!col) return;
-  // Elegir estado representativo de esa columna. Si la cotización no tiene la fase necesaria, usar el primero permitido.
   const cots = loadCots();
   const c = cots.find(x=>x.id===cotId);
   if(!c) return;
   const hasF1=(c.f1||0)>0, hasF2=(c.f2||0)>0;
+
+  // Validaciones: no permitir mover a una columna sin la fase necesaria
+  if(colId==='anteproyecto' && !hasF1){
+    alert('Este proyecto no tiene Fase 1 cotizada. Movelo directo a Planos o Entrega.');
+    return;
+  }
+  if(colId==='planos' && !hasF2){
+    alert('Este proyecto no tiene Fase 2 cotizada. Movelo a Entrega cuando esté cobrado.');
+    return;
+  }
+
+  // Elegir estado canónico de la columna destino
   let target = col.estados[0];
   if(colId==='planos'){
     target = (hasF1&&hasF2) ? 'cobrado_f1' : 'f1_entregada';
-    if(!hasF1) target = 'en_progreso'; // fallback
   }
-  if(colId==='aprobado' && !hasF2) target = 'f1_entregada';
   updateEstado(cotId, target);
 }
 
