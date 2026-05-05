@@ -318,13 +318,34 @@ input.narrow{width:88px}input.mid{width:108px}
 .sprint-card{
   background:rgba(255,255,255,0.03);
   border:1px solid rgba(255,255,255,0.07);
-  border-radius:var(--r-md);padding:.9rem;margin-bottom:7px;position:relative;
-  transition:border-color .15s;
+  border-radius:var(--r-md);padding:.9rem;padding-left:1.6rem;margin-bottom:7px;position:relative;
+  transition:border-color .15s, transform .15s, box-shadow .15s;
+  cursor:default;
 }
 .sprint-card:hover{border-color:rgba(255,255,255,0.11)}
 .sprint-card.f1{border-left:3px solid var(--blue)}
 .sprint-card.f2{border-left:3px solid var(--green)}
 .sprint-card.hito{border-left:3px solid var(--accent)}
+.sprint-card.sprint-drag-over{
+  border-color:var(--accent)!important;
+  box-shadow:0 0 0 2px var(--accent-subtle);
+  transform:translateY(-1px);
+}
+.sprint-drag-handle{
+  position:absolute;
+  left:6px;top:50%;transform:translateY(-50%);
+  font-family:var(--font-mono);
+  color:var(--text-3);
+  font-size:14px;
+  cursor:grab;
+  user-select:none;
+  letter-spacing:-2px;
+  padding:8px 4px;
+  opacity:.4;
+  transition:opacity .15s, color .15s;
+}
+.sprint-card:hover .sprint-drag-handle{opacity:.8}
+.sprint-drag-handle:active{cursor:grabbing;color:var(--accent)}
 .sprint-head{display:flex;align-items:center;gap:7px;margin-bottom:7px}
 .sprint-num{
   width:22px;height:22px;border-radius:50%;
@@ -576,6 +597,35 @@ input.narrow{width:88px}input.mid{width:108px}
   cursor:pointer;transition:all .15s var(--ease-out);
   border:1px solid;outline:none;padding:0;
 }
+
+/* ═══ Botón de detalles del item (notas/bloqueos/comentarios) ═══ */
+.item-detail-btn{
+  width:22px;height:22px;border-radius:6px;flex-shrink:0;
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:11px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.10);
+  color:var(--text-3);
+  cursor:pointer;
+  transition:all .15s var(--ease-out);
+  padding:0;outline:none;
+}
+.item-detail-btn:hover{
+  background:var(--accent-subtle);
+  border-color:var(--border-accent);
+  color:var(--accent);
+}
+.item-detail-btn.has-details{
+  background:var(--accent-subtle);
+  border-color:var(--border-accent);
+  color:var(--accent);
+}
+.backlog-item.item-blocked{
+  background:rgba(224,90,90,0.06);
+  border-left:2px solid var(--red);
+  padding-left:6px;
+}
+.backlog-item.item-blocked .backlog-name{color:var(--red);opacity:.85}
 .colab-avatar.empty{
   background:rgba(255,255,255,0.04);
   color:var(--text-3);
@@ -766,6 +816,7 @@ input.narrow{width:88px}input.mid{width:108px}
   text-align:right;padding:0 2px;letter-spacing:.02em;margin-bottom:6px;opacity:.85;
 }
 </style>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 </head>
 <body>
 
@@ -786,7 +837,8 @@ input.narrow{width:88px}input.mid{width:108px}
   <div class="topbar-actions" style="min-width:auto;gap:6px">
     <div style="display:flex;flex-direction:column;align-items:flex-end">
       <div style="display:flex;gap:6px">
-        <button class="btn-data" onclick="exportarJSON()" title="Descargar todos tus datos como archivo JSON">⬇ Exportar</button>
+        <button class="btn-data" onclick="exportarJSON()" title="Descargar todos tus datos como archivo JSON">⬇ JSON</button>
+        <button class="btn-data" onclick="exportarExcel()" title="Descargar cotizaciones como archivo Excel">📊 Excel</button>
         <label class="btn-data" style="cursor:pointer" title="Restaurar datos desde un archivo JSON previamente exportado">⬆ Importar<input type="file" id="importInput" accept=".json" style="display:none" onchange="importarJSON(event)"></label>
         <button class="btn-data verde" id="btnNube" onclick="togglePanelNube()" title="Sincronizar datos con la nube">☁ Nube</button>
       </div>
@@ -1436,6 +1488,15 @@ input.narrow{width:88px}input.mid{width:108px}
   <div id="ing-term-body" style="display:none;margin-top:12px"></div>
 </div>
 
+<div class="sc">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+    <div class="sc-title" style="margin:0">🔗 Mis herramientas y artefactos</div>
+    <button onclick="openArtefactoModal()" style="padding:5px 12px;font-size:10px;font-weight:500;border:0.5px solid var(--border-accent);border-radius:var(--r-md);background:var(--accent-subtle);color:var(--accent);cursor:pointer;font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase">+ Agregar</button>
+  </div>
+  <p style="font-size:11px;color:var(--text-3);margin-bottom:12px">Acceso rápido a otros artefactos de Claude que usás en tu trabajo.</p>
+  <div id="artefactos-lista"></div>
+</div>
+
 </div><!-- /pg-ing -->
 
 
@@ -1674,6 +1735,39 @@ function addSprint(type){
   setTimeout(()=>{const ins=document.querySelectorAll('.sprint-title-inp');if(ins.length)ins[ins.length-1].focus()},50);
 }
 function deleteSprint(id){sprints=sprints.filter(s=>s.id!==id);renderAll()}
+
+// ═══ Drag & drop para reordenar sprints ═══
+let _draggedSprintId = null;
+function sprintDragStart(ev, id){
+  _draggedSprintId = id;
+  ev.dataTransfer.effectAllowed = 'move';
+  ev.currentTarget.style.opacity = '0.4';
+}
+function sprintDragOver(ev){
+  ev.preventDefault();
+  ev.dataTransfer.dropEffect = 'move';
+  ev.currentTarget.classList.add('sprint-drag-over');
+}
+function sprintDragLeave(ev){
+  ev.currentTarget.classList.remove('sprint-drag-over');
+}
+function sprintDrop(ev, targetId){
+  ev.preventDefault();
+  ev.currentTarget.classList.remove('sprint-drag-over');
+  if(_draggedSprintId === null || _draggedSprintId === targetId) return;
+  const fromIdx = sprints.findIndex(s => s.id === _draggedSprintId);
+  const toIdx = sprints.findIndex(s => s.id === targetId);
+  if(fromIdx < 0 || toIdx < 0) return;
+  const [moved] = sprints.splice(fromIdx, 1);
+  sprints.splice(toIdx, 0, moved);
+  _draggedSprintId = null;
+  renderAll();
+}
+function sprintDragEnd(ev){
+  ev.currentTarget.style.opacity = '1';
+  document.querySelectorAll('.sprint-drag-over').forEach(el => el.classList.remove('sprint-drag-over'));
+  _draggedSprintId = null;
+}
 function toggleEnt(id,e){const s=sprints.find(s=>s.id===id);if(!s)return;const i=s.entregables.indexOf(e);i===-1?s.entregables.push(e):s.entregables.splice(i,1);renderAll()}
 function toggleSprintAccordion(id){const s=sprints.find(s=>s.id===id);if(!s)return;s._open=!s._open;renderAll();}
 function toggleFb(id){const s=sprints.find(s=>s.id===id);if(s){s.needsFeedback=!s.needsFeedback;renderAll()}}
@@ -1734,7 +1828,13 @@ function renderEditor(){
              </div>
            </div>`
         : `<div class="ent-wrap"><p class="nt" style="margin-bottom:5px">Entregables:</p><div style="display:flex;flex-wrap:wrap">${entTags}</div></div>`;
-    return`<div class="sprint-card ${s.type}">
+    return`<div class="sprint-card ${s.type}" draggable="true" data-sprint-id="${s.id}"
+        ondragstart="sprintDragStart(event, ${s.id})"
+        ondragover="sprintDragOver(event)"
+        ondragleave="sprintDragLeave(event)"
+        ondrop="sprintDrop(event, ${s.id})"
+        ondragend="sprintDragEnd(event)">
+      <span class="sprint-drag-handle" title="Arrastrar para reordenar">⋮⋮</span>
       <button class="del-btn" onclick="deleteSprint(${s.id})">×</button>
       <div class="sprint-head">
         <div class="sprint-num">${i+1}</div>
@@ -2086,10 +2186,208 @@ function updateEstado(id,estado){
   saveCots(cots);renderIngresos();if(document.getElementById('pg-est').classList.contains('active'))renderEstatus();
 }
 
-// Recibo del anticipo (placeholder — sin funcionalidad por ahora)
+// Recibo del anticipo: genera un comprobante imprimible con LOGO_B64
 function verReciboAnticipo(id){
-  // Función pendiente de implementar. Recibirás instrucciones luego.
-  alert('Función de recibo del anticipo próximamente.');
+  const cots = loadCots();
+  const c = cots.find(x => x.id === id);
+  if(!c){ alert('Cotización no encontrada.'); return; }
+  if(!c.antic || c.antic <= 0){
+    if(!confirm('Esta cotización no tiene un anticipo definido. ¿Querés generar un recibo de todos modos?')) return;
+  }
+
+  // Obtener datos guardados/sugeridos del recibo
+  const recibos = JSON.parse(localStorage.getItem('avit_recibos')||'{}');
+  const r = recibos[id] || {};
+
+  // Modal de configuración previa
+  const existing = document.getElementById('reciboConfigModal');
+  if(existing) existing.remove();
+  const modal = document.createElement('div');
+  modal.id = 'reciboConfigModal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9998;display:flex;align-items:flex-start;justify-content:center;padding:40px 20px;overflow-y:auto';
+  modal.onclick = e => { if(e.target === modal) modal.remove(); };
+
+  const hoy = new Date().toISOString().split('T')[0];
+  // Correlativo automático: REC-AAAAMMDD-XXXX (último dígitos del id de la cot)
+  const correlativoSugerido = r.numero || `REC-${hoy.replace(/-/g,'')}-${String(c.id).slice(-4)}`;
+  const montoSugerido = r.monto || c.antic || 0;
+  const conceptoSugerido = r.concepto || `Anticipo por servicios profesionales — ${c.proyecto}`;
+  const fechaSugerida = r.fecha || hoy;
+  const lugarSugerido = r.lugar || 'Ciudad de Guatemala';
+  const formaPagoSugerida = r.formaPago || 'Transferencia bancaria';
+
+  modal.innerHTML = `
+    <div style="background:var(--bg-surface-2,#1a1b1e);border:1px solid var(--border-accent);border-radius:var(--r-lg);padding:24px 28px;width:100%;max-width:520px;font-family:var(--font-body)" onclick="event.stopPropagation()">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <div style="font-family:var(--font-display);font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)">🧾 Generar recibo del anticipo</div>
+        <button onclick="document.getElementById('reciboConfigModal').remove()" style="background:transparent;border:0;color:var(--text-3);font-size:20px;cursor:pointer">×</button>
+      </div>
+      <div style="font-size:11px;color:var(--text-3);margin-bottom:16px">${escapeHtmlK(c.cliente)} — ${escapeHtmlK(c.proyecto)}</div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div>
+          <label class="lbl">No. de recibo</label>
+          <input type="text" id="rec-numero" value="${escapeHtmlK(correlativoSugerido)}" style="width:100%;padding:7px 10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.10);border-radius:var(--r-md);color:var(--text);font-size:12px;font-family:var(--font-mono)">
+        </div>
+        <div>
+          <label class="lbl">Fecha</label>
+          <input type="date" id="rec-fecha" value="${fechaSugerida}" style="width:100%;padding:7px 10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.10);border-radius:var(--r-md);color:var(--text);font-size:12px;font-family:var(--font-mono)">
+        </div>
+        <div>
+          <label class="lbl">Monto (${c.cur})</label>
+          <input type="number" id="rec-monto" value="${montoSugerido}" min="0" step="0.01" style="width:100%;padding:7px 10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.10);border-radius:var(--r-md);color:var(--text);font-size:12px;font-family:var(--font-mono)">
+        </div>
+        <div>
+          <label class="lbl">Forma de pago</label>
+          <select id="rec-formapago" style="width:100%;padding:7px 10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.10);border-radius:var(--r-md);color:var(--text);font-size:12px;font-family:var(--font-body)">
+            <option ${formaPagoSugerida==='Transferencia bancaria'?'selected':''}>Transferencia bancaria</option>
+            <option ${formaPagoSugerida==='Efectivo'?'selected':''}>Efectivo</option>
+            <option ${formaPagoSugerida==='Cheque'?'selected':''}>Cheque</option>
+            <option ${formaPagoSugerida==='Depósito'?'selected':''}>Depósito</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="margin-top:10px">
+        <label class="lbl">Concepto</label>
+        <input type="text" id="rec-concepto" value="${escapeHtmlK(conceptoSugerido)}" style="width:100%;padding:7px 10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.10);border-radius:var(--r-md);color:var(--text);font-size:12px;font-family:var(--font-body)">
+      </div>
+
+      <div style="margin-top:10px">
+        <label class="lbl">Lugar de emisión</label>
+        <input type="text" id="rec-lugar" value="${escapeHtmlK(lugarSugerido)}" style="width:100%;padding:7px 10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.10);border-radius:var(--r-md);color:var(--text);font-size:12px;font-family:var(--font-body)">
+      </div>
+
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.06)">
+        <button onclick="document.getElementById('reciboConfigModal').remove()" style="padding:7px 14px;font-size:11px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text-2);cursor:pointer;font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase">Cancelar</button>
+        <button onclick="generarReciboHTML(${id})" style="padding:7px 18px;font-size:11px;border:1px solid var(--accent);border-radius:var(--r-md);background:var(--accent);color:var(--text-on-accent);cursor:pointer;font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase">📄 Generar</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  setTimeout(()=>document.getElementById('rec-numero').focus(), 50);
+}
+
+function generarReciboHTML(id){
+  const cots = loadCots();
+  const c = cots.find(x => x.id === id);
+  if(!c) return;
+  const numero = document.getElementById('rec-numero').value.trim();
+  const fecha = document.getElementById('rec-fecha').value;
+  const monto = parseFloat(document.getElementById('rec-monto').value)||0;
+  const formaPago = document.getElementById('rec-formapago').value;
+  const concepto = document.getElementById('rec-concepto').value.trim();
+  const lugar = document.getElementById('rec-lugar').value.trim();
+
+  if(!numero || !fecha || !monto){ alert('Completá número, fecha y monto.'); return; }
+
+  // Guardar para próxima vez
+  const recibos = JSON.parse(localStorage.getItem('avit_recibos')||'{}');
+  recibos[id] = { numero, fecha, monto, concepto, lugar, formaPago };
+  localStorage.setItem('avit_recibos', JSON.stringify(recibos));
+
+  // Cerrar modal de config
+  document.getElementById('reciboConfigModal').remove();
+
+  // Convertir monto a letras (función simple para Quetzales)
+  const montoEnLetras = numeroALetras(monto, c.cur);
+  const fechaFormateada = new Date(fecha+'T12:00:00').toLocaleDateString('es-GT',{day:'2-digit',month:'long',year:'numeric'});
+  const montoFormateado = c.cur + ' ' + Math.round(monto).toLocaleString('es-GT');
+
+  // HTML imprimible del recibo
+  const html = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Recibo ${numero} — Estudio AVIT</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#1a1a18;background:#fff;font-size:12px;line-height:1.7}
+.page{max-width:680px;margin:0 auto;padding:0 20px}
+.lh{background:#111;padding:28px 44px 24px;display:flex;justify-content:space-between;align-items:center;margin:0 -20px}
+.lh img{height:42px;width:auto}
+.lh-r{text-align:right;color:#888;font-size:10px;line-height:1.8}
+.lh-r .cn{font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:#aaa;margin-bottom:3px}
+.lh-r .num{font-size:14px;color:#fff;font-weight:500;letter-spacing:1px}
+.titulo{text-align:center;padding:32px 0 18px;border-bottom:2px solid #1a1a18;margin-bottom:28px}
+.titulo h1{font-size:22px;font-weight:300;letter-spacing:6px;text-transform:uppercase;color:#1a1a18}
+.titulo .sub{font-size:10px;color:#aaa;letter-spacing:2px;text-transform:uppercase;margin-top:6px}
+.fila{display:flex;padding:10px 0;border-bottom:.5px solid #f0f0f0;align-items:flex-start}
+.fila .lbl{font-size:10px;text-transform:uppercase;letter-spacing:1.4px;color:#888;width:140px;flex-shrink:0;padding-top:2px}
+.fila .val{font-size:13px;color:#1a1a18;flex:1}
+.fila .val.big{font-size:18px;font-weight:500;letter-spacing:.5px}
+.monto-box{margin:24px 0;padding:24px;background:#fafaf6;border:1px solid #e8e8e0;border-radius:6px;text-align:center}
+.monto-box .a{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#aaa;margin-bottom:6px}
+.monto-box .b{font-size:32px;font-weight:300;color:#1a1a18;letter-spacing:1px}
+.monto-box .c{font-size:11px;color:#666;margin-top:6px;font-style:italic}
+.firma{margin-top:60px;display:flex;justify-content:space-between;align-items:flex-end;gap:60px}
+.firma .col{flex:1;text-align:center}
+.firma .ln{border-top:1px solid #1a1a18;padding-top:6px}
+.firma .nm{font-size:13px;color:#1a1a18;font-weight:500}
+.firma .rl{font-size:10px;color:#888;letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+.ft{margin:40px -20px 0;padding:14px 44px;background:#f8f8f6;border-top:1px solid #ebebeb}
+.ft p{font-size:9.5px;color:#999;line-height:1.6;text-align:center}
+.print-bar{position:fixed;top:12px;right:12px;background:#1a1a18;color:#fff;padding:8px 16px;border-radius:4px;cursor:pointer;font-size:11px;letter-spacing:1px;text-transform:uppercase;z-index:9999;border:0;font-family:inherit}
+.print-bar:hover{background:#333}
+@media print{
+  body{background:white}
+  .page{padding:0;max-width:100%}
+  .print-bar{display:none}
+  @page{margin:0;size:A4}
+}
+</style></head><body><button class="print-bar" onclick="window.print()">🖨 Imprimir / PDF</button><div class="page">
+<div class="lh"><img src="data:image/png;base64,${LOGO_B64}" alt="Estudio AVIT"><div class="lh-r"><div class="cn">Recibo No.</div><div class="num">${escapeHtmlBasic(numero)}</div></div></div>
+
+<div class="titulo">
+  <h1>Recibo</h1>
+  <div class="sub">Comprobante de pago</div>
+</div>
+
+<div class="fila"><div class="lbl">Recibí de</div><div class="val big">${escapeHtmlBasic(c.cliente)}</div></div>
+<div class="fila"><div class="lbl">Lugar y fecha</div><div class="val">${escapeHtmlBasic(lugar)}, ${fechaFormateada}</div></div>
+<div class="fila"><div class="lbl">Por concepto de</div><div class="val">${escapeHtmlBasic(concepto)}</div></div>
+<div class="fila"><div class="lbl">Forma de pago</div><div class="val">${escapeHtmlBasic(formaPago)}</div></div>
+
+<div class="monto-box">
+  <div class="a">Monto recibido</div>
+  <div class="b">${montoFormateado}</div>
+  <div class="c">${montoEnLetras}</div>
+</div>
+
+<div class="firma">
+  <div class="col">
+    <div class="ln">
+      <div class="nm">Estudio AVIT</div>
+      <div class="rl">Receptor</div>
+    </div>
+  </div>
+  <div class="col">
+    <div class="ln">
+      <div class="nm">${escapeHtmlBasic(c.cliente)}</div>
+      <div class="rl">Cliente</div>
+    </div>
+  </div>
+</div>
+
+<div class="ft"><p>Este recibo es válido como comprobante de pago. Estudio AVIT — Arquitectura e interiorismo.</p></div>
+</div></body></html>`;
+
+  const w = window.open('','_blank');
+  w.document.write(html);
+  w.document.close();
+}
+
+// Helper: escape HTML básico para el contenido del recibo
+function escapeHtmlBasic(s){
+  return String(s||"").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
+}
+
+// Helper: convierte un número a letras (versión simplificada para Quetzales)
+function numeroALetras(num, cur){
+  if(!num || num <= 0) return '';
+  const monedaTexto = cur === 'GTQ' ? 'Quetzales' : (cur === 'USD' ? 'Dólares' : cur);
+  const entero = Math.floor(num);
+  const decimal = Math.round((num - entero) * 100);
+  // Versión muy básica — para uso real podría enriquecerse
+  const enteroFmt = entero.toLocaleString('es-GT');
+  const decimalFmt = String(decimal).padStart(2,'0');
+  return `(${enteroFmt} con ${decimalFmt}/100 ${monedaTexto})`;
 }
 
 function deleteCot(id){
@@ -2275,6 +2573,125 @@ function reactivarCot(id){
   saveCots(cots);
   renderIngresos();
   if(document.getElementById('pg-est').classList.contains('active')) renderEstatus();
+}
+
+// ═══════ ARTEFACTOS VINCULADOS (linkeo con otros tools de Claude) ═══════
+function loadArtefactos(){
+  try { return JSON.parse(localStorage.getItem('avit_artifacts')||'[]'); }
+  catch(e){ return []; }
+}
+function saveArtefactos(arr){
+  localStorage.setItem('avit_artifacts', JSON.stringify(arr));
+}
+
+function renderArtefactos(){
+  const cont = document.getElementById('artefactos-lista');
+  if(!cont) return;
+  const arts = loadArtefactos();
+  if(!arts.length){
+    cont.innerHTML = '<p class="empty" style="padding:.5rem 0;font-size:11px">Sin artefactos registrados. Agregá uno con el botón de arriba.</p>';
+    return;
+  }
+  cont.innerHTML = arts.map(a => `
+    <div class="artefacto-card" style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:var(--r-md);margin-bottom:6px;transition:all .15s">
+      <div style="font-size:20px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:var(--accent-subtle);border-radius:8px;flex-shrink:0">${a.icon||'🔗'}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:500;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtmlK(a.title)}</div>
+        ${a.desc?`<div style="font-size:10px;color:var(--text-3);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtmlK(a.desc)}</div>`:''}
+      </div>
+      <div style="display:flex;gap:6px;flex-shrink:0">
+        <button onclick="window.open('${escapeHtmlK(a.url)}','_blank')" title="Abrir" style="padding:5px 11px;font-size:10px;font-weight:500;border:0.5px solid var(--border-accent);border-radius:var(--r-md);background:var(--accent);color:var(--text-on-accent);cursor:pointer;font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase">Abrir</button>
+        <button onclick="editArtefacto(${a.id})" title="Editar" style="padding:5px 9px;font-size:11px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text-2);cursor:pointer">✎</button>
+        <button onclick="deleteArtefacto(${a.id})" title="Eliminar" style="padding:5px 9px;font-size:11px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--red);cursor:pointer">×</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openArtefactoModal(editId){
+  const arts = loadArtefactos();
+  const editing = editId ? arts.find(a=>a.id===editId) : null;
+  const existing = document.getElementById('artefactoModal');
+  if(existing) existing.remove();
+  const modal = document.createElement('div');
+  modal.id = 'artefactoModal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9998;display:flex;align-items:center;justify-content:center;padding:20px';
+  modal.onclick = e => { if(e.target === modal) modal.remove(); };
+  modal.innerHTML = `
+    <div style="background:var(--bg-surface-2,#1a1b1e);border:1px solid var(--border-accent);border-radius:var(--r-lg);padding:24px;width:100%;max-width:440px;font-family:var(--font-body)" onclick="event.stopPropagation()">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+        <div style="font-family:var(--font-display);font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)">${editing?'Editar artefacto':'+ Agregar artefacto'}</div>
+        <button onclick="document.getElementById('artefactoModal').remove()" style="background:transparent;border:0;color:var(--text-3);font-size:18px;cursor:pointer">×</button>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div>
+          <label class="lbl">Título *</label>
+          <input type="text" id="art-title" value="${editing?escapeHtmlK(editing.title):''}" placeholder="Ej: Calculadora de costos avanzada" style="width:100%;padding:8px 12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.10);border-radius:var(--r-md);color:var(--text);font-size:13px">
+        </div>
+        <div>
+          <label class="lbl">URL del artefacto *</label>
+          <input type="url" id="art-url" value="${editing?escapeHtmlK(editing.url):''}" placeholder="https://claude.ai/artifacts/..." style="width:100%;padding:8px 12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.10);border-radius:var(--r-md);color:var(--text);font-size:13px">
+        </div>
+        <div>
+          <label class="lbl">Descripción (opcional)</label>
+          <input type="text" id="art-desc" value="${editing?escapeHtmlK(editing.desc||''):''}" placeholder="Para qué sirve este artefacto" style="width:100%;padding:8px 12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.10);border-radius:var(--r-md);color:var(--text);font-size:13px">
+        </div>
+        <div>
+          <label class="lbl">Icono</label>
+          <div id="art-icon-picker" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px">
+            ${['🔗','🧮','📐','🏗️','🎨','📊','📋','🛠️','💡','📝','🗂️','⚙️'].map(emoji => `
+              <button type="button" data-icon="${emoji}" onclick="selectArtIcon('${emoji}')" style="width:36px;height:36px;font-size:18px;border:1px solid rgba(255,255,255,0.10);border-radius:var(--r-md);background:${(editing&&editing.icon===emoji)||(!editing&&emoji==='🔗')?'var(--accent-subtle)':'rgba(255,255,255,0.03)'};cursor:pointer;color:var(--text)">${emoji}</button>
+            `).join('')}
+          </div>
+          <input type="hidden" id="art-icon" value="${editing?editing.icon:'🔗'}">
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.08)">
+        <button onclick="document.getElementById('artefactoModal').remove()" style="padding:7px 16px;font-size:11px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text-2);cursor:pointer;font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase">Cancelar</button>
+        <button onclick="saveArtefacto(${editing?editing.id:'null'})" style="padding:7px 16px;font-size:11px;border:1px solid var(--accent);border-radius:var(--r-md);background:var(--accent);color:var(--text-on-accent);cursor:pointer;font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase">${editing?'Guardar':'Agregar'}</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  setTimeout(()=>document.getElementById('art-title').focus(), 50);
+}
+
+function selectArtIcon(emoji){
+  document.getElementById('art-icon').value = emoji;
+  document.querySelectorAll('#art-icon-picker button').forEach(b => {
+    b.style.background = b.dataset.icon === emoji ? 'var(--accent-subtle)' : 'rgba(255,255,255,0.03)';
+  });
+}
+
+function saveArtefacto(editId){
+  const title = document.getElementById('art-title').value.trim();
+  const url = document.getElementById('art-url').value.trim();
+  const desc = document.getElementById('art-desc').value.trim();
+  const icon = document.getElementById('art-icon').value || '🔗';
+  if(!title){ alert('Ingresá un título.'); return; }
+  if(!url){ alert('Ingresá la URL.'); return; }
+  // Validación simple de URL
+  if(!/^https?:\/\//i.test(url)){ alert('La URL debe empezar con http:// o https://'); return; }
+  const arts = loadArtefactos();
+  if(editId){
+    const a = arts.find(x=>x.id===editId);
+    if(a){ a.title = title; a.url = url; a.desc = desc; a.icon = icon; }
+  } else {
+    arts.push({ id:Date.now(), title, url, desc, icon });
+  }
+  saveArtefactos(arts);
+  document.getElementById('artefactoModal').remove();
+  renderArtefactos();
+}
+
+function editArtefacto(id){
+  openArtefactoModal(id);
+}
+
+function deleteArtefacto(id){
+  if(!confirm('¿Eliminar este artefacto?')) return;
+  saveArtefactos(loadArtefactos().filter(a => a.id !== id));
+  renderArtefactos();
 }
 
 // ═══════ ESTATUS ═══════
@@ -2617,9 +3034,17 @@ function renderProjectCard(c, columnId){
               ${sp.items.map(it => {
                 const ini = getInitialsK(it.colab);
                 const hasColab = !!(it.colab && it.colab.trim());
-                return `<div class="backlog-item">
+                const hasDetails = !!(
+                  (it.notes && it.notes.trim()) ||
+                  (it.comments && it.comments.length) ||
+                  (it.blocked) ||
+                  (it.dueDate)
+                );
+                const detailIcon = it.blocked ? '🚫' : (hasDetails ? '📝' : '📋');
+                return `<div class="backlog-item ${it.blocked?'item-blocked':''}">
                   <input type="checkbox" ${it.done?'checked':''} onchange="kanbanToggleItem(${c.id},'${sp.id}','${it.id}',this.checked)">
                   <span class="backlog-name ${it.done?'done':''}" title="${escapeHtmlK(it.name)}">${escapeHtmlK(it.name)}${it.milestone?' <span class="milestone-tag">◆</span>':''}</span>
+                  <button class="item-detail-btn ${hasDetails?'has-details':''}" title="${hasDetails?'Ver detalles':'Agregar notas, fechas y comentarios'}" onclick="event.stopPropagation();openItemDetails(${c.id},'${sp.id}','${it.id}')">${detailIcon}</button>
                   <button class="colab-avatar ${hasColab?'filled':'empty'}" title="${hasColab?escapeHtmlK(it.colab):'Asignar colaborador'}" onclick="event.stopPropagation();openColabPopover(event,${c.id},'${sp.id}','${it.id}')">${hasColab?ini:'+'}</button>
                 </div>`;
               }).join('')}
@@ -2850,6 +3275,164 @@ function kanbanSetItemColab(cotId, spId, itemId, colabNombre){
   saveProjectSprints(cotId, sprints);
 }
 
+// ═══════ DETALLES DEL ITEM (notas, comentarios, fechas, bloqueos) ═══════
+function openItemDetails(cotId, spId, itemId){
+  const sprints = getProjectSprints(cotId);
+  const sp = sprints.find(s=>s.id===spId);
+  if(!sp) return;
+  const it = sp.items.find(i=>i.id===itemId);
+  if(!it) return;
+  // Inicializar campos si no existen
+  if(typeof it.notes === 'undefined') it.notes = '';
+  if(typeof it.blocked === 'undefined') it.blocked = false;
+  if(typeof it.blockReason === 'undefined') it.blockReason = '';
+  if(typeof it.dueDate === 'undefined') it.dueDate = '';
+  if(typeof it.completedDate === 'undefined') it.completedDate = '';
+  if(!Array.isArray(it.comments)) it.comments = [];
+
+  const cots = loadCots();
+  const cot = cots.find(c => c.id === cotId);
+  const projTitle = cot ? `${cot.cliente} — ${cot.proyecto}` : '';
+
+  const existing = document.getElementById('itemDetailModal');
+  if(existing) existing.remove();
+  const modal = document.createElement('div');
+  modal.id = 'itemDetailModal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9998;display:flex;align-items:flex-start;justify-content:center;padding:40px 20px;overflow-y:auto';
+  modal.onclick = e => { if(e.target === modal){ saveItemDetails(cotId, spId, itemId); modal.remove(); }};
+
+  const fmtCommentDate = ts => {
+    const d = new Date(ts);
+    return d.toLocaleDateString('es-GT',{day:'2-digit',month:'short',year:'numeric'}) + ' · ' + d.toLocaleTimeString('es-GT',{hour:'2-digit',minute:'2-digit'});
+  };
+
+  modal.innerHTML = `
+    <div style="background:var(--bg-surface-2,#1a1b1e);border:1px solid var(--border-accent);border-radius:var(--r-lg);padding:24px 28px;width:100%;max-width:560px;font-family:var(--font-body)" onclick="event.stopPropagation()">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
+        <div>
+          <div style="font-family:var(--font-display);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3);margin-bottom:2px">${escapeHtmlK(projTitle)}</div>
+          <div style="font-size:15px;font-weight:500;color:var(--text)">${escapeHtmlK(it.name)}${it.milestone?' <span style="color:var(--accent);font-size:12px">◆</span>':''}</div>
+          <div style="font-size:10px;color:var(--text-3);margin-top:1px">Sprint: ${escapeHtmlK(sp.title)}</div>
+        </div>
+        <button onclick="saveItemDetails(${cotId},'${spId}','${itemId}');document.getElementById('itemDetailModal').remove()" style="background:transparent;border:0;color:var(--text-3);font-size:20px;cursor:pointer;padding:0 4px">×</button>
+      </div>
+
+      <!-- Bloqueo -->
+      <div style="margin-top:18px;padding:10px 14px;border-radius:var(--r-md);background:${it.blocked?'rgba(224,90,90,0.10)':'rgba(255,255,255,0.02)'};border:1px solid ${it.blocked?'rgba(224,90,90,0.30)':'rgba(255,255,255,0.06)'}">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:12px;color:var(--text)">
+          <input type="checkbox" id="itd-blocked" ${it.blocked?'checked':''} onchange="document.getElementById('itd-blockreason-row').style.display=this.checked?'block':'none'">
+          <span style="font-weight:500">🚫 Marcar como bloqueado</span>
+        </label>
+        <div id="itd-blockreason-row" style="display:${it.blocked?'block':'none'};margin-top:8px">
+          <input type="text" id="itd-blockreason" value="${escapeHtmlK(it.blockReason)}" placeholder="¿Qué te traba para avanzar?" style="width:100%;padding:6px 10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.10);border-radius:var(--r-md);color:var(--text);font-size:12px">
+        </div>
+      </div>
+
+      <!-- Fechas -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px">
+        <div>
+          <label class="lbl">Fecha estimada</label>
+          <input type="date" id="itd-duedate" value="${it.dueDate}" style="width:100%;padding:6px 10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.10);border-radius:var(--r-md);color:var(--text);font-size:12px;font-family:var(--font-mono)">
+        </div>
+        <div>
+          <label class="lbl">Fecha real ${it.done?'(completado)':''}</label>
+          <input type="date" id="itd-completed" value="${it.completedDate}" ${!it.done?'disabled style="opacity:.5"':''} style="width:100%;padding:6px 10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.10);border-radius:var(--r-md);color:var(--text);font-size:12px;font-family:var(--font-mono)">
+        </div>
+      </div>
+
+      <!-- Notas -->
+      <div style="margin-top:14px">
+        <label class="lbl">Notas internas</label>
+        <textarea id="itd-notes" rows="3" placeholder="Detalles, especificaciones, requerimientos..." style="width:100%;padding:8px 10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.10);border-radius:var(--r-md);color:var(--text);font-size:12px;font-family:var(--font-body);resize:vertical">${escapeHtmlK(it.notes)}</textarea>
+      </div>
+
+      <!-- Comentarios fechados -->
+      <div style="margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.06)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <span class="lbl" style="margin:0">Bitácora <span style="color:var(--text-3);font-weight:400">(${it.comments.length})</span></span>
+        </div>
+        <div style="display:flex;gap:6px;margin-bottom:10px">
+          <input type="text" id="itd-newcomment" placeholder="Nuevo comentario..." onkeydown="if(event.key==='Enter'){addItemComment(${cotId},'${spId}','${itemId}');event.preventDefault();}" style="flex:1;padding:6px 10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.10);border-radius:var(--r-md);color:var(--text);font-size:12px">
+          <button onclick="addItemComment(${cotId},'${spId}','${itemId}')" style="padding:6px 14px;font-size:11px;border:1px solid var(--accent);border-radius:var(--r-md);background:var(--accent);color:var(--text-on-accent);cursor:pointer;font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase">+</button>
+        </div>
+        <div id="itd-comments-list" style="max-height:180px;overflow-y:auto">
+          ${it.comments.length === 0
+            ? '<p style="font-size:11px;color:var(--text-3);font-style:italic;padding:6px 0">Sin comentarios todavía.</p>'
+            : [...it.comments].reverse().map((cm, idx) => `
+              <div style="padding:8px 10px;background:rgba(255,255,255,0.02);border-radius:var(--r-md);margin-bottom:5px;border-left:2px solid var(--accent)">
+                <div style="font-size:11.5px;color:var(--text);line-height:1.5">${escapeHtmlK(cm.text)}</div>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px">
+                  <span style="font-size:9.5px;color:var(--text-3);font-family:var(--font-mono)">${fmtCommentDate(cm.ts)}</span>
+                  <button onclick="deleteItemComment(${cotId},'${spId}','${itemId}',${cm.ts})" style="background:transparent;border:0;color:var(--text-3);font-size:11px;cursor:pointer;padding:0 4px" title="Eliminar">×</button>
+                </div>
+              </div>
+            `).join('')
+          }
+        </div>
+      </div>
+
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.06)">
+        <button onclick="saveItemDetails(${cotId},'${spId}','${itemId}');document.getElementById('itemDetailModal').remove()" style="padding:7px 18px;font-size:11px;border:1px solid var(--accent);border-radius:var(--r-md);background:var(--accent);color:var(--text-on-accent);cursor:pointer;font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase">Guardar y cerrar</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  setTimeout(()=>{
+    const inp = document.getElementById('itd-newcomment');
+    if(inp) inp.focus();
+  }, 50);
+}
+
+function saveItemDetails(cotId, spId, itemId){
+  const sprints = getProjectSprints(cotId);
+  const sp = sprints.find(s=>s.id===spId);
+  if(!sp) return;
+  const it = sp.items.find(i=>i.id===itemId);
+  if(!it) return;
+  const blocked = document.getElementById('itd-blocked');
+  const reason = document.getElementById('itd-blockreason');
+  const dueDate = document.getElementById('itd-duedate');
+  const completed = document.getElementById('itd-completed');
+  const notes = document.getElementById('itd-notes');
+  if(blocked) it.blocked = blocked.checked;
+  if(reason) it.blockReason = reason.value.trim();
+  if(dueDate) it.dueDate = dueDate.value;
+  if(completed) it.completedDate = completed.value;
+  if(notes) it.notes = notes.value.trim();
+  saveProjectSprints(cotId, sprints);
+  if(document.getElementById('pg-est').classList.contains('active')) renderEstatus();
+}
+
+function addItemComment(cotId, spId, itemId){
+  const inp = document.getElementById('itd-newcomment');
+  if(!inp) return;
+  const text = inp.value.trim();
+  if(!text) return;
+  const sprints = getProjectSprints(cotId);
+  const sp = sprints.find(s=>s.id===spId);
+  if(!sp) return;
+  const it = sp.items.find(i=>i.id===itemId);
+  if(!it) return;
+  if(!Array.isArray(it.comments)) it.comments = [];
+  it.comments.push({ ts: Date.now(), text });
+  saveProjectSprints(cotId, sprints);
+  // Re-abrir el modal para refrescar la lista
+  inp.value = '';
+  openItemDetails(cotId, spId, itemId);
+}
+
+function deleteItemComment(cotId, spId, itemId, ts){
+  if(!confirm('¿Eliminar este comentario?')) return;
+  const sprints = getProjectSprints(cotId);
+  const sp = sprints.find(s=>s.id===spId);
+  if(!sp) return;
+  const it = sp.items.find(i=>i.id===itemId);
+  if(!it || !Array.isArray(it.comments)) return;
+  it.comments = it.comments.filter(c => c.ts !== ts);
+  saveProjectSprints(cotId, sprints);
+  openItemDetails(cotId, spId, itemId);
+}
+
 // ═══ Milestones que mueven la cotización de columna y actualizan cobros ═══
 function procesarMilestone(cotId, milestone){
   const cots = loadCots();
@@ -3074,8 +3657,68 @@ document.addEventListener('DOMContentLoaded',()=>{
   n.setDate(t.getDate()+df);
   document.getElementById('projStart').value=n.toISOString().split('T')[0];
   document.getElementById('ing-year').value=new Date().getFullYear();
-  calc();renderIngresos();
+  calc();renderIngresos();renderArtefactos();
+
+  // ═══ Atajos de teclado globales ═══
+  document.addEventListener('keydown', (e) => {
+    // No activar si está escribiendo en input/textarea/select
+    const tag = (e.target.tagName||'').toLowerCase();
+    if(tag === 'input' || tag === 'textarea' || tag === 'select' || e.target.isContentEditable) return;
+    // No activar con modificadores (Ctrl/Cmd) salvo casos específicos
+    if(e.ctrlKey || e.metaKey || e.altKey) return;
+
+    const key = e.key.toLowerCase();
+    switch(key){
+      case 'p': showPage('ing'); e.preventDefault(); break;
+      case 'k': showPage('est'); e.preventDefault(); break;
+      case 'e': showPage('estimado'); e.preventDefault(); break;
+      case 'r': showPage('programa'); e.preventDefault(); break;
+      case 'c': showPage('calc'); e.preventDefault(); break;
+      case 'n': {
+        // Nueva cotización: abrir modal de "Nueva cot."
+        const btn = document.querySelector('[onclick*="showFormCot"]');
+        if(btn) btn.click();
+        e.preventDefault();
+        break;
+      }
+      case '?': mostrarAtajos(); e.preventDefault(); break;
+      case 'escape': {
+        // Cerrar modales abiertos
+        const openModal = document.querySelector('.modal[style*="flex"]');
+        if(openModal) openModal.style.display = 'none';
+        const openHelp = document.getElementById('modalAtajos');
+        if(openHelp) openHelp.remove();
+        break;
+      }
+    }
+  });
 });
+
+function mostrarAtajos(){
+  const existente = document.getElementById('modalAtajos');
+  if(existente){ existente.remove(); return; }
+  const modal = document.createElement('div');
+  modal.id = 'modalAtajos';
+  modal.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:9999;background:var(--bg-surface-2,#1a1b1e);border:1px solid var(--border-accent);border-radius:var(--r-lg);padding:24px 28px;box-shadow:0 10px 40px rgba(0,0,0,0.6);min-width:340px;font-family:var(--font-body)';
+  modal.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div style="font-family:var(--font-display);font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)">⌨ Atajos de teclado</div>
+      <button onclick="document.getElementById('modalAtajos').remove()" style="background:transparent;border:0;color:var(--text-3);font-size:18px;cursor:pointer;padding:0 4px">×</button>
+    </div>
+    <div style="display:grid;grid-template-columns:auto 1fr;gap:10px 18px;font-size:12px">
+      <kbd style="font-family:var(--font-mono);background:rgba(255,255,255,0.06);padding:3px 9px;border-radius:4px;border:1px solid rgba(255,255,255,0.10);text-align:center;color:var(--accent)">P</kbd><span style="color:var(--text-2);align-self:center">Ir a Proyectos</span>
+      <kbd style="font-family:var(--font-mono);background:rgba(255,255,255,0.06);padding:3px 9px;border-radius:4px;border:1px solid rgba(255,255,255,0.10);text-align:center;color:var(--accent)">K</kbd><span style="color:var(--text-2);align-self:center">Ir a Kanban</span>
+      <kbd style="font-family:var(--font-mono);background:rgba(255,255,255,0.06);padding:3px 9px;border-radius:4px;border:1px solid rgba(255,255,255,0.10);text-align:center;color:var(--accent)">E</kbd><span style="color:var(--text-2);align-self:center">Ir a Estimado rápido</span>
+      <kbd style="font-family:var(--font-mono);background:rgba(255,255,255,0.06);padding:3px 9px;border-radius:4px;border:1px solid rgba(255,255,255,0.10);text-align:center;color:var(--accent)">R</kbd><span style="color:var(--text-2);align-self:center">Ir a Programa arquitectónico</span>
+      <kbd style="font-family:var(--font-mono);background:rgba(255,255,255,0.06);padding:3px 9px;border-radius:4px;border:1px solid rgba(255,255,255,0.10);text-align:center;color:var(--accent)">C</kbd><span style="color:var(--text-2);align-self:center">Ir a Cotizador</span>
+      <kbd style="font-family:var(--font-mono);background:rgba(255,255,255,0.06);padding:3px 9px;border-radius:4px;border:1px solid rgba(255,255,255,0.10);text-align:center;color:var(--accent)">N</kbd><span style="color:var(--text-2);align-self:center">Nueva cotización rápida</span>
+      <kbd style="font-family:var(--font-mono);background:rgba(255,255,255,0.06);padding:3px 9px;border-radius:4px;border:1px solid rgba(255,255,255,0.10);text-align:center;color:var(--accent)">Esc</kbd><span style="color:var(--text-2);align-self:center">Cerrar modal</span>
+      <kbd style="font-family:var(--font-mono);background:rgba(255,255,255,0.06);padding:3px 9px;border-radius:4px;border:1px solid rgba(255,255,255,0.10);text-align:center;color:var(--accent)">?</kbd><span style="color:var(--text-2);align-self:center">Mostrar/ocultar esta ayuda</span>
+    </div>
+    <div style="margin-top:16px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.08);font-size:10px;color:var(--text-3);font-style:italic">Los atajos se desactivan cuando estás escribiendo en un campo.</div>
+  `;
+  document.body.appendChild(modal);
+}
 </script>
 
 <!-- Modal Ver / Editar cotización -->
@@ -3118,7 +3761,9 @@ function exportarJSON(){
   const datos={
     avit_cots:localStorage.getItem('avit_cots')||'[]',
     avit_sprint_tracker:localStorage.getItem('avit_sprint_tracker')||'{}',
-    avit_calc:localStorage.getItem('avit_calc')||'{}'
+    avit_calc:localStorage.getItem('avit_calc')||'{}',
+    avit_artifacts:localStorage.getItem('avit_artifacts')||'[]',
+    avit_recibos:localStorage.getItem('avit_recibos')||'{}'
   };
   const blob=new Blob([JSON.stringify(datos,null,2)],{type:'application/json'});
   const url=URL.createObjectURL(blob);
@@ -3129,6 +3774,71 @@ function exportarJSON(){
   a.click();
   URL.revokeObjectURL(url);
   document.getElementById('syncStatus').textContent='✓ Exportado '+fecha;
+}
+
+function exportarExcel(){
+  if(typeof XLSX === 'undefined'){
+    alert('La librería de Excel no se cargó (problema de red). Intentá de nuevo.');
+    return;
+  }
+  const cots = loadCots();
+  if(!cots.length){
+    alert('No hay cotizaciones para exportar.');
+    return;
+  }
+  const wb = XLSX.utils.book_new();
+
+  // Hoja 1: Cotizaciones
+  const filas = cots.map(c => ({
+    'ID': c.id,
+    'Cliente': c.cliente,
+    'Proyecto': c.proyecto,
+    'Fecha': c.fecha,
+    'Estado': c.estado,
+    'Moneda': c.cur,
+    'Honorario F1': c.f1 || 0,
+    'Honorario F2': c.f2 || 0,
+    'Subtotal': c.sub || 0,
+    'IVA': c.iva || 0,
+    'Total': c.tot || 0,
+    'Anticipo': c.antic || 0,
+    'Mid-payment F1': c.mid || 0,
+    'Saldo': c.saldo || 0,
+    'Cobrado': c.cobrado || 0,
+    'Overhead': c.oh || 0,
+    'Colaborador (costo)': c.colab || 0,
+    'Utilidad estimada': c.util || 0,
+    'Colab. Modelado 3D': c.colNombre3D || '',
+    'Colab. Renderización': c.colNombreRend || '',
+    'Colab. Planos': c.colNombrePlanos || ''
+  }));
+  const ws1 = XLSX.utils.json_to_sheet(filas);
+  // Anchos automáticos aproximados
+  ws1['!cols'] = Object.keys(filas[0]||{}).map(k => ({wch: Math.max(k.length, 14)}));
+  XLSX.utils.book_append_sheet(wb, ws1, 'Cotizaciones');
+
+  // Hoja 2: Resumen
+  const totales = cots.reduce((acc, c) => {
+    acc.total += c.tot || 0;
+    acc.cobrado += c.cobrado || 0;
+    acc.saldo += (c.tot || 0) - (c.cobrado || 0);
+    return acc;
+  }, { total:0, cobrado:0, saldo:0 });
+  const resumen = [
+    { Métrica: 'Total cotizado', Valor: totales.total },
+    { Métrica: 'Total cobrado', Valor: totales.cobrado },
+    { Métrica: 'Por cobrar', Valor: totales.saldo },
+    { Métrica: 'Cantidad de cotizaciones', Valor: cots.length },
+    { Métrica: 'Activos', Valor: cots.filter(c => c.estado !== 'cobrado_total' && c.estado !== 'completada').length },
+    { Métrica: 'Terminados', Valor: cots.filter(c => c.estado === 'cobrado_total' || c.estado === 'completada').length }
+  ];
+  const ws2 = XLSX.utils.json_to_sheet(resumen);
+  ws2['!cols'] = [{wch:30},{wch:20}];
+  XLSX.utils.book_append_sheet(wb, ws2, 'Resumen');
+
+  const fecha = new Date().toISOString().split('T')[0];
+  XLSX.writeFile(wb, `avit-cotizaciones-${fecha}.xlsx`);
+  document.getElementById('syncStatus').textContent='📊 Excel descargado '+fecha;
 }
 
 function importarJSON(evt){
@@ -3146,8 +3856,11 @@ function importarJSON(evt){
       localStorage.setItem('avit_cots',datos.avit_cots);
       if(datos.avit_sprint_tracker) localStorage.setItem('avit_sprint_tracker',datos.avit_sprint_tracker);
       if(datos.avit_calc) localStorage.setItem('avit_calc',datos.avit_calc);
+      if(datos.avit_artifacts) localStorage.setItem('avit_artifacts',datos.avit_artifacts);
+      if(datos.avit_recibos) localStorage.setItem('avit_recibos',datos.avit_recibos);
       document.getElementById('syncStatus').textContent=`✓ Importadas ${n} cotizaciones`;
       renderIngresos();
+      renderArtefactos();
       if(document.getElementById('pg-est').classList.contains('active'))renderEstatus();
       // Recargar estado de calculadora y refrescar si están visibles
       if(typeof cargarCalc==='function') cargarCalc();
@@ -3211,7 +3924,9 @@ async function subirNube(){
     const datos={
       avit_cots:localStorage.getItem('avit_cots')||'[]',
       avit_sprint_tracker:localStorage.getItem('avit_sprint_tracker')||'{}',
-      avit_calc:localStorage.getItem('avit_calc')||'{}'
+      avit_calc:localStorage.getItem('avit_calc')||'{}',
+      avit_artifacts:localStorage.getItem('avit_artifacts')||'[]',
+      avit_recibos:localStorage.getItem('avit_recibos')||'{}'
     };
     const nombre = binName(key);
     let binId = await getBinId(key);
@@ -3284,10 +3999,13 @@ async function bajarNube(){
     localStorage.setItem('avit_cots',datos.avit_cots||'[]');
     if(datos.avit_sprint_tracker) localStorage.setItem('avit_sprint_tracker',datos.avit_sprint_tracker);
     if(datos.avit_calc) localStorage.setItem('avit_calc',datos.avit_calc);
+    if(datos.avit_artifacts) localStorage.setItem('avit_artifacts',datos.avit_artifacts);
+    if(datos.avit_recibos) localStorage.setItem('avit_recibos',datos.avit_recibos);
     msg.style.color='var(--green)';
     msg.textContent=`✓ ${n} cotizaciones cargadas desde la nube`;
     document.getElementById('syncStatus').textContent='☁ Bajado '+new Date().toLocaleDateString('es-GT');
     renderIngresos();
+    renderArtefactos();
     if(document.getElementById('pg-est').classList.contains('active'))renderEstatus();
     // Recargar estado de calculadora
     if(typeof cargarCalc==='function') cargarCalc();
