@@ -13,6 +13,7 @@
   --bg-card:rgba(24,24,26,0.82);
   --bg-surface:rgba(255,255,255,0.045);
   --bg-elevated:rgba(255,255,255,0.07);
+  --bg-surface-2:#1a1b1e;
   /* ── Grises ── */
   --gray-800:#1C1C1C;--gray-750:#242426;--gray-700:#2E2E2E;
   --gray-600:#3D3D3D;--gray-500:#555;--gray-400:#777;
@@ -39,6 +40,11 @@
   --shadow-lg:0 8px 32px rgba(0,0,0,0.55);
   --shadow-xl:0 24px 60px rgba(0,0,0,0.65);
   --shadow-accent:0 4px 20px rgba(212,168,67,0.20);
+  /* ── Tintes para mezclas (referenciables en otras reglas) ── */
+  --tint-on-bg-soft:rgba(255,255,255,0.02);
+  --tint-on-bg-medium:rgba(255,255,255,0.05);
+  --tint-on-bg-strong:rgba(255,255,255,0.08);
+  --tint-on-bg-stronger:rgba(255,255,255,0.12);
   /* ── Radios ── */
   --r-sm:6px;--r-md:10px;--r-lg:12px;--r-xl:16px;--r-2xl:22px;
   /* ── Tipografías ── */
@@ -54,6 +60,62 @@
   /* ── Compat aliases (para HTML existente) ── */
   --bg:var(--bg-base);--surface:var(--bg-card);
   --border-2:rgba(255,255,255,0.12);
+  /* ── Logo: invertir o no según tema ── */
+  --logo-invert:0;
+}
+
+/* ═══════════════════════════════════════════════ */
+/* MODO CLARO — override de las variables CSS      */
+/* ═══════════════════════════════════════════════ */
+[data-theme="light"]{
+  /* ── Fondos ── beige cálido en vez de blanco puro */
+  --bg-base:#F5F2EB;
+  --bg-card:rgba(255,253,247,0.85);
+  --bg-surface:rgba(0,0,0,0.025);
+  --bg-elevated:rgba(0,0,0,0.05);
+  --bg-surface-2:#FBF8F1;
+  /* ── Grises invertidos ── */
+  --gray-800:#E8E5DD;--gray-750:#DDD8CC;--gray-700:#BCB6A6;
+  --gray-600:#9A9382;--gray-500:#7A7466;--gray-400:#5A554A;
+  --gray-300:#4A463D;--gray-200:#3A372F;--gray-100:#2A2823;--gray-50:#1F1D1A;
+  /* ── Acento mostaza más oscuro para contraste sobre claro ── */
+  --accent:#B8902A;--accent-light:#D4A843;--accent-dim:#7A5F18;
+  --accent-subtle:rgba(184,144,42,0.10);--accent-glow:rgba(184,144,42,0.07);
+  /* ── Texto oscuro sobre claro ── */
+  --text:#1F1D1A;--text-2:#5A554A;--text-3:#9A9382;--text-on-accent:#FFFFFF;
+  /* ── Bordes oscuros sutiles ── */
+  --border:rgba(0,0,0,0.08);--border-2:rgba(0,0,0,0.12);
+  --border-accent:rgba(184,144,42,0.40);--border-focus:rgba(184,144,42,0.65);
+  /* ── Semánticos: ajustar para WCAG contrast sobre fondo claro ── */
+  --green:#2D8050;--green-lt:rgba(45,128,80,0.12);--green-dk:#2D8050;
+  --blue:#3A7BB0;--blue-lt:rgba(58,123,176,0.12);--blue-dk:#3A7BB0;
+  --red:#C0392B;--red-lt:rgba(192,57,43,0.10);
+  --amber:#B8902A;--amber-lt:rgba(184,144,42,0.12);
+  --purple-lt:rgba(109,60,199,0.10);--purple-dk:#7A4FB8;
+  --teal-lt:rgba(45,128,80,0.10);--teal-dk:#2D8050;
+  --pink-lt:rgba(180,60,100,0.10);--pink-dk:#B43C64;
+  /* ── Sombras más sutiles ── */
+  --shadow-sm:0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:0 4px 16px rgba(0,0,0,0.08);
+  --shadow-lg:0 8px 32px rgba(0,0,0,0.10);
+  --shadow-xl:0 24px 60px rgba(0,0,0,0.14);
+  --shadow-accent:0 4px 20px rgba(184,144,42,0.18);
+  /* ── Tintes invertidos: sombras oscuras en vez de blancas ── */
+  --tint-on-bg-soft:rgba(0,0,0,0.02);
+  --tint-on-bg-medium:rgba(0,0,0,0.05);
+  --tint-on-bg-strong:rgba(0,0,0,0.08);
+  --tint-on-bg-stronger:rgba(0,0,0,0.12);
+  /* ── Compat ── */
+  --bg:var(--bg-base);--surface:var(--bg-card);
+  --border-2:rgba(0,0,0,0.12);
+  /* ── Logo: invertir el blanco a negro ── */
+  --logo-invert:1;
+}
+
+/* Transiciones suaves al cambiar tema */
+html{transition:background-color .35s ease, color .35s ease}
+body, .sc, .ntab, .home-kpi, .home-summary-card, .modal-box, .topbar{
+  transition:background-color .35s ease, border-color .35s ease, color .35s ease;
 }
 @keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
 @keyframes resultIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
@@ -61,7 +123,7 @@
 
 html{scroll-behavior:smooth}
 body{
-  background:#111214;
+  background:var(--bg-base);
   font-family:var(--font-body);
   color:var(--text);font-size:14px;line-height:1.55;min-height:100vh;
   position:relative;
@@ -77,6 +139,13 @@ body::before{
 body::after{
   bottom:-15%;left:-8%;width:420px;height:420px;
   background:radial-gradient(circle,rgba(90,140,212,0.05) 0%,transparent 65%);
+}
+/* En modo claro, los orbs son más sutiles */
+[data-theme="light"] body::before{
+  background:radial-gradient(circle,rgba(184,144,42,0.10) 0%,transparent 65%);
+}
+[data-theme="light"] body::after{
+  background:radial-gradient(circle,rgba(58,123,176,0.08) 0%,transparent 65%);
 }
 
 /* ── GLASS SYSTEM ── */
@@ -119,12 +188,13 @@ body::after{
 }
 .nav-tabs{display:flex;gap:2px;flex:1;justify-content:center}
 .ntab{
-  padding:6px 18px;font-size:11px;border:none;border-radius:var(--r-md);
+  padding:6px 18px;font-size:11px;border:1px solid transparent;border-radius:var(--r-md);
   background:transparent;color:var(--text-3);cursor:pointer;
   font-family:var(--font-display);transition:all .15s;font-weight:400;
   letter-spacing:0.12em;text-transform:uppercase;
 }
 .ntab:hover{background:rgba(255,255,255,0.05);color:var(--text-2)}
+.ntab:focus,.ntab:focus-visible{outline:none}
 .ntab.active{
   background:rgba(212,168,67,0.12);color:var(--accent);
   font-weight:600;border:1px solid rgba(212,168,67,0.25);
@@ -173,6 +243,204 @@ body::after{
   border:1px solid rgba(255,255,255,0.07);
   border-radius:var(--r-lg);padding:1.25rem;margin-bottom:.85rem;
   box-shadow:0 4px 16px rgba(0,0,0,0.35),inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
+/* ═══════ HOME DASHBOARD ═══════ */
+.home-hero{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:24px 28px;margin-bottom:18px;
+  background:linear-gradient(135deg,rgba(212,168,67,0.08) 0%,rgba(24,24,26,0.70) 60%);
+  border:1px solid rgba(212,168,67,0.18);
+  border-radius:var(--r-lg);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+}
+.home-hero-greeting{
+  font-family:var(--font-display);font-size:24px;font-weight:300;
+  color:var(--text);margin:0;letter-spacing:-0.02em;
+}
+.home-hero-date{
+  font-size:11px;color:var(--text-3);margin:4px 0 0 0;
+  font-family:var(--font-mono);letter-spacing:0.05em;
+}
+.home-hero-quick{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.home-quick-btn{
+  display:flex;align-items:center;gap:7px;
+  padding:9px 16px;font-size:12px;font-weight:500;
+  border-radius:var(--r-md);cursor:pointer;
+  border:0.5px solid var(--border-2);
+  background:rgba(255,255,255,0.03);color:var(--text);
+  transition:all .15s var(--ease-out);
+  font-family:var(--font-body);
+}
+.home-quick-btn:hover{background:rgba(255,255,255,0.07);border-color:rgba(255,255,255,0.18)}
+.home-quick-btn.primary{
+  background:var(--accent);color:var(--text-on-accent,#1a1a18);
+  border-color:var(--accent);font-weight:500;
+}
+.home-quick-btn.primary:hover{filter:brightness(1.05)}
+
+.home-kpis{
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:18px;
+}
+.home-kpi{
+  background:rgba(24,24,26,0.70);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  border:1px solid rgba(255,255,255,0.07);
+  border-radius:var(--r-lg);padding:18px 20px;
+  position:relative;overflow:hidden;
+  transition:border-color .2s;
+}
+.home-kpi:hover{border-color:rgba(255,255,255,0.13)}
+.home-kpi .kpi-label{
+  font-size:9.5px;color:var(--text-3);font-weight:500;
+  text-transform:uppercase;letter-spacing:0.16em;
+  font-family:var(--font-display);margin-bottom:6px;
+}
+.home-kpi .kpi-value{
+  font-size:24px;font-weight:300;color:var(--text);
+  font-family:var(--font-display);letter-spacing:-0.01em;line-height:1.1;
+}
+.home-kpi .kpi-sub{
+  font-size:10px;color:var(--text-3);margin-top:4px;
+  font-family:var(--font-mono);
+}
+.home-kpi.kpi-green .kpi-value{color:var(--green)}
+.home-kpi.kpi-blue .kpi-value{color:var(--blue)}
+.home-kpi.kpi-accent .kpi-value{color:var(--accent)}
+
+.home-summary-grid{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:18px;
+}
+.home-summary-card{
+  background:rgba(24,24,26,0.70);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  border:1px solid rgba(255,255,255,0.07);
+  border-radius:var(--r-lg);padding:16px 18px;
+  display:flex;flex-direction:column;
+}
+.home-summary-head{
+  display:flex;align-items:center;gap:8px;margin-bottom:10px;
+  padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.home-summary-icon{font-size:14px}
+.home-summary-title{
+  font-size:10px;font-weight:600;color:var(--accent);
+  text-transform:uppercase;letter-spacing:0.14em;
+  font-family:var(--font-display);
+}
+.home-summary-body{flex:1;min-height:60px}
+.home-summary-item{
+  display:flex;justify-content:space-between;align-items:flex-start;
+  padding:7px 0;border-bottom:1px dashed rgba(255,255,255,0.05);
+  cursor:pointer;transition:padding-left .15s;
+}
+.home-summary-item:last-child{border-bottom:0}
+.home-summary-item:hover{padding-left:4px}
+.home-summary-item-main{font-size:12px;color:var(--text);line-height:1.3}
+.home-summary-item-sub{font-size:10px;color:var(--text-3);margin-top:1px}
+.home-summary-item-value{
+  font-size:11.5px;color:var(--text);font-family:var(--font-mono);
+  font-weight:500;flex-shrink:0;margin-left:8px;
+}
+.home-summary-empty{
+  text-align:center;padding:18px 8px;
+  font-size:11px;color:var(--text-3);font-style:italic;
+}
+
+.home-metrics{
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:16px;
+}
+.home-metric{
+  padding:12px 14px;background:rgba(255,255,255,0.02);
+  border:1px solid rgba(255,255,255,0.05);
+  border-radius:var(--r-md);
+}
+.home-metric-label{
+  font-size:9px;color:var(--text-3);text-transform:uppercase;
+  letter-spacing:0.14em;font-family:var(--font-display);font-weight:500;
+}
+.home-metric-value{
+  font-size:18px;font-weight:300;color:var(--text);
+  font-family:var(--font-display);margin-top:4px;letter-spacing:-0.01em;
+}
+.home-metric-sub{font-size:9.5px;color:var(--text-3);font-family:var(--font-mono);margin-top:2px}
+
+.home-charts{
+  display:grid;grid-template-columns:1.4fr 1fr;gap:14px;
+}
+.home-chart-box{
+  padding:16px 18px;background:rgba(255,255,255,0.02);
+  border:1px solid rgba(255,255,255,0.05);
+  border-radius:var(--r-md);
+}
+.home-chart-title{
+  font-size:10px;color:var(--text-3);text-transform:uppercase;
+  letter-spacing:0.14em;font-family:var(--font-display);
+  font-weight:500;margin-bottom:14px;
+}
+
+/* Bar chart */
+.home-bar-chart{display:flex;align-items:flex-end;gap:4px;height:120px;padding:0 4px}
+.home-bar{
+  flex:1;min-width:14px;background:var(--accent);
+  border-radius:3px 3px 0 0;
+  position:relative;cursor:pointer;
+  transition:opacity .15s,filter .15s;
+  display:flex;align-items:flex-end;justify-content:center;
+}
+.home-bar:hover{filter:brightness(1.15)}
+.home-bar.empty{background:rgba(255,255,255,0.06)}
+.home-bar-tooltip{
+  position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);
+  background:var(--bg-surface-2,#1a1b1e);border:1px solid var(--border-accent);
+  padding:5px 8px;border-radius:4px;font-size:10px;font-family:var(--font-mono);
+  white-space:nowrap;opacity:0;pointer-events:none;
+  transition:opacity .15s;color:var(--text);z-index:10;
+}
+.home-bar:hover .home-bar-tooltip{opacity:1}
+.home-bar-axis{
+  display:flex;gap:4px;margin-top:6px;padding:0 4px;
+  font-size:9px;color:var(--text-3);font-family:var(--font-mono);
+}
+.home-bar-axis-label{flex:1;text-align:center;min-width:14px;text-transform:uppercase;letter-spacing:0.05em}
+
+/* Donut chart */
+.home-donut{position:relative;width:120px;height:120px;flex-shrink:0}
+.home-donut svg{width:100%;height:100%;transform:rotate(-90deg)}
+.home-donut-center{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;
+}
+.home-donut-center-num{
+  font-size:24px;font-weight:300;color:var(--text);
+  font-family:var(--font-display);line-height:1;
+}
+.home-donut-center-lbl{
+  font-size:8.5px;color:var(--text-3);text-transform:uppercase;
+  letter-spacing:0.10em;font-family:var(--font-display);margin-top:3px;
+}
+.home-donut-legend{
+  display:flex;flex-direction:column;gap:6px;font-size:11px;
+}
+.home-donut-legend-item{
+  display:flex;align-items:center;gap:8px;
+  font-family:var(--font-body);color:var(--text-2);
+}
+.home-donut-legend-dot{
+  width:9px;height:9px;border-radius:2px;flex-shrink:0;
+}
+.home-donut-legend-cnt{
+  font-family:var(--font-mono);font-size:10px;color:var(--text-3);margin-left:4px;
+}
+
+@media (max-width:980px){
+  .home-kpis,.home-summary-grid,.home-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .home-charts{grid-template-columns:1fr}
+}
+@media (max-width:560px){
+  .home-kpis,.home-summary-grid,.home-metrics{grid-template-columns:1fr}
+  .home-hero{flex-direction:column;align-items:stretch;gap:14px}
+  .home-hero-quick{justify-content:flex-start}
 }
 .sc-title{
   font-size:10px;font-weight:600;color:var(--accent);
@@ -815,6 +1083,180 @@ input.narrow{width:88px}input.mid{width:108px}
   font-family:var(--font-mono);font-size:9.5px;color:var(--accent);
   text-align:right;padding:0 2px;letter-spacing:.02em;margin-bottom:6px;opacity:.85;
 }
+
+/* ═══════════════════════════════════════════════ */
+/* MODO CLARO — overrides puntuales sobre rgba()   */
+/* hardcoded que no se podían convertir a vars     */
+/* ═══════════════════════════════════════════════ */
+
+/* Backgrounds y bordes blancos hardcoded → equivalentes oscuros sutiles */
+[data-theme="light"] .topbar{
+  background:rgba(255,253,247,0.75)!important;
+  border-bottom-color:rgba(0,0,0,0.08)!important;
+}
+[data-theme="light"] .sc{
+  background:rgba(255,253,247,0.85)!important;
+  border-color:rgba(0,0,0,0.07)!important;
+  box-shadow:0 1px 3px rgba(0,0,0,0.04)!important;
+}
+[data-theme="light"] .home-kpi,
+[data-theme="light"] .home-summary-card,
+[data-theme="light"] .home-chart-box,
+[data-theme="light"] .home-metric{
+  background:rgba(255,253,247,0.80)!important;
+  border-color:rgba(0,0,0,0.07)!important;
+}
+[data-theme="light"] .home-metric{
+  background:rgba(0,0,0,0.025)!important;
+  border-color:rgba(0,0,0,0.05)!important;
+}
+[data-theme="light"] .home-summary-head{
+  border-bottom-color:rgba(0,0,0,0.06)!important;
+}
+[data-theme="light"] .home-summary-item{
+  border-bottom-color:rgba(0,0,0,0.05)!important;
+}
+[data-theme="light"] .home-bar-chart .home-bar.empty{
+  background:rgba(0,0,0,0.06)!important;
+}
+[data-theme="light"] .home-bar-tooltip{
+  background:#FBF8F1!important;
+  color:var(--text)!important;
+  border-color:var(--border-accent)!important;
+  box-shadow:0 4px 12px rgba(0,0,0,0.10)!important;
+}
+
+/* Hero del Home con gradient adaptado */
+[data-theme="light"] .home-hero{
+  background:linear-gradient(135deg,rgba(184,144,42,0.12) 0%,rgba(255,253,247,0.85) 60%)!important;
+  border-color:rgba(184,144,42,0.25)!important;
+}
+
+/* Tabs */
+[data-theme="light"] .ntab:hover{
+  background:rgba(0,0,0,0.04)!important;
+}
+[data-theme="light"] .ntab.active{
+  background:rgba(184,144,42,0.14)!important;
+  border-color:rgba(184,144,42,0.30)!important;
+}
+
+/* Botones primarios y data */
+[data-theme="light"] .home-quick-btn{
+  background:rgba(0,0,0,0.025)!important;
+}
+[data-theme="light"] .home-quick-btn:hover{
+  background:rgba(0,0,0,0.06)!important;
+  border-color:rgba(0,0,0,0.18)!important;
+}
+[data-theme="light"] .home-quick-btn.primary{
+  background:var(--accent)!important;
+  color:var(--text-on-accent)!important;
+  border-color:var(--accent)!important;
+}
+
+/* Sprint cards y elementos del Kanban */
+[data-theme="light"] .sprint-card{
+  background:rgba(0,0,0,0.025)!important;
+  border-color:rgba(0,0,0,0.07)!important;
+}
+[data-theme="light"] .sprint-card:hover{border-color:rgba(0,0,0,0.13)!important}
+
+/* Inputs, selects, textareas */
+[data-theme="light"] input[type="text"],
+[data-theme="light"] input[type="number"],
+[data-theme="light"] input[type="password"],
+[data-theme="light"] input[type="date"],
+[data-theme="light"] input[type="email"],
+[data-theme="light"] input[type="url"],
+[data-theme="light"] textarea,
+[data-theme="light"] select{
+  background:rgba(0,0,0,0.025)!important;
+  border-color:rgba(0,0,0,0.10)!important;
+  color:var(--text)!important;
+}
+[data-theme="light"] input:focus,
+[data-theme="light"] textarea:focus,
+[data-theme="light"] select:focus{
+  border-color:var(--border-focus)!important;
+  outline:none;
+}
+
+/* Modales (modal-overlay, modal-box) */
+[data-theme="light"] .modal-overlay{
+  background:rgba(31,29,26,0.55)!important;
+}
+[data-theme="light"] .modal-box{
+  background:#FBF8F1!important;
+  border-color:rgba(0,0,0,0.10)!important;
+  box-shadow:0 24px 60px rgba(0,0,0,0.18)!important;
+}
+
+/* Cot cards (cotizaciones registradas) */
+[data-theme="light"] .cot-card{
+  background:rgba(255,253,247,0.85)!important;
+  border-color:rgba(0,0,0,0.07)!important;
+}
+[data-theme="light"] .cot-card:hover{border-color:rgba(0,0,0,0.13)!important}
+
+/* Backlog items, search results, artefacto cards */
+[data-theme="light"] .backlog-item{
+  background:rgba(0,0,0,0.025)!important;
+  border-color:rgba(0,0,0,0.05)!important;
+}
+[data-theme="light"] .backlog-item:hover{background:rgba(0,0,0,0.045)!important}
+[data-theme="light"] .artefacto-card{
+  background:rgba(0,0,0,0.025)!important;
+  border-color:rgba(0,0,0,0.06)!important;
+}
+[data-theme="light"] .artefacto-card:hover{background:rgba(0,0,0,0.04)!important}
+[data-theme="light"] .search-result-item:hover{background:rgba(0,0,0,0.03)!important}
+
+/* Avatares de colaboradores */
+[data-theme="light"] .colab-avatar.empty{
+  background:rgba(0,0,0,0.04)!important;
+  color:var(--text-3)!important;
+  border-color:rgba(0,0,0,0.12)!important;
+}
+[data-theme="light"] .item-detail-btn{
+  background:rgba(0,0,0,0.04)!important;
+  border-color:rgba(0,0,0,0.10)!important;
+}
+
+/* Métricas pequeñas y badges */
+[data-theme="light"] .metric{
+  background:rgba(0,0,0,0.025)!important;
+  border-color:rgba(0,0,0,0.05)!important;
+}
+
+/* KBD del modal de atajos */
+[data-theme="light"] kbd{
+  background:rgba(0,0,0,0.04)!important;
+  border-color:rgba(0,0,0,0.12)!important;
+  color:var(--accent)!important;
+}
+
+/* Logo: si en modo oscuro es blanco, en claro debe ser oscuro (filter invert) */
+[data-theme="light"] .topbar-logo img,
+[data-theme="light"] .home-hero img{
+  filter:invert(var(--logo-invert))!important;
+}
+
+/* Botón de tema */
+.theme-toggle{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:34px;height:34px;border-radius:var(--r-md);
+  border:0.5px solid var(--border-2);
+  background:transparent;color:var(--text-2);cursor:pointer;
+  font-size:14px;transition:all .2s var(--ease-out);
+  margin-right:6px;
+}
+.theme-toggle:hover{
+  background:var(--tint-on-bg-medium);
+  border-color:var(--border-accent);
+  color:var(--accent);
+}
+
 </style>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 </head>
@@ -826,7 +1268,9 @@ input.narrow{width:88px}input.mid{width:108px}
     <span style="font-size:20px;font-weight:600;letter-spacing:0.06em;color:#D0D0D0;font-family:var(--font-display);line-height:1">AVIT</span>
   </div>
   <div class="nav-tabs">
-    <button class="ntab active" onclick="showPage('ing')">Proyectos</button>
+    <button class="ntab active" onclick="showPage('home')">Inicio</button>
+    <div style="width:1px;height:20px;background:rgba(255,255,255,0.08);align-self:center;margin:0 4px;flex-shrink:0"></div>
+    <button class="ntab" onclick="showPage('ing')">Proyectos</button>
     <button class="ntab" onclick="showPage('est')">Kanban</button>
     <div style="width:1px;height:20px;background:rgba(255,255,255,0.08);align-self:center;margin:0 4px;flex-shrink:0"></div>
     <button class="ntab" onclick="showPage('estimado')">Estimado rápido</button>
@@ -834,7 +1278,8 @@ input.narrow{width:88px}input.mid{width:108px}
     <div style="width:1px;height:20px;background:rgba(255,255,255,0.08);align-self:center;margin:0 4px;flex-shrink:0"></div>
     <button class="ntab" onclick="showPage('calc')">Cotizador</button>
   </div>
-  <div class="topbar-actions" style="min-width:auto;gap:6px">
+  <div class="topbar-actions" style="min-width:auto;gap:6px;align-items:center">
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Cambiar entre modo claro y oscuro" aria-label="Cambiar tema">🌙</button>
     <div style="display:flex;flex-direction:column;align-items:flex-end">
       <div style="display:flex;gap:6px">
         <button class="btn-data" onclick="exportarJSON()" title="Descargar todos tus datos como archivo JSON">⬇ JSON</button>
@@ -1395,8 +1840,76 @@ input.narrow{width:88px}input.mid{width:108px}
 
 
 
+<!-- ═══════════════════════════════════════════════ PÁGINA: INICIO (Home Dashboard) -->
+<div class="page active" id="pg-home">
+
+<div class="home-hero">
+  <div>
+    <p class="home-hero-greeting" id="home-greeting">Hola, Baldi</p>
+    <p class="home-hero-date" id="home-date"></p>
+  </div>
+  <div class="home-hero-quick">
+    <button onclick="showPage('ing');showFormCot()" class="home-quick-btn primary">
+      <span style="font-size:18px">+</span><span>Nueva cotización</span>
+    </button>
+    <button onclick="showPage('calc')" class="home-quick-btn">
+      <span style="font-size:14px">📋</span><span>Cotizador</span>
+    </button>
+    <button onclick="showPage('est')" class="home-quick-btn">
+      <span style="font-size:14px">📊</span><span>Kanban</span>
+    </button>
+  </div>
+</div>
+
+<!-- KPIs grandes -->
+<div class="home-kpis" id="home-kpis"></div>
+
+<!-- Cards de info: Pendientes / Próximas entregas / Alertas -->
+<div class="home-summary-grid">
+  <div class="home-summary-card">
+    <div class="home-summary-head">
+      <span class="home-summary-icon">💰</span>
+      <span class="home-summary-title">Cobros pendientes</span>
+    </div>
+    <div class="home-summary-body" id="home-pending"></div>
+  </div>
+  <div class="home-summary-card">
+    <div class="home-summary-head">
+      <span class="home-summary-icon">📅</span>
+      <span class="home-summary-title">Próximas entregas</span>
+    </div>
+    <div class="home-summary-body" id="home-deliveries"></div>
+  </div>
+  <div class="home-summary-card">
+    <div class="home-summary-head">
+      <span class="home-summary-icon">⚠️</span>
+      <span class="home-summary-title">Alertas y bloqueos</span>
+    </div>
+    <div class="home-summary-body" id="home-alerts"></div>
+  </div>
+</div>
+
+<!-- Reportes con métricas y gráficos -->
+<div class="sc">
+  <div class="sc-title">📊 Reportes del negocio</div>
+  <div class="home-metrics" id="home-metrics"></div>
+  <div class="home-charts">
+    <div class="home-chart-box">
+      <div class="home-chart-title">Cobros por mes (últimos 12 meses)</div>
+      <div id="home-chart-bars"></div>
+    </div>
+    <div class="home-chart-box">
+      <div class="home-chart-title">Distribución de proyectos</div>
+      <div id="home-chart-donut" style="display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:18px"></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /pg-home -->
+
+
 <!-- ═══════════════════════════════════════════════ PÁGINA: INGRESOS -->
-<div class="page active" id="pg-ing">
+<div class="page" id="pg-ing">
 
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem">
   <div id="ing-kpis" style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;flex:1"></div>
@@ -1564,12 +2077,49 @@ function renderPlanosRows(){
   }).join('');
 }
 
+// ═══════════════════════════════════════════════
+// MODO CLARO / OSCURO
+// ═══════════════════════════════════════════════
+function getActiveTheme(){
+  return document.documentElement.getAttribute('data-theme') || 'dark';
+}
+
+function setTheme(theme){
+  if(theme !== 'light' && theme !== 'dark') theme = 'dark';
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('avit_theme', theme);
+  // Actualizar icono del botón
+  const btn = document.getElementById('themeToggle');
+  if(btn){
+    btn.textContent = theme === 'dark' ? '🌙' : '☀️';
+    btn.title = theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro';
+  }
+}
+
+function toggleTheme(){
+  const current = getActiveTheme();
+  setTheme(current === 'dark' ? 'light' : 'dark');
+}
+
+// Inicializar tema al cargar (antes de que renderice cualquier cosa)
+(function initTheme(){
+  const stored = localStorage.getItem('avit_theme');
+  if(stored === 'light' || stored === 'dark'){
+    setTheme(stored);
+  } else {
+    // Detectar preferencia del sistema la primera vez
+    const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+    setTheme(prefersLight ? 'light' : 'dark');
+  }
+})();
+
 function showPage(id) {
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.ntab').forEach(t=>t.classList.remove('active'));
   document.getElementById('pg-'+id).classList.add('active');
-  const idx={'ing':0,'est':1,'estimado':2,'programa':3,'calc':4}[id]||0;
+  const idx={'home':0,'ing':1,'est':2,'estimado':3,'programa':4,'calc':5}[id]||0;
   document.querySelectorAll('.ntab')[idx].classList.add('active');
+  if(id==='home'){renderHome();}
   if(id==='ing'){renderIngresos();}
   if(id==='est'){renderEstatus();}
   if(id==='estimado'){renderEstimado();}
@@ -2065,7 +2615,7 @@ const MESES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov'
 const MESES_FULL = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 
 function loadCots(){try{return JSON.parse(localStorage.getItem('avit_cots')||'[]')}catch{return[]}}
-function saveCots(arr){localStorage.setItem('avit_cots',JSON.stringify(arr))}
+function saveCots(arr){localStorage.setItem('avit_cots',JSON.stringify(arr));if(typeof triggerAutoSync==='function')triggerAutoSync();}
 
 function fmtCur(n,c){return(c||'GTQ')+' '+Math.round(n).toLocaleString()}
 
@@ -2094,6 +2644,106 @@ function showFormCot(){
 }
 function hideFormCot(){document.getElementById('formCot').style.display='none'}
 
+// ═══════ Modal de validaciones del cotizador ═══════
+function mostrarValidacionesCot(errores, warnings, puedeContinuar){
+  const existing = document.getElementById('validacionesCotModal');
+  if(existing) existing.remove();
+  const modal = document.createElement('div');
+  modal.id = 'validacionesCotModal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9998;display:flex;align-items:flex-start;justify-content:center;padding:60px 20px;overflow-y:auto';
+  modal.onclick = e => { if(e.target === modal) modal.remove(); };
+
+  const erroresHTML = errores.length === 0 ? '' : `
+    <div style="margin-bottom:18px">
+      <div style="font-family:var(--font-display);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--red);margin-bottom:8px">⛔ Errores (${errores.length})</div>
+      ${errores.map(e => `
+        <div onclick="enfocarCampoCot('${e.campo}')" style="padding:9px 12px;margin-bottom:4px;background:rgba(224,90,90,0.10);border:1px solid rgba(224,90,90,0.25);border-left:3px solid var(--red);border-radius:var(--r-md);cursor:pointer;display:flex;align-items:center;gap:8px;transition:background .15s">
+          <span style="color:var(--red);flex-shrink:0">●</span>
+          <span style="font-size:12px;color:var(--text);flex:1">${escapeHtmlK(e.msg)}</span>
+          <span style="font-size:10px;color:var(--text-3)">→</span>
+        </div>
+      `).join('')}
+    </div>
+  `;
+
+  const warningsHTML = warnings.length === 0 ? '' : `
+    <div style="margin-bottom:18px">
+      <div style="font-family:var(--font-display);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:8px">⚠ Advertencias (${warnings.length})</div>
+      ${warnings.map(w => `
+        <div onclick="enfocarCampoCot('${w.campo}')" style="padding:9px 12px;margin-bottom:4px;background:var(--accent-subtle);border:1px solid var(--border-accent);border-left:3px solid var(--accent);border-radius:var(--r-md);cursor:pointer;display:flex;align-items:center;gap:8px;transition:background .15s">
+          <span style="color:var(--accent);flex-shrink:0">●</span>
+          <span style="font-size:12px;color:var(--text);flex:1">${escapeHtmlK(w.msg)}</span>
+          <span style="font-size:10px;color:var(--text-3)">→</span>
+        </div>
+      `).join('')}
+    </div>
+  `;
+
+  const titulo = errores.length > 0
+    ? 'No se puede guardar la cotización'
+    : 'Hay advertencias en la cotización';
+
+  const subtitulo = errores.length > 0
+    ? 'Corregí los errores marcados antes de guardar.'
+    : 'Podés continuar de todos modos si estás seguro.';
+
+  const botones = errores.length > 0
+    ? `<button onclick="document.getElementById('validacionesCotModal').remove()" style="padding:7px 18px;font-size:11px;border:1px solid var(--accent);border-radius:var(--r-md);background:var(--accent);color:var(--text-on-accent);cursor:pointer;font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase">Entendido</button>`
+    : `<button onclick="document.getElementById('validacionesCotModal').remove()" style="padding:7px 14px;font-size:11px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text-2);cursor:pointer;font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase">Cancelar</button>
+       <button onclick="confirmarGuardarConWarnings()" style="padding:7px 18px;font-size:11px;border:1px solid var(--accent);border-radius:var(--r-md);background:var(--accent);color:var(--text-on-accent);cursor:pointer;font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase">Guardar de todos modos</button>`;
+
+  modal.innerHTML = `
+    <div style="background:var(--bg-surface-2,#1a1b1e);border:1px solid var(--border-accent);border-radius:var(--r-lg);padding:24px 28px;width:100%;max-width:520px;font-family:var(--font-body)" onclick="event.stopPropagation()">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
+        <div>
+          <div style="font-family:var(--font-display);font-size:14px;font-weight:500;color:var(--text)">${titulo}</div>
+          <div style="font-size:11px;color:var(--text-3);margin-top:3px">${subtitulo}</div>
+        </div>
+        <button onclick="document.getElementById('validacionesCotModal').remove()" style="background:transparent;border:0;color:var(--text-3);font-size:20px;cursor:pointer">×</button>
+      </div>
+      <div style="margin-top:18px">
+        ${erroresHTML}
+        ${warningsHTML}
+        <div style="font-size:10px;color:var(--text-3);font-style:italic;margin-top:8px">Hacé clic en cada uno para ir al campo correspondiente.</div>
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.06)">
+        ${botones}
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+}
+
+function enfocarCampoCot(idCampo){
+  document.getElementById('validacionesCotModal')?.remove();
+  const el = document.getElementById(idCampo);
+  if(el){
+    el.focus();
+    el.style.transition = 'box-shadow .3s';
+    el.style.boxShadow = '0 0 0 2px var(--accent)';
+    setTimeout(()=>{ el.style.boxShadow = ''; }, 1500);
+  }
+}
+
+function confirmarGuardarConWarnings(){
+  document.getElementById('validacionesCotModal')?.remove();
+  // Re-leer valores y guardar (pasa por saveCot pero ahora sin warnings porque el usuario confirmó)
+  const clienteRaw = document.getElementById('fc-cliente').value.trim();
+  const proyectoRaw = document.getElementById('fc-proyecto').value.trim();
+  const f1=parseFloat(document.getElementById('fc-f1').value)||0;
+  const f2=parseFloat(document.getElementById('fc-f2').value)||0;
+  const oh=parseFloat(document.getElementById('fc-oh').value)||0;
+  const colab=parseFloat(document.getElementById('fc-colab').value)||0;
+  const iva=parseFloat(document.getElementById('fc-iva').value)||0;
+  const antic=parseFloat(document.getElementById('fc-antic').value)||0;
+  const mid=parseFloat(document.getElementById('fc-mid').value)||0;
+  const cur=document.getElementById('fc-cur').value;
+  const fecha=document.getElementById('fc-fecha').value||new Date().toISOString().split('T')[0];
+  const estado=document.getElementById('fc-estado').value;
+  const sub=f1+f2,tot=sub+iva;
+  guardarCotConfirmado({clienteRaw, proyectoRaw, f1, f2, oh, colab, iva, antic, mid, cur, fecha, estado, sub, tot});
+}
+
 function calcFormTotals(){
   const f1=parseFloat(document.getElementById('fc-f1').value)||0;
   const f2=parseFloat(document.getElementById('fc-f2').value)||0;
@@ -2115,8 +2765,9 @@ function calcFormTotals(){
 }
 
 function saveCot(){
-  const cliente=document.getElementById('fc-cliente').value.trim()||'Sin nombre';
-  const proyecto=document.getElementById('fc-proyecto').value.trim()||'Sin título';
+  // Capturar valores raw
+  const clienteRaw = document.getElementById('fc-cliente').value.trim();
+  const proyectoRaw = document.getElementById('fc-proyecto').value.trim();
   const f1=parseFloat(document.getElementById('fc-f1').value)||0;
   const f2=parseFloat(document.getElementById('fc-f2').value)||0;
   const oh=parseFloat(document.getElementById('fc-oh').value)||0;
@@ -2127,7 +2778,45 @@ function saveCot(){
   const cur=document.getElementById('fc-cur').value;
   const fecha=document.getElementById('fc-fecha').value||new Date().toISOString().split('T')[0];
   const estado=document.getElementById('fc-estado').value;
-  const sub=f1+f2,tot=sub+iva,util=tot-oh-colab,saldo=Math.max(0,tot-antic-mid);
+  const sub=f1+f2,tot=sub+iva;
+
+  // ═══ VALIDACIONES ═══
+  const errores = [];   // bloqueantes
+  const warnings = [];  // advertencias
+
+  // Bloqueantes
+  if(!clienteRaw)  errores.push({ campo:'fc-cliente',  msg:'El nombre del cliente es obligatorio' });
+  if(!proyectoRaw) errores.push({ campo:'fc-proyecto', msg:'El nombre del proyecto es obligatorio' });
+  if(tot <= 0)     errores.push({ campo:'fc-f1',       msg:'El total no puede ser 0. Ingresá honorarios en F1, F2 o ambos' });
+
+  // Advertencias
+  if(tot > 0 && antic > tot * 0.5){
+    warnings.push({ campo:'fc-antic', msg:`El anticipo (${cur} ${antic.toLocaleString('es-GT')}) supera el 50% del total. ¿Estás seguro?` });
+  }
+  if(tot > 0 && (antic + mid) > tot){
+    warnings.push({ campo:'fc-antic', msg:`Anticipo + entrega F1 (${cur} ${(antic+mid).toLocaleString('es-GT')}) supera el total (${cur} ${tot.toLocaleString('es-GT')})` });
+  }
+
+  // Si hay errores bloqueantes, mostrar y abortar
+  if(errores.length > 0){
+    mostrarValidacionesCot(errores, warnings, false);
+    return;
+  }
+
+  // Si solo hay advertencias, mostrar modal de confirmación
+  if(warnings.length > 0){
+    mostrarValidacionesCot(errores, warnings, true);
+    return;
+  }
+
+  // Sin errores ni warnings: guardar directo
+  guardarCotConfirmado({clienteRaw, proyectoRaw, f1, f2, oh, colab, iva, antic, mid, cur, fecha, estado, sub, tot});
+}
+
+// Llamada cuando el usuario confirma guardar a pesar de las advertencias
+function guardarCotConfirmado(d){
+  const { clienteRaw, proyectoRaw, f1, f2, oh, colab, iva, antic, mid, cur, fecha, estado, sub, tot } = d;
+  const util=tot-oh-colab,saldo=Math.max(0,tot-antic-mid);
   const cobrado=(()=>{
     if(estado==='cobrado_total'||estado==='completada') return tot;
     if(estado==='cobrado_f1') return antic+mid;
@@ -2139,7 +2828,7 @@ function saveCot(){
   const colNombrePlanos=(window._st?window._st.colNombrePlanos:'')||'';
   const planosQty=(window._st?window._st.planosQty:null)||{};
   const cots=loadCots();
-  cots.push({id:Date.now(),cliente,proyecto,f1,f2,oh,colab,iva,sub,tot,util,antic,mid,saldo,cobrado,cur,fecha,estado,colNombre3D,colNombreRend,colNombrePlanos,planosQty});
+  cots.push({id:Date.now(),cliente:clienteRaw,proyecto:proyectoRaw,f1,f2,oh,colab,iva,sub,tot,util,antic,mid,saldo,cobrado,cur,fecha,estado,colNombre3D,colNombreRend,colNombrePlanos,planosQty});
   saveCots(cots);
   hideFormCot();
   // reset form mini
@@ -2285,6 +2974,7 @@ function generarReciboHTML(id){
   const recibos = JSON.parse(localStorage.getItem('avit_recibos')||'{}');
   recibos[id] = { numero, fecha, monto, concepto, lugar, formaPago };
   localStorage.setItem('avit_recibos', JSON.stringify(recibos));
+  if(typeof triggerAutoSync==='function') triggerAutoSync();
 
   // Cerrar modal de config
   document.getElementById('reciboConfigModal').remove();
@@ -2400,6 +3090,324 @@ function deleteCot(id){
   }catch(e){}
   renderIngresos();
   if(document.getElementById('pg-est').classList.contains('active')) renderEstatus();
+}
+
+// ═══════════════════════════════════════════════
+// HOME DASHBOARD — Pestaña Inicio
+// ═══════════════════════════════════════════════
+function renderHome(){
+  const cots = loadCots();
+
+  // Saludo según hora
+  const ahora = new Date();
+  const h = ahora.getHours();
+  let saludo = 'Hola';
+  if(h < 12) saludo = 'Buenos días';
+  else if(h < 19) saludo = 'Buenas tardes';
+  else saludo = 'Buenas noches';
+  const greetingEl = document.getElementById('home-greeting');
+  if(greetingEl) greetingEl.textContent = `${saludo}, Baldi`;
+  const dateEl = document.getElementById('home-date');
+  if(dateEl){
+    dateEl.textContent = ahora.toLocaleDateString('es-GT',{weekday:'long',day:'2-digit',month:'long',year:'numeric'}).toUpperCase();
+  }
+
+  // ═══ KPIs grandes ═══
+  const yearActual = ahora.getFullYear();
+  const cotsActuales = cots.filter(c => c.estado !== 'cobrado_total' && c.estado !== 'completada');
+  const cotsAnyo = cots.filter(c => new Date(c.fecha+'T12:00:00').getFullYear() === yearActual);
+  const facturadoAnyo = cotsAnyo.reduce((a,c)=>a+(c.tot||0),0);
+  const cobradoAnyo = cotsAnyo.reduce((a,c)=>a+(c.cobrado||0),0);
+  const porCobrarAnyo = facturadoAnyo - cobradoAnyo;
+  const cotizadasTotal = cots.filter(c => c.estado === 'emitida' || c.estado === 'aprobada').length;
+  const enProcesoTotal = cots.filter(c => ['en_progreso','f1_entregada','cobrado_f1','f2_entregada'].includes(c.estado)).length;
+  const terminadosTotal = cots.filter(c => c.estado === 'cobrado_total' || c.estado === 'completada').length;
+  const totalCots = cots.length;
+  const tasaConversion = totalCots > 0 ? Math.round(((enProcesoTotal + terminadosTotal) / totalCots) * 100) : 0;
+
+  const kpisHTML = `
+    <div class="home-kpi">
+      <div class="kpi-label">Facturado ${yearActual}</div>
+      <div class="kpi-value">GTQ ${facturadoAnyo.toLocaleString('es-GT')}</div>
+      <div class="kpi-sub">${cotsAnyo.length} cotización${cotsAnyo.length===1?'':'es'}</div>
+    </div>
+    <div class="home-kpi kpi-green">
+      <div class="kpi-label">Cobrado ${yearActual}</div>
+      <div class="kpi-value">GTQ ${cobradoAnyo.toLocaleString('es-GT')}</div>
+      <div class="kpi-sub">${facturadoAnyo>0?Math.round(cobradoAnyo/facturadoAnyo*100):0}% del total</div>
+    </div>
+    <div class="home-kpi kpi-blue">
+      <div class="kpi-label">Por cobrar</div>
+      <div class="kpi-value">GTQ ${porCobrarAnyo.toLocaleString('es-GT')}</div>
+      <div class="kpi-sub">${cotsActuales.length} proyecto${cotsActuales.length===1?'':'s'} activo${cotsActuales.length===1?'':'s'}</div>
+    </div>
+    <div class="home-kpi kpi-accent">
+      <div class="kpi-label">Tasa conversión</div>
+      <div class="kpi-value">${tasaConversion}%</div>
+      <div class="kpi-sub">de ${totalCots} cotización${totalCots===1?'':'es'} históricas</div>
+    </div>
+  `;
+  const kpisEl = document.getElementById('home-kpis');
+  if(kpisEl) kpisEl.innerHTML = kpisHTML;
+
+  // ═══ Cobros pendientes ═══
+  const cotsConSaldo = cotsActuales
+    .map(c => ({ c, saldo: (c.tot||0) - (c.cobrado||0) }))
+    .filter(x => x.saldo > 0)
+    .sort((a,b) => b.saldo - a.saldo)
+    .slice(0, 5);
+  const pendingEl = document.getElementById('home-pending');
+  if(pendingEl){
+    if(cotsConSaldo.length === 0){
+      pendingEl.innerHTML = '<div class="home-summary-empty">No hay cobros pendientes</div>';
+    } else {
+      pendingEl.innerHTML = cotsConSaldo.map(x => `
+        <div class="home-summary-item" onclick="showPage('ing');setTimeout(()=>verCot(${x.c.id}),100)">
+          <div style="flex:1;min-width:0">
+            <div class="home-summary-item-main" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtmlK(x.c.cliente)}</div>
+            <div class="home-summary-item-sub" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtmlK(x.c.proyecto)}</div>
+          </div>
+          <div class="home-summary-item-value">${x.c.cur} ${x.saldo.toLocaleString('es-GT')}</div>
+        </div>
+      `).join('');
+    }
+  }
+
+  // ═══ Próximas entregas (items con dueDate cercana) ═══
+  const tracker = JSON.parse(localStorage.getItem('avit_sprint_tracker')||'{}');
+  const proximasEntregas = [];
+  const hoy0 = new Date(); hoy0.setHours(0,0,0,0);
+  const en30dias = new Date(hoy0); en30dias.setDate(en30dias.getDate()+30);
+  cotsActuales.forEach(c => {
+    const sps = (tracker[c.id]?.sprints) || [];
+    sps.forEach(sp => {
+      (sp.items||[]).forEach(it => {
+        if(it.dueDate && !it.done){
+          const due = new Date(it.dueDate+'T12:00:00');
+          if(due >= hoy0 && due <= en30dias){
+            proximasEntregas.push({ c, sp, it, due });
+          }
+        }
+      });
+    });
+  });
+  proximasEntregas.sort((a,b) => a.due - b.due);
+  const top5Entregas = proximasEntregas.slice(0,5);
+
+  const deliveriesEl = document.getElementById('home-deliveries');
+  if(deliveriesEl){
+    if(top5Entregas.length === 0){
+      deliveriesEl.innerHTML = '<div class="home-summary-empty">Sin fechas próximas en los siguientes 30 días</div>';
+    } else {
+      deliveriesEl.innerHTML = top5Entregas.map(x => {
+        const dias = Math.ceil((x.due - hoy0)/(1000*60*60*24));
+        const diasLbl = dias === 0 ? 'Hoy' : dias === 1 ? 'Mañana' : `En ${dias} días`;
+        const color = dias <= 3 ? 'var(--red)' : dias <= 7 ? 'var(--accent)' : 'var(--text-2)';
+        return `
+          <div class="home-summary-item" onclick="showPage('est')">
+            <div style="flex:1;min-width:0">
+              <div class="home-summary-item-main" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtmlK(x.it.name)}</div>
+              <div class="home-summary-item-sub" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtmlK(x.c.cliente)} · ${escapeHtmlK(x.c.proyecto)}</div>
+            </div>
+            <div class="home-summary-item-value" style="color:${color}">${diasLbl}</div>
+          </div>
+        `;
+      }).join('');
+    }
+  }
+
+  // ═══ Alertas: items bloqueados, proyectos sin avance, etc. ═══
+  const alertas = [];
+  cotsActuales.forEach(c => {
+    const sps = (tracker[c.id]?.sprints) || [];
+    sps.forEach(sp => {
+      (sp.items||[]).forEach(it => {
+        if(it.blocked){
+          alertas.push({
+            tipo: 'bloqueado',
+            cot: c,
+            texto: it.name,
+            sub: it.blockReason || 'Sin razón especificada',
+            color: 'var(--red)'
+          });
+        }
+      });
+    });
+  });
+  // Cotizaciones emitidas hace más de 30 días sin avance
+  cots.forEach(c => {
+    if(c.estado === 'emitida'){
+      const dias = Math.ceil((hoy0 - new Date(c.fecha+'T12:00:00'))/(1000*60*60*24));
+      if(dias > 30){
+        alertas.push({
+          tipo: 'estancado',
+          cot: c,
+          texto: `${c.cliente} sin avance`,
+          sub: `Cotizada hace ${dias} días`,
+          color: 'var(--accent)'
+        });
+      }
+    }
+  });
+  alertas.sort((a,b) => (a.color === 'var(--red)' ? 0 : 1) - (b.color === 'var(--red)' ? 0 : 1));
+  const top5Alertas = alertas.slice(0, 5);
+
+  const alertsEl = document.getElementById('home-alerts');
+  if(alertsEl){
+    if(top5Alertas.length === 0){
+      alertsEl.innerHTML = '<div class="home-summary-empty">Todo en orden ✓</div>';
+    } else {
+      alertsEl.innerHTML = top5Alertas.map(a => `
+        <div class="home-summary-item" onclick="showPage('${a.tipo==='bloqueado'?'est':'ing'}')">
+          <div style="flex:1;min-width:0">
+            <div class="home-summary-item-main" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:${a.color}">${escapeHtmlK(a.texto)}</div>
+            <div class="home-summary-item-sub" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtmlK(a.sub)}</div>
+          </div>
+          <div class="home-summary-item-value" style="color:${a.color};font-size:10px;text-transform:uppercase;letter-spacing:0.08em">${a.tipo}</div>
+        </div>
+      `).join('');
+    }
+  }
+
+  // ═══ Métricas de Reportes ═══
+  const totalCotizado = cots.reduce((a,c)=>a+(c.tot||0),0);
+  const totalCobrado = cots.reduce((a,c)=>a+(c.cobrado||0),0);
+  const proyectosCerrados = cots.filter(c => c.estado === 'cobrado_total' || c.estado === 'completada');
+  const ticketPromedio = proyectosCerrados.length > 0
+    ? Math.round(proyectosCerrados.reduce((a,c)=>a+(c.tot||0),0) / proyectosCerrados.length)
+    : 0;
+  const margenTotal = cots.reduce((a,c)=>a+(c.util||0),0);
+  const margenPromedio = totalCotizado > 0 ? Math.round((margenTotal / totalCotizado) * 100) : 0;
+
+  // Q por m² promedio: requiere recuperar los m² desde el cotizador completo. Solo lo calcula si hay datos guardados en avit_calc.
+  let qPorM2 = 0;
+  let qPorM2Count = 0;
+  try {
+    // Intento simple: si hay `m2` en la cot, lo uso. Si no, skip.
+    const conM2 = cots.filter(c => c.m2 && c.m2 > 0);
+    if(conM2.length > 0){
+      qPorM2 = Math.round(conM2.reduce((a,c)=>a+((c.tot||0)/c.m2),0) / conM2.length);
+      qPorM2Count = conM2.length;
+    }
+  } catch(e){}
+
+  const metricsEl = document.getElementById('home-metrics');
+  if(metricsEl){
+    metricsEl.innerHTML = `
+      <div class="home-metric">
+        <div class="home-metric-label">Ticket promedio</div>
+        <div class="home-metric-value">${ticketPromedio > 0 ? 'GTQ '+ticketPromedio.toLocaleString('es-GT') : '—'}</div>
+        <div class="home-metric-sub">${proyectosCerrados.length} proyecto${proyectosCerrados.length===1?'':'s'} cerrado${proyectosCerrados.length===1?'':'s'}</div>
+      </div>
+      <div class="home-metric">
+        <div class="home-metric-label">Margen promedio</div>
+        <div class="home-metric-value">${margenPromedio}%</div>
+        <div class="home-metric-sub">utilidad / total</div>
+      </div>
+      <div class="home-metric">
+        <div class="home-metric-label">Q / m² promedio</div>
+        <div class="home-metric-value">${qPorM2 > 0 ? 'GTQ '+qPorM2.toLocaleString('es-GT') : '—'}</div>
+        <div class="home-metric-sub">${qPorM2Count > 0 ? qPorM2Count+' proyecto'+(qPorM2Count===1?'':'s')+' con m²' : 'sin datos de m²'}</div>
+      </div>
+      <div class="home-metric">
+        <div class="home-metric-label">Tasa conversión</div>
+        <div class="home-metric-value">${tasaConversion}%</div>
+        <div class="home-metric-sub">cotizado → contratado</div>
+      </div>
+    `;
+  }
+
+  // ═══ Gráfico de barras: cobros por mes (últimos 12 meses) ═══
+  const mesesData = [];
+  for(let i = 11; i >= 0; i--){
+    const d = new Date(ahora.getFullYear(), ahora.getMonth() - i, 1);
+    mesesData.push({
+      año: d.getFullYear(),
+      mes: d.getMonth(),
+      lbl: d.toLocaleDateString('es-GT',{month:'short'}).replace('.','').toUpperCase().slice(0,3),
+      total: 0
+    });
+  }
+  cots.forEach(c => {
+    if(!c.fecha || !c.cobrado) return;
+    const d = new Date(c.fecha+'T12:00:00');
+    const slot = mesesData.find(m => m.año === d.getFullYear() && m.mes === d.getMonth());
+    if(slot) slot.total += (c.cobrado || 0);
+  });
+  const maxTotal = Math.max(...mesesData.map(m => m.total), 1);
+  const barsEl = document.getElementById('home-chart-bars');
+  if(barsEl){
+    barsEl.innerHTML = `
+      <div class="home-bar-chart">
+        ${mesesData.map(m => {
+          const pct = m.total > 0 ? Math.max(2, Math.round((m.total / maxTotal) * 100)) : 0;
+          const isEmpty = m.total === 0;
+          return `<div class="home-bar ${isEmpty?'empty':''}" style="height:${isEmpty?6:pct}%">
+            ${m.total > 0 ? `<div class="home-bar-tooltip">${m.lbl} ${m.año}: GTQ ${m.total.toLocaleString('es-GT')}</div>` : ''}
+          </div>`;
+        }).join('')}
+      </div>
+      <div class="home-bar-axis">
+        ${mesesData.map(m => `<div class="home-bar-axis-label">${m.lbl}</div>`).join('')}
+      </div>
+    `;
+  }
+
+  // ═══ Gráfico donut: distribución de proyectos por estado ═══
+  const dist = [
+    { lbl: 'Cotizados', count: cots.filter(c => c.estado === 'emitida' || c.estado === 'aprobada').length, color: '#5DA9E9' },
+    { lbl: 'Anteproyecto', count: cots.filter(c => ['en_progreso','parcial'].includes(c.estado)).length, color: '#A878D1' },
+    { lbl: 'Planos', count: cots.filter(c => ['f1_entregada','cobrado_f1'].includes(c.estado)).length, color: '#D4A843' },
+    { lbl: 'Entrega', count: cots.filter(c => c.estado === 'f2_entregada').length, color: '#5BC68A' },
+    { lbl: 'Terminados', count: terminadosTotal, color: '#4A4A4A' }
+  ].filter(x => x.count > 0);
+  const totalDist = dist.reduce((a,d)=>a+d.count,0);
+
+  const donutEl = document.getElementById('home-chart-donut');
+  if(donutEl){
+    if(totalDist === 0){
+      donutEl.innerHTML = '<div style="font-size:11px;color:var(--text-3);font-style:italic;padding:30px">Sin datos para mostrar</div>';
+    } else {
+      // Generar paths SVG del donut
+      const cx = 60, cy = 60, r = 48, sw = 18;
+      let acc = 0;
+      const arcs = dist.map(d => {
+        const startAngle = (acc / totalDist) * 360;
+        const endAngle = ((acc + d.count) / totalDist) * 360;
+        acc += d.count;
+        // Si solo hay 1 categoría con todo, dibujar círculo completo
+        if(dist.length === 1){
+          return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${d.color}" stroke-width="${sw}"/>`;
+        }
+        const startRad = (startAngle * Math.PI) / 180;
+        const endRad = (endAngle * Math.PI) / 180;
+        const x1 = cx + r * Math.cos(startRad);
+        const y1 = cy + r * Math.sin(startRad);
+        const x2 = cx + r * Math.cos(endRad);
+        const y2 = cy + r * Math.sin(endRad);
+        const largeArc = (endAngle - startAngle) > 180 ? 1 : 0;
+        return `<path d="M ${x1.toFixed(2)} ${y1.toFixed(2)} A ${r} ${r} 0 ${largeArc} 1 ${x2.toFixed(2)} ${y2.toFixed(2)}" fill="none" stroke="${d.color}" stroke-width="${sw}" stroke-linecap="butt"/>`;
+      });
+      donutEl.innerHTML = `
+        <div class="home-donut">
+          <svg viewBox="0 0 120 120">${arcs.join('')}</svg>
+          <div class="home-donut-center">
+            <div class="home-donut-center-num">${totalDist}</div>
+            <div class="home-donut-center-lbl">Proyectos</div>
+          </div>
+        </div>
+        <div class="home-donut-legend">
+          ${dist.map(d => `
+            <div class="home-donut-legend-item">
+              <div class="home-donut-legend-dot" style="background:${d.color}"></div>
+              <span>${d.lbl}</span>
+              <span class="home-donut-legend-cnt">${d.count}</span>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+  }
 }
 
 function renderIngresos(){
@@ -2582,6 +3590,7 @@ function loadArtefactos(){
 }
 function saveArtefactos(arr){
   localStorage.setItem('avit_artifacts', JSON.stringify(arr));
+  if(typeof triggerAutoSync==='function') triggerAutoSync();
 }
 
 function renderArtefactos(){
@@ -2760,6 +3769,7 @@ function saveProjectSprints(cotId, sprints){
   if(!tracker[cotId]) tracker[cotId] = {};
   tracker[cotId].sprints = sprints;
   localStorage.setItem('avit_sprint_tracker', JSON.stringify(tracker));
+  if(typeof triggerAutoSync==='function') triggerAutoSync();
 }
 
 function ensureDefaultSprints(c){
@@ -3478,6 +4488,7 @@ function updTracker(id,field,val){
   if(!t[id])t[id]={fase:'',sprint:'',responsable:''};
   t[id][field]=val;
   localStorage.setItem('avit_sprint_tracker',JSON.stringify(t));
+  if(typeof triggerAutoSync==='function') triggerAutoSync();
 }
 
 // ═══════ VER / EDITAR COTIZACIÓN ═══════
@@ -3657,25 +4668,38 @@ document.addEventListener('DOMContentLoaded',()=>{
   n.setDate(t.getDate()+df);
   document.getElementById('projStart').value=n.toISOString().split('T')[0];
   document.getElementById('ing-year').value=new Date().getFullYear();
-  calc();renderIngresos();renderArtefactos();
+  calc();renderIngresos();renderArtefactos();renderHome();
 
   // ═══ Atajos de teclado globales ═══
   document.addEventListener('keydown', (e) => {
-    // No activar si está escribiendo en input/textarea/select
+    // Ctrl+K / Cmd+K: búsqueda global (funciona incluso dentro de inputs)
+    if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k'){
+      e.preventDefault();
+      abrirBuscadorGlobal();
+      return;
+    }
+
+    // Escape cierra el buscador si está abierto
+    if(e.key === 'Escape'){
+      const buscador = document.getElementById('globalSearchOverlay');
+      if(buscador){ buscador.remove(); return; }
+    }
+
+    // No activar atajos de letra si está escribiendo en input/textarea/select
     const tag = (e.target.tagName||'').toLowerCase();
     if(tag === 'input' || tag === 'textarea' || tag === 'select' || e.target.isContentEditable) return;
-    // No activar con modificadores (Ctrl/Cmd) salvo casos específicos
+    // No activar atajos con modificadores (excepto los manejados arriba)
     if(e.ctrlKey || e.metaKey || e.altKey) return;
 
     const key = e.key.toLowerCase();
     switch(key){
+      case 'h': showPage('home'); e.preventDefault(); break;
       case 'p': showPage('ing'); e.preventDefault(); break;
       case 'k': showPage('est'); e.preventDefault(); break;
       case 'e': showPage('estimado'); e.preventDefault(); break;
       case 'r': showPage('programa'); e.preventDefault(); break;
       case 'c': showPage('calc'); e.preventDefault(); break;
       case 'n': {
-        // Nueva cotización: abrir modal de "Nueva cot."
         const btn = document.querySelector('[onclick*="showFormCot"]');
         if(btn) btn.click();
         e.preventDefault();
@@ -3683,7 +4707,6 @@ document.addEventListener('DOMContentLoaded',()=>{
       }
       case '?': mostrarAtajos(); e.preventDefault(); break;
       case 'escape': {
-        // Cerrar modales abiertos
         const openModal = document.querySelector('.modal[style*="flex"]');
         if(openModal) openModal.style.display = 'none';
         const openHelp = document.getElementById('modalAtajos');
@@ -3693,6 +4716,266 @@ document.addEventListener('DOMContentLoaded',()=>{
     }
   });
 });
+
+// ═══════ BÚSQUEDA GLOBAL (Ctrl+K) ═══════
+function abrirBuscadorGlobal(){
+  const existing = document.getElementById('globalSearchOverlay');
+  if(existing){ existing.remove(); return; }
+
+  const overlay = document.createElement('div');
+  overlay.id = 'globalSearchOverlay';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:flex-start;justify-content:center;padding:80px 20px 20px';
+  overlay.onclick = e => { if(e.target === overlay) overlay.remove(); };
+
+  overlay.innerHTML = `
+    <div style="background:var(--bg-surface-2,#1a1b1e);border:1px solid var(--border-accent);border-radius:var(--r-lg);width:100%;max-width:600px;max-height:75vh;display:flex;flex-direction:column;font-family:var(--font-body);box-shadow:0 20px 60px rgba(0,0,0,0.5)" onclick="event.stopPropagation()">
+      <div style="display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid rgba(255,255,255,0.08)">
+        <span style="font-size:14px;color:var(--text-3)">🔍</span>
+        <input type="text" id="globalSearchInput" placeholder="Buscar proyectos, sprints, comentarios, colaboradores, artefactos..." style="flex:1;border:0;background:transparent;color:var(--text);font-size:14px;font-family:var(--font-body);outline:none">
+        <kbd style="font-family:var(--font-mono);font-size:9px;padding:2px 7px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);border-radius:4px;color:var(--text-3)">ESC</kbd>
+      </div>
+      <div id="globalSearchResults" style="flex:1;overflow-y:auto;padding:8px"></div>
+      <div style="padding:9px 18px;border-top:1px solid rgba(255,255,255,0.06);font-size:10px;color:var(--text-3);display:flex;justify-content:space-between">
+        <span>↑↓ navegar · Enter abrir · Esc cerrar</span>
+        <span id="globalSearchCount"></span>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+
+  // Inicializar
+  _searchSelectedIdx = 0;
+  _searchResultsCache = [];
+  setTimeout(()=>{
+    const inp = document.getElementById('globalSearchInput');
+    if(inp){
+      inp.focus();
+      inp.addEventListener('input', () => ejecutarBusquedaGlobal(inp.value));
+      inp.addEventListener('keydown', manejarTeclasBusqueda);
+    }
+    // Mostrar atajos rápidos como contenido inicial
+    ejecutarBusquedaGlobal('');
+  }, 30);
+}
+
+let _searchSelectedIdx = 0;
+let _searchResultsCache = [];
+
+function manejarTeclasBusqueda(e){
+  if(e.key === 'ArrowDown'){
+    e.preventDefault();
+    _searchSelectedIdx = Math.min(_searchSelectedIdx + 1, _searchResultsCache.length - 1);
+    renderSearchSelection();
+  } else if(e.key === 'ArrowUp'){
+    e.preventDefault();
+    _searchSelectedIdx = Math.max(_searchSelectedIdx - 1, 0);
+    renderSearchSelection();
+  } else if(e.key === 'Enter'){
+    e.preventDefault();
+    const r = _searchResultsCache[_searchSelectedIdx];
+    if(r) abrirResultadoBusqueda(r);
+  }
+}
+
+function renderSearchSelection(){
+  document.querySelectorAll('.search-result-item').forEach((el, idx) => {
+    if(idx === _searchSelectedIdx){
+      el.style.background = 'var(--accent-subtle)';
+      el.style.borderColor = 'var(--border-accent)';
+      el.scrollIntoView({ block:'nearest', behavior:'smooth' });
+    } else {
+      el.style.background = 'transparent';
+      el.style.borderColor = 'transparent';
+    }
+  });
+}
+
+function ejecutarBusquedaGlobal(query){
+  const cont = document.getElementById('globalSearchResults');
+  const counter = document.getElementById('globalSearchCount');
+  if(!cont) return;
+
+  const q = (query||'').trim().toLowerCase();
+  const resultados = [];
+
+  // 1. Proyectos (cliente, proyecto)
+  const cots = loadCots();
+  const ESTADOS_LABEL = {
+    emitida:'Cotizado', aprobada:'Cotizado',
+    en_progreso:'Anteproyecto', parcial:'Anteproyecto',
+    f1_entregada:'Planos', cobrado_f1:'Planos',
+    f2_entregada:'Entrega',
+    cobrado_total:'Terminado', completada:'Terminado'
+  };
+  cots.forEach(c => {
+    const matchCli = (c.cliente||'').toLowerCase().includes(q);
+    const matchPro = (c.proyecto||'').toLowerCase().includes(q);
+    if(q === '' || matchCli || matchPro){
+      resultados.push({
+        tipo: 'proyecto',
+        icon: '📁',
+        titulo: `${c.cliente} — ${c.proyecto}`,
+        sub: `${c.cur} ${(c.tot||0).toLocaleString('es-GT')} · ${ESTADOS_LABEL[c.estado] || c.estado}`,
+        cotId: c.id,
+        action: 'verCot'
+      });
+    }
+
+    // 2. Sprints (título y notas)
+    const tracker = JSON.parse(localStorage.getItem('avit_sprint_tracker')||'{}');
+    const proyectoSprints = tracker[c.id]?.sprints || [];
+    proyectoSprints.forEach(sp => {
+      const matchSp = (sp.title||'').toLowerCase().includes(q);
+      if(q !== '' && matchSp){
+        resultados.push({
+          tipo: 'sprint',
+          icon: '🎯',
+          titulo: sp.title,
+          sub: `Sprint en ${c.cliente} — ${c.proyecto}`,
+          cotId: c.id,
+          action: 'verCot'
+        });
+      }
+
+      // 3. Items de backlog (nombre, notas, comentarios)
+      (sp.items||[]).forEach(it => {
+        const matchIt = (it.name||'').toLowerCase().includes(q);
+        const matchNotes = (it.notes||'').toLowerCase().includes(q);
+        const matchComments = (it.comments||[]).some(cm => (cm.text||'').toLowerCase().includes(q));
+        const matchColab = (it.colab||'').toLowerCase().includes(q);
+
+        if(q !== '' && matchIt){
+          resultados.push({
+            tipo: 'item',
+            icon: it.done ? '✅' : (it.blocked ? '🚫' : '☐'),
+            titulo: it.name,
+            sub: `${sp.title} · ${c.cliente}`,
+            cotId: c.id,
+            action: 'irKanban'
+          });
+        }
+        if(q !== '' && matchNotes){
+          resultados.push({
+            tipo: 'nota',
+            icon: '📝',
+            titulo: `Nota: ${it.notes.substring(0,80)}${it.notes.length>80?'...':''}`,
+            sub: `En "${it.name}" · ${c.cliente}`,
+            cotId: c.id,
+            action: 'irKanban'
+          });
+        }
+        if(q !== '' && matchComments){
+          (it.comments||[]).forEach(cm => {
+            if((cm.text||'').toLowerCase().includes(q)){
+              resultados.push({
+                tipo: 'comentario',
+                icon: '💬',
+                titulo: `"${cm.text.substring(0,80)}${cm.text.length>80?'...':''}"`,
+                sub: `Comentario en "${it.name}" · ${c.cliente}`,
+                cotId: c.id,
+                action: 'irKanban'
+              });
+            }
+          });
+        }
+        if(q !== '' && matchColab){
+          resultados.push({
+            tipo: 'colaborador',
+            icon: '👤',
+            titulo: it.colab,
+            sub: `Asignado a "${it.name}" · ${c.cliente}`,
+            cotId: c.id,
+            action: 'irKanban'
+          });
+        }
+      });
+    });
+
+    // 4. Colaboradores del cotizador (3D, Render, Planos)
+    [['colNombre3D','Modelado 3D'],['colNombreRend','Renderización'],['colNombrePlanos','Planos']].forEach(([campo, rol]) => {
+      const nombre = c[campo];
+      if(q !== '' && nombre && nombre.toLowerCase().includes(q)){
+        resultados.push({
+          tipo: 'colaborador',
+          icon: '👤',
+          titulo: nombre,
+          sub: `${rol} en ${c.cliente} — ${c.proyecto}`,
+          cotId: c.id,
+          action: 'verCot'
+        });
+      }
+    });
+  });
+
+  // 5. Artefactos vinculados
+  const arts = loadArtefactos();
+  arts.forEach(a => {
+    const matchT = (a.title||'').toLowerCase().includes(q);
+    const matchD = (a.desc||'').toLowerCase().includes(q);
+    if(q === '' || matchT || matchD){
+      resultados.push({
+        tipo: 'artefacto',
+        icon: a.icon || '🔗',
+        titulo: a.title,
+        sub: a.desc || a.url,
+        url: a.url,
+        action: 'abrirURL'
+      });
+    }
+  });
+
+  // Deduplicar resultados de proyecto si la query está vacía (mostrar uno por cot)
+  if(q === ''){
+    // Solo mostrar proyectos y artefactos
+    const filtrados = resultados.filter(r => r.tipo === 'proyecto' || r.tipo === 'artefacto');
+    _searchResultsCache = filtrados.slice(0, 20);
+  } else {
+    _searchResultsCache = resultados.slice(0, 30);
+  }
+
+  _searchSelectedIdx = 0;
+
+  // Render
+  if(_searchResultsCache.length === 0){
+    cont.innerHTML = q === ''
+      ? '<div style="padding:40px 20px;text-align:center;color:var(--text-3);font-size:12px">Sin elementos. Comenzá a escribir para buscar.</div>'
+      : `<div style="padding:40px 20px;text-align:center;color:var(--text-3);font-size:12px">Sin resultados para "${escapeHtmlK(q)}"</div>`;
+    counter.textContent = '';
+    return;
+  }
+
+  cont.innerHTML = _searchResultsCache.map((r, idx) => `
+    <div class="search-result-item" onclick="_searchSelectedIdx=${idx};abrirResultadoBusqueda(_searchResultsCache[${idx}])"
+      style="display:flex;align-items:center;gap:12px;padding:9px 12px;border:1px solid transparent;border-radius:var(--r-md);cursor:pointer;margin-bottom:2px;transition:background .12s">
+      <span style="font-size:16px;flex-shrink:0;width:24px;text-align:center">${r.icon}</span>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:12.5px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtmlK(r.titulo)}</div>
+        <div style="font-size:10px;color:var(--text-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtmlK(r.sub||'')}</div>
+      </div>
+      <span style="font-size:9px;color:var(--text-3);text-transform:uppercase;letter-spacing:.1em;flex-shrink:0">${r.tipo}</span>
+    </div>
+  `).join('');
+
+  counter.textContent = `${_searchResultsCache.length} resultado${_searchResultsCache.length===1?'':'s'}`;
+
+  // Resaltar el primero
+  renderSearchSelection();
+}
+
+function abrirResultadoBusqueda(r){
+  document.getElementById('globalSearchOverlay')?.remove();
+  if(r.action === 'verCot' && r.cotId){
+    showPage('ing');
+    setTimeout(()=>{
+      if(typeof verCot === 'function') verCot(r.cotId);
+    }, 100);
+  } else if(r.action === 'irKanban'){
+    showPage('est');
+    // Auto-expandir el sprint del proyecto buscado podría hacerse, pero requiere estado del Kanban
+  } else if(r.action === 'abrirURL' && r.url){
+    window.open(r.url, '_blank');
+  }
+}
 
 function mostrarAtajos(){
   const existente = document.getElementById('modalAtajos');
@@ -3706,12 +4989,14 @@ function mostrarAtajos(){
       <button onclick="document.getElementById('modalAtajos').remove()" style="background:transparent;border:0;color:var(--text-3);font-size:18px;cursor:pointer;padding:0 4px">×</button>
     </div>
     <div style="display:grid;grid-template-columns:auto 1fr;gap:10px 18px;font-size:12px">
+      <kbd style="font-family:var(--font-mono);background:rgba(255,255,255,0.06);padding:3px 9px;border-radius:4px;border:1px solid rgba(255,255,255,0.10);text-align:center;color:var(--accent)">H</kbd><span style="color:var(--text-2);align-self:center">Ir a Inicio</span>
       <kbd style="font-family:var(--font-mono);background:rgba(255,255,255,0.06);padding:3px 9px;border-radius:4px;border:1px solid rgba(255,255,255,0.10);text-align:center;color:var(--accent)">P</kbd><span style="color:var(--text-2);align-self:center">Ir a Proyectos</span>
       <kbd style="font-family:var(--font-mono);background:rgba(255,255,255,0.06);padding:3px 9px;border-radius:4px;border:1px solid rgba(255,255,255,0.10);text-align:center;color:var(--accent)">K</kbd><span style="color:var(--text-2);align-self:center">Ir a Kanban</span>
       <kbd style="font-family:var(--font-mono);background:rgba(255,255,255,0.06);padding:3px 9px;border-radius:4px;border:1px solid rgba(255,255,255,0.10);text-align:center;color:var(--accent)">E</kbd><span style="color:var(--text-2);align-self:center">Ir a Estimado rápido</span>
       <kbd style="font-family:var(--font-mono);background:rgba(255,255,255,0.06);padding:3px 9px;border-radius:4px;border:1px solid rgba(255,255,255,0.10);text-align:center;color:var(--accent)">R</kbd><span style="color:var(--text-2);align-self:center">Ir a Programa arquitectónico</span>
       <kbd style="font-family:var(--font-mono);background:rgba(255,255,255,0.06);padding:3px 9px;border-radius:4px;border:1px solid rgba(255,255,255,0.10);text-align:center;color:var(--accent)">C</kbd><span style="color:var(--text-2);align-self:center">Ir a Cotizador</span>
       <kbd style="font-family:var(--font-mono);background:rgba(255,255,255,0.06);padding:3px 9px;border-radius:4px;border:1px solid rgba(255,255,255,0.10);text-align:center;color:var(--accent)">N</kbd><span style="color:var(--text-2);align-self:center">Nueva cotización rápida</span>
+      <kbd style="font-family:var(--font-mono);background:rgba(255,255,255,0.06);padding:3px 9px;border-radius:4px;border:1px solid rgba(255,255,255,0.10);text-align:center;color:var(--accent)">Ctrl+K</kbd><span style="color:var(--text-2);align-self:center">Búsqueda global</span>
       <kbd style="font-family:var(--font-mono);background:rgba(255,255,255,0.06);padding:3px 9px;border-radius:4px;border:1px solid rgba(255,255,255,0.10);text-align:center;color:var(--accent)">Esc</kbd><span style="color:var(--text-2);align-self:center">Cerrar modal</span>
       <kbd style="font-family:var(--font-mono);background:rgba(255,255,255,0.06);padding:3px 9px;border-radius:4px;border:1px solid rgba(255,255,255,0.10);text-align:center;color:var(--accent)">?</kbd><span style="color:var(--text-2);align-self:center">Mostrar/ocultar esta ayuda</span>
     </div>
@@ -3741,6 +5026,26 @@ function mostrarAtajos(){
       <input type="password" id="nubeKey" placeholder="Ej: mi-avit-2024" style="margin-bottom:.5rem">
       <p style="font-size:10px;color:var(--text-3);margin:0">Esta clave identifica tus datos en la nube. Usa la misma en todos tus dispositivos.</p>
     </div>
+
+    <!-- Toggle de auto-sync -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;margin-bottom:.5rem;background:rgba(212,168,67,0.06);border:1px solid var(--border-accent);border-radius:var(--r-md)">
+      <div style="flex:1;min-width:0">
+        <label for="autoSyncToggle" style="font-size:12px;font-weight:500;color:var(--text);cursor:pointer;display:block">⚡ Sincronización automática</label>
+        <p style="font-size:10px;color:var(--text-3);margin:2px 0 0 0;line-height:1.4">Sube los cambios a la nube automáticamente cuando edites cotizaciones o el Kanban.</p>
+      </div>
+      <input type="checkbox" id="autoSyncToggle" onchange="toggleAutoSync(this.checked)" style="width:18px;height:18px;cursor:pointer;flex-shrink:0;margin-left:10px">
+    </div>
+
+    <!-- Toggle de cifrado -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;margin-bottom:.75rem;background:rgba(212,168,67,0.06);border:1px solid var(--border-accent);border-radius:var(--r-md)">
+      <div style="flex:1;min-width:0">
+        <label for="cryptoToggle" style="font-size:12px;font-weight:500;color:var(--text);cursor:pointer;display:block">🔐 Cifrar datos en la nube</label>
+        <p style="font-size:10px;color:var(--text-3);margin:2px 0 0 0;line-height:1.4">Tus datos viajan cifrados (AES-256). Si perdés la password son irrecuperables.</p>
+        <div id="cryptoStatus" style="font-size:10px;color:var(--text-3);margin-top:4px;font-family:var(--font-mono)"></div>
+      </div>
+      <input type="checkbox" id="cryptoToggle" onchange="toggleCifrado(this.checked)" style="width:18px;height:18px;cursor:pointer;flex-shrink:0;margin-left:10px">
+    </div>
+
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:.75rem">
       <button onclick="subirNube()" style="padding:9px;font-size:13px;font-weight:500;border:none;border-radius:var(--r-md);background:var(--blue);color:#fff;cursor:pointer">⬆ Subir a la nube</button>
       <button onclick="bajarNube()" style="padding:9px;font-size:13px;font-weight:500;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:var(--surface);color:var(--text);cursor:pointer">⬇ Bajar de la nube</button>
@@ -3749,7 +5054,7 @@ function mostrarAtajos(){
     <div style="background:rgba(255,255,255,0.03);border-radius:var(--r-md);padding:.85rem 1rem;margin-top:.75rem">
       <p style="font-size:11px;font-weight:500;margin-bottom:.35rem">¿Cómo funciona?</p>
       <p style="font-size:10px;color:var(--text-3);line-height:1.6;margin:0">
-        Al subir, tus datos se guardan en la nube asociados a tu clave. Al bajar, se cargan en este navegador. Siempre exportá un respaldo local antes de sincronizar.
+        Al subir, tus datos se guardan en la nube asociados a tu clave. Al bajar, se cargan en este navegador. Con sincronización automática, los cambios se suben solos. Con cifrado activado, los datos viajan ilegibles para cualquiera sin tu password (incluyendo a Anthropic, JSONBin y cualquier intermediario).
       </p>
     </div>
   </div>
@@ -3882,11 +5187,227 @@ function importarJSON(evt){
 const JSONBIN_API_KEY = '$2a$10$6NAO1NtNR26nw01ypOgYEu/7cL5HiLBoSsJw64u4qT60ZXKIw9kbS';
 const JSONBIN_BASE = 'https://api.jsonbin.io/v3';
 
+// ═══════ CIFRADO AES-GCM 256-BIT (solo nube) ═══════
+// Password mantenida solo en memoria — se pierde al cerrar la pestaña
+let _cryptoPassword = null;
+const CRYPTO_MAGIC = 'avit-enc-v1'; // marcador para detectar bins cifrados
+const CRYPTO_PBKDF2_ITERS = 200000;
+
+// Convierte string a Uint8Array
+function _str2bytes(s){ return new TextEncoder().encode(s); }
+function _bytes2str(b){ return new TextDecoder().decode(b); }
+
+// Convierte Uint8Array a base64
+function _bytes2b64(b){
+  let s = '';
+  const bytes = new Uint8Array(b);
+  for(let i = 0; i < bytes.byteLength; i++) s += String.fromCharCode(bytes[i]);
+  return btoa(s);
+}
+// Convierte base64 a Uint8Array
+function _b642bytes(s){
+  const bin = atob(s);
+  const out = new Uint8Array(bin.length);
+  for(let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
+
+// Deriva clave AES-256 desde password + salt usando PBKDF2
+async function _derivarClave(password, salt){
+  const passKey = await crypto.subtle.importKey(
+    'raw', _str2bytes(password), { name:'PBKDF2' }, false, ['deriveKey']
+  );
+  return crypto.subtle.deriveKey(
+    { name:'PBKDF2', salt, iterations:CRYPTO_PBKDF2_ITERS, hash:'SHA-256' },
+    passKey,
+    { name:'AES-GCM', length:256 },
+    false,
+    ['encrypt','decrypt']
+  );
+}
+
+// Cifra un objeto JSON con la password en memoria. Devuelve un objeto envoltorio.
+async function cifrarPayload(obj, password){
+  if(!password) throw new Error('Sin password');
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const key = await _derivarClave(password, salt);
+  const plaintext = _str2bytes(JSON.stringify(obj));
+  const cipher = await crypto.subtle.encrypt({ name:'AES-GCM', iv }, key, plaintext);
+  return {
+    _avit_enc: CRYPTO_MAGIC,
+    salt: _bytes2b64(salt),
+    iv: _bytes2b64(iv),
+    data: _bytes2b64(cipher)
+  };
+}
+
+// Descifra un envoltorio. Lanza error si la password es incorrecta.
+async function descifrarPayload(envelope, password){
+  if(!envelope || envelope._avit_enc !== CRYPTO_MAGIC){
+    throw new Error('No es un payload cifrado válido');
+  }
+  if(!password) throw new Error('Sin password');
+  const salt = _b642bytes(envelope.salt);
+  const iv = _b642bytes(envelope.iv);
+  const cipher = _b642bytes(envelope.data);
+  const key = await _derivarClave(password, salt);
+  let plaintext;
+  try {
+    plaintext = await crypto.subtle.decrypt({ name:'AES-GCM', iv }, key, cipher);
+  } catch(e){
+    throw new Error('Password incorrecta');
+  }
+  return JSON.parse(_bytes2str(plaintext));
+}
+
+// Detecta si un payload bajado de la nube viene cifrado
+function esPayloadCifrado(obj){
+  return obj && obj._avit_enc === CRYPTO_MAGIC;
+}
+
+// Estado del cifrado: ON/OFF persistido en localStorage
+function isCryptoEnabled(){
+  return localStorage.getItem('avit_crypto_enabled') === '1';
+}
+function setCryptoEnabled(enabled){
+  localStorage.setItem('avit_crypto_enabled', enabled ? '1' : '0');
+}
+
+// Pide la password al usuario (modal). Devuelve Promise<string|null>.
+function pedirPasswordCripto(motivo){
+  return new Promise(resolve => {
+    const existing = document.getElementById('cryptoPassModal');
+    if(existing) existing.remove();
+    const modal = document.createElement('div');
+    modal.id = 'cryptoPassModal';
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
+    modal.innerHTML = `
+      <div style="background:var(--bg-surface-2,#1a1b1e);border:1px solid var(--border-accent);border-radius:var(--r-lg);padding:26px 30px;width:100%;max-width:420px;font-family:var(--font-body)" onclick="event.stopPropagation()">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+          <span style="font-size:18px">🔐</span>
+          <div>
+            <div style="font-family:var(--font-display);font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)">Password de cifrado</div>
+            <div style="font-size:11px;color:var(--text-3);margin-top:2px">${escapeHtmlK(motivo||'Necesaria para acceder a tus datos en la nube')}</div>
+          </div>
+        </div>
+        <input type="password" id="cryptoPassInput" placeholder="Tu password de cifrado" autocomplete="off" style="width:100%;padding:9px 12px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.10);border-radius:var(--r-md);color:var(--text);font-size:13px;font-family:var(--font-mono);margin-bottom:8px">
+        <div id="cryptoPassError" style="font-size:10.5px;color:var(--red);min-height:14px;margin-bottom:10px"></div>
+        <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:var(--r-md);padding:9px 12px;margin-bottom:14px">
+          <p style="font-size:10px;color:var(--text-3);line-height:1.6;margin:0">⚠ Si la olvidás, los datos cifrados en la nube son irrecuperables. Mantené tu localStorage como backup.</p>
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:8px">
+          <button id="cryptoPassCancel" style="padding:7px 14px;font-size:11px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text-2);cursor:pointer;font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase">Cancelar</button>
+          <button id="cryptoPassOk" style="padding:7px 18px;font-size:11px;border:1px solid var(--accent);border-radius:var(--r-md);background:var(--accent);color:var(--text-on-accent);cursor:pointer;font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase">Confirmar</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    const inp = document.getElementById('cryptoPassInput');
+    setTimeout(()=>inp.focus(), 30);
+    const cleanup = () => modal.remove();
+    document.getElementById('cryptoPassOk').onclick = () => {
+      const v = inp.value;
+      if(!v){
+        document.getElementById('cryptoPassError').textContent = 'Ingresá una password.';
+        return;
+      }
+      cleanup();
+      resolve(v);
+    };
+    document.getElementById('cryptoPassCancel').onclick = () => { cleanup(); resolve(null); };
+    inp.addEventListener('keydown', e => {
+      if(e.key === 'Enter'){ document.getElementById('cryptoPassOk').click(); }
+      else if(e.key === 'Escape'){ cleanup(); resolve(null); }
+    });
+  });
+}
+
+// Obtiene la password — la pide solo si no la tenemos en memoria
+async function obtenerPasswordCripto(motivo){
+  if(_cryptoPassword) return _cryptoPassword;
+  const p = await pedirPasswordCripto(motivo);
+  if(p) _cryptoPassword = p;
+  return p;
+}
+
+
 function togglePanelNube(){
   const p=document.getElementById('panelNube');
   p.style.display=p.style.display==='none'?'flex':'none';
   document.getElementById('nubeMsg').textContent='';
+  // Hidratar valores persistidos
+  if(p.style.display === 'flex'){
+    const savedKey = localStorage.getItem('avit_nube_key') || '';
+    const inp = document.getElementById('nubeKey');
+    if(inp && !inp.value) inp.value = savedKey;
+    const toggle = document.getElementById('autoSyncToggle');
+    if(toggle) toggle.checked = isAutoSyncEnabled();
+    const cryptoToggle = document.getElementById('cryptoToggle');
+    if(cryptoToggle) cryptoToggle.checked = isCryptoEnabled();
+    actualizarCryptoStatus();
+  }
 }
+
+// Estado visible del cifrado debajo del toggle
+function actualizarCryptoStatus(){
+  const el = document.getElementById('cryptoStatus');
+  if(!el) return;
+  if(!isCryptoEnabled()){
+    el.textContent = '';
+    return;
+  }
+  if(_cryptoPassword){
+    el.textContent = '✓ Password cargada en esta sesión';
+    el.style.color = 'var(--green)';
+  } else {
+    el.textContent = '⚠ Falta ingresar password (se pedirá al subir/bajar)';
+    el.style.color = 'var(--accent)';
+  }
+}
+
+async function toggleCifrado(enabled){
+  if(enabled){
+    // Pedir password ahora para confirmar
+    const pass = await pedirPasswordCripto('Esta password protegerá tus datos en la nube');
+    if(!pass){
+      // El usuario canceló: dejar el toggle desactivado
+      const t = document.getElementById('cryptoToggle');
+      if(t) t.checked = false;
+      return;
+    }
+    // Pedir confirmación de la password (defensa contra typos)
+    const confirmacion = await pedirPasswordCripto('Repetí la password para confirmar');
+    if(confirmacion !== pass){
+      alert('Las passwords no coinciden. El cifrado NO se activó.');
+      const t = document.getElementById('cryptoToggle');
+      if(t) t.checked = false;
+      return;
+    }
+    _cryptoPassword = pass;
+    setCryptoEnabled(true);
+    const msg = document.getElementById('nubeMsg');
+    if(msg){
+      msg.style.color = 'var(--green)';
+      msg.textContent = '🔐 Cifrado activado. La próxima vez que subas, los datos viajarán cifrados.';
+    }
+  } else {
+    if(!confirm('¿Desactivar el cifrado? La próxima vez que subas, los datos NO viajarán cifrados (volverán a ser legibles directamente en JSONBin).')){
+      const t = document.getElementById('cryptoToggle');
+      if(t) t.checked = true;
+      return;
+    }
+    setCryptoEnabled(false);
+    _cryptoPassword = null;
+    const msg = document.getElementById('nubeMsg');
+    if(msg){
+      msg.style.color = 'var(--text-2)';
+      msg.textContent = 'Cifrado desactivado.';
+    }
+  }
+  actualizarCryptoStatus();
+}
+
 function cerrarNube(){document.getElementById('panelNube').style.display='none';}
 
 // Convierte la clave del usuario en un nombre de bin seguro (máx 32 chars)
@@ -3928,30 +5449,35 @@ async function subirNube(){
       avit_artifacts:localStorage.getItem('avit_artifacts')||'[]',
       avit_recibos:localStorage.getItem('avit_recibos')||'{}'
     };
+
+    // Si cifrado activado, cifrar el payload
+    let payloadParaSubir = datos;
+    if(isCryptoEnabled()){
+      const pass = await obtenerPasswordCripto('Necesaria para cifrar tus datos antes de subir');
+      if(!pass){
+        msg.style.color='var(--red,#c0392b)';
+        msg.textContent='✗ Cancelado: cifrado activado pero no se ingresó password';
+        return;
+      }
+      msg.textContent='Cifrando…';
+      payloadParaSubir = await cifrarPayload(datos, pass);
+      msg.textContent='Subiendo…';
+    }
+
     const nombre = binName(key);
     let binId = await getBinId(key);
     let resp;
     if(binId){
-      // Actualizar bin existente
       resp=await fetch(`${JSONBIN_BASE}/b/${binId}`,{
         method:'PUT',
-        headers:{
-          'Content-Type':'application/json',
-          'X-Master-Key':JSONBIN_API_KEY
-        },
-        body:JSON.stringify(datos)
+        headers:{ 'Content-Type':'application/json', 'X-Master-Key':JSONBIN_API_KEY },
+        body:JSON.stringify(payloadParaSubir)
       });
     } else {
-      // Crear bin nuevo
       resp=await fetch(`${JSONBIN_BASE}/b`,{
         method:'POST',
-        headers:{
-          'Content-Type':'application/json',
-          'X-Master-Key':JSONBIN_API_KEY,
-          'X-Bin-Name':nombre,
-          'X-Bin-Private':'true'
-        },
-        body:JSON.stringify(datos)
+        headers:{ 'Content-Type':'application/json', 'X-Master-Key':JSONBIN_API_KEY, 'X-Bin-Name':nombre, 'X-Bin-Private':'true' },
+        body:JSON.stringify(payloadParaSubir)
       });
       if(resp.ok){
         const result=await resp.json();
@@ -3964,11 +5490,120 @@ async function subirNube(){
       throw new Error(t||resp.statusText);
     }
     msg.style.color='var(--green)';
-    msg.textContent='✓ Datos subidos correctamente a la nube';
+    msg.textContent = isCryptoEnabled() ? '✓ Datos cifrados y subidos correctamente' : '✓ Datos subidos correctamente a la nube';
     document.getElementById('syncStatus').textContent='☁ Subido '+new Date().toLocaleDateString('es-GT');
+    localStorage.setItem('avit_nube_key', key);
   }catch(err){
     msg.style.color='var(--red,#c0392b)';
     msg.textContent='✗ Error: '+err.message;
+  }
+}
+
+// ═══════ AUTO-SYNC SILENCIOSO ═══════
+let _autoSyncTimer = null;
+let _autoSyncInProgress = false;
+
+function isAutoSyncEnabled(){
+  return localStorage.getItem('avit_autosync_enabled') === '1';
+}
+
+function toggleAutoSync(enabled){
+  localStorage.setItem('avit_autosync_enabled', enabled ? '1' : '0');
+  const status = document.getElementById('syncStatus');
+  if(enabled){
+    if(status){
+      status.textContent = '⚡ Auto-sync activado';
+      setTimeout(()=>{ if(status.textContent === '⚡ Auto-sync activado') status.textContent = ''; }, 2500);
+    }
+    // Si hay clave guardada, hacer una sync inmediata
+    if(getStoredNubeKey()) triggerAutoSync();
+  } else {
+    if(status){
+      status.textContent = '⚡ Auto-sync desactivado';
+      setTimeout(()=>{ if(status.textContent === '⚡ Auto-sync desactivado') status.textContent = ''; }, 2500);
+    }
+    if(_autoSyncTimer){ clearTimeout(_autoSyncTimer); _autoSyncTimer = null; }
+  }
+}
+
+function getStoredNubeKey(){
+  // Primero intentar del input visible (si está abierto el panel), luego de localStorage
+  const inp = document.getElementById('nubeKey');
+  if(inp && inp.value.trim()) return inp.value.trim();
+  return localStorage.getItem('avit_nube_key') || '';
+}
+
+// Llamada después de cualquier cambio que afecte datos persistidos
+function triggerAutoSync(){
+  if(!isAutoSyncEnabled()) return;
+  const key = getStoredNubeKey();
+  if(!key) return; // sin clave no podemos sync
+
+  // Debounce: cancelar timer pendiente
+  if(_autoSyncTimer){ clearTimeout(_autoSyncTimer); }
+  _autoSyncTimer = setTimeout(() => {
+    ejecutarAutoSync(key);
+  }, 3000);
+}
+
+async function ejecutarAutoSync(key){
+  if(_autoSyncInProgress) return;
+  _autoSyncInProgress = true;
+  const status = document.getElementById('syncStatus');
+  try{
+    if(status){ status.textContent = '⏳ Sincronizando...'; status.style.color = 'var(--text-2)'; }
+
+    const datos={
+      avit_cots:localStorage.getItem('avit_cots')||'[]',
+      avit_sprint_tracker:localStorage.getItem('avit_sprint_tracker')||'{}',
+      avit_calc:localStorage.getItem('avit_calc')||'{}',
+      avit_artifacts:localStorage.getItem('avit_artifacts')||'[]',
+      avit_recibos:localStorage.getItem('avit_recibos')||'{}'
+    };
+
+    // Si cifrado activado: requerimos password en memoria (sin pedirla, para no interrumpir).
+    // Si no la tenemos, pausamos silenciosamente y avisamos en el statusbar.
+    let payload = datos;
+    if(isCryptoEnabled()){
+      if(!_cryptoPassword){
+        if(status){ status.textContent = '🔐 Sync pausado: ingresá password en panel Nube'; status.style.color = 'var(--accent)'; }
+        return;
+      }
+      payload = await cifrarPayload(datos, _cryptoPassword);
+    }
+
+    const nombre = binName(key);
+    let binId = await getBinId(key);
+    let resp;
+    if(binId){
+      resp = await fetch(`${JSONBIN_BASE}/b/${binId}`,{
+        method:'PUT',
+        headers:{ 'Content-Type':'application/json', 'X-Master-Key':JSONBIN_API_KEY },
+        body:JSON.stringify(payload)
+      });
+    } else {
+      resp = await fetch(`${JSONBIN_BASE}/b`,{
+        method:'POST',
+        headers:{ 'Content-Type':'application/json', 'X-Master-Key':JSONBIN_API_KEY, 'X-Bin-Name':nombre, 'X-Bin-Private':'true' },
+        body:JSON.stringify(payload)
+      });
+      if(resp.ok){
+        const result = await resp.json();
+        const newBinId = result.metadata && result.metadata.id;
+        if(newBinId) localStorage.setItem('avit_bin_'+nombre, newBinId);
+      }
+    }
+    if(!resp.ok) throw new Error('Status '+resp.status);
+
+    const ahora = new Date();
+    const hora = ahora.toLocaleTimeString('es-GT',{hour:'2-digit',minute:'2-digit'});
+    const lockIcon = isCryptoEnabled() ? '🔐 ' : '';
+    if(status){ status.textContent = `${lockIcon}✓ Sincronizado ${hora}`; status.style.color = 'var(--green)'; }
+  }catch(err){
+    if(status){ status.textContent = '⚠ Sync falló (reintentaremos)'; status.style.color = 'var(--red)'; }
+    setTimeout(()=>{ if(isAutoSyncEnabled()) triggerAutoSync(); }, 30000);
+  } finally {
+    _autoSyncInProgress = false;
   }
 }
 
@@ -3993,7 +5628,30 @@ async function bajarNube(){
       throw new Error(t||resp.statusText);
     }
     const result=await resp.json();
-    const datos=result.record||result;
+    let datos=result.record||result;
+
+    // Si el payload viene cifrado, descifrar
+    if(esPayloadCifrado(datos)){
+      msg.style.color='var(--text-2)';
+      msg.textContent='Datos cifrados. Pidiendo password…';
+      const pass = await obtenerPasswordCripto('Necesaria para descifrar los datos de la nube');
+      if(!pass){
+        msg.style.color='var(--red,#c0392b)';
+        msg.textContent='✗ Cancelado: no se ingresó password';
+        return;
+      }
+      msg.textContent='Descifrando…';
+      try {
+        datos = await descifrarPayload(datos, pass);
+      } catch(e){
+        // Password incorrecta — limpiar de memoria para que la próxima vez la pida de nuevo
+        _cryptoPassword = null;
+        msg.style.color='var(--red,#c0392b)';
+        msg.textContent='✗ Password incorrecta. Los datos locales NO se modificaron.';
+        return;
+      }
+    }
+
     const n=JSON.parse(datos.avit_cots||'[]').length;
     if(!confirm(`¿Bajar ${n} cotización(es) de la nube? Esto reemplazará los datos de este navegador.`))return;
     localStorage.setItem('avit_cots',datos.avit_cots||'[]');
@@ -4004,6 +5662,9 @@ async function bajarNube(){
     msg.style.color='var(--green)';
     msg.textContent=`✓ ${n} cotizaciones cargadas desde la nube`;
     document.getElementById('syncStatus').textContent='☁ Bajado '+new Date().toLocaleDateString('es-GT');
+    // Persistir clave para auto-sync
+    const inpKey = document.getElementById('nubeKey');
+    if(inpKey && inpKey.value.trim()) localStorage.setItem('avit_nube_key', inpKey.value.trim());
     renderIngresos();
     renderArtefactos();
     if(document.getElementById('pg-est').classList.contains('active'))renderEstatus();
