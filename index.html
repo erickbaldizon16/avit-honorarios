@@ -1128,6 +1128,49 @@ input.narrow{width:88px}input.mid{width:108px}
   text-align:right;padding:0 2px;letter-spacing:.02em;margin-bottom:6px;opacity:.85;
 }
 
+/* ═══ RESUMEN STICKY DEL COTIZADOR ═══ */
+#pg-calc{ padding-bottom: 72px; }
+#cotSticky{
+  position:fixed;
+  bottom:0;left:0;right:0;
+  z-index:150;
+  background:rgba(17,18,20,0.92);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-top:1px solid rgba(212,168,67,0.25);
+  padding:10px 20px;
+  display:none; /* se muestra solo en pestaña Cotizador */
+  align-items:center;
+  gap:16px;
+  box-shadow:0 -8px 32px rgba(0,0,0,0.4);
+}
+[data-theme="light"] #cotSticky{
+  background:rgba(245,242,235,0.92)!important;
+  border-top-color:rgba(184,144,42,0.30)!important;
+  box-shadow:0 -4px 20px rgba(0,0,0,0.08)!important;
+}
+.cot-sticky-col{
+  display:flex;flex-direction:column;gap:1px;min-width:0;
+}
+.cot-sticky-label{
+  font-size:8.5px;color:var(--text-3);
+  font-family:var(--font-display);letter-spacing:.14em;text-transform:uppercase;
+}
+.cot-sticky-value{
+  font-size:13px;font-weight:500;color:var(--text);
+  font-family:var(--font-mono);white-space:nowrap;
+}
+.cot-sticky-value.accent{color:var(--accent)}
+.cot-sticky-value.green{color:var(--green)}
+.cot-sticky-sep{
+  width:1px;height:28px;background:rgba(255,255,255,0.08);
+  flex-shrink:0;align-self:center;
+}
+[data-theme="light"] .cot-sticky-sep{background:rgba(0,0,0,0.10)!important}
+.cot-sticky-actions{
+  margin-left:auto;display:flex;gap:8px;align-items:center;flex-shrink:0;
+}
+
+
 /* ═══════════════════════════════════════════════ */
 /* MODO CLARO — overrides puntuales sobre rgba()   */
 /* hardcoded que no se podían convertir a vars     */
@@ -1293,12 +1336,29 @@ input.narrow{width:88px}input.mid{width:108px}
   border:0.5px solid var(--border-2);
   background:transparent;color:var(--text-2);cursor:pointer;
   font-size:14px;transition:all .2s var(--ease-out);
-  margin-right:6px;
 }
 .theme-toggle:hover{
   background:var(--tint-on-bg-medium);
   border-color:var(--border-accent);
   color:var(--accent);
+}
+
+/* Ítem del menú ⚙ */
+.menu-config-item{
+  display:flex;align-items:center;gap:8px;
+  width:100%;padding:7px 10px;
+  font-size:12px;font-family:var(--font-body);
+  color:var(--text-2);background:transparent;
+  border:none;border-radius:var(--r-md);
+  cursor:pointer;text-align:left;
+  transition:background .12s,color .12s;
+}
+.menu-config-item:hover{
+  background:var(--tint-on-bg-medium);
+  color:var(--text);
+}
+[data-theme="light"] .menu-config-item:hover{
+  background:rgba(0,0,0,0.05)!important;
 }
 
 </style>
@@ -1316,23 +1376,31 @@ input.narrow{width:88px}input.mid{width:108px}
     <div style="width:1px;height:20px;background:rgba(255,255,255,0.08);align-self:center;margin:0 4px;flex-shrink:0"></div>
     <button class="ntab" onclick="showPage('ing')">Proyectos</button>
     <button class="ntab" onclick="showPage('est')">Kanban</button>
-    <div style="width:1px;height:20px;background:rgba(255,255,255,0.08);align-self:center;margin:0 4px;flex-shrink:0"></div>
-    <button class="ntab" onclick="showPage('estimado')">Estimado rápido</button>
-    <button class="ntab" onclick="showPage('programa')">Programa arquitectónico</button>
-    <div style="width:1px;height:20px;background:rgba(255,255,255,0.08);align-self:center;margin:0 4px;flex-shrink:0"></div>
     <button class="ntab" onclick="showPage('calc')">Cotizador</button>
+    <div style="width:1px;height:20px;background:rgba(255,255,255,0.08);align-self:center;margin:0 4px;flex-shrink:0"></div>
+    <button class="ntab" onclick="showPage('ing');setTimeout(()=>document.getElementById('sec-herramientas')?.scrollIntoView({behavior:'smooth'}),120)">Mis Herramientas</button>
   </div>
   <div class="topbar-actions" style="min-width:auto;gap:6px;align-items:center">
-    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Cambiar entre modo claro y oscuro" aria-label="Cambiar tema">🌙</button>
-    <div style="display:flex;flex-direction:column;align-items:flex-end">
-      <div style="display:flex;gap:6px">
-        <button class="btn-data" onclick="exportarJSON()" title="Descargar todos tus datos como archivo JSON">⬇ JSON</button>
-        <button class="btn-data" onclick="exportarExcel()" title="Descargar cotizaciones como archivo Excel">📊 Excel</button>
-        <label class="btn-data" style="cursor:pointer" title="Restaurar datos desde un archivo JSON previamente exportado">⬆ Importar<input type="file" id="importInput" accept=".json" style="display:none" onchange="importarJSON(event)"></label>
-        <button class="btn-data verde" id="btnNube" onclick="togglePanelNube()" title="Sincronizar datos con la nube">☁ Nube</button>
+    <!-- Botón +Nueva global -->
+    <button onclick="showPage('ing');showFormCot()" title="Nueva cotización" style="display:inline-flex;align-items:center;gap:5px;padding:6px 13px;font-size:10px;font-weight:600;border:1px solid var(--accent);border-radius:var(--r-md);background:var(--accent);color:var(--text-on-accent);cursor:pointer;font-family:var(--font-display);letter-spacing:.10em;text-transform:uppercase;transition:all .2s var(--ease-out)">
+      <span style="font-size:14px;line-height:1">+</span> Nueva
+    </button>
+    <!-- Menú ⚙ -->
+    <div style="position:relative" id="menuConfigWrap">
+      <button onclick="toggleMenuConfig()" title="Herramientas y datos" style="display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:var(--r-md);border:0.5px solid var(--border-2);background:transparent;color:var(--text-2);cursor:pointer;font-size:15px;transition:all .2s var(--ease-out)">⚙</button>
+      <div id="menuConfig" style="display:none;position:absolute;top:calc(100% + 8px);right:0;background:var(--bg-surface-2,#1a1b1e);border:1px solid var(--border-accent);border-radius:var(--r-lg);padding:6px;min-width:200px;box-shadow:0 10px 40px rgba(0,0,0,0.5);z-index:200;animation:popIn .15s var(--ease-out)">
+        <div style="padding:5px 10px 3px;font-family:var(--font-display);font-size:8.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-3)">Datos</div>
+        <button onclick="exportarJSON();toggleMenuConfig()" class="menu-config-item">⬇ Exportar JSON</button>
+        <button onclick="exportarExcel();toggleMenuConfig()" class="menu-config-item">📊 Exportar Excel</button>
+        <label class="menu-config-item" style="cursor:pointer">⬆ Importar JSON<input type="file" id="importInput" accept=".json" style="display:none" onchange="importarJSON(event);toggleMenuConfig()"></label>
+        <div style="height:1px;background:rgba(255,255,255,0.06);margin:4px 0"></div>
+        <div style="padding:5px 10px 3px;font-family:var(--font-display);font-size:8.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-3)">Sincronización</div>
+        <button onclick="togglePanelNube();toggleMenuConfig()" class="menu-config-item" id="btnNube">☁ Nube <span id="syncStatusMenu" style="font-family:var(--font-mono);font-size:9px;color:var(--green);margin-left:4px"></span></button>
       </div>
-      <div class="sync-status" id="syncStatus"></div>
     </div>
+    <!-- Toggle tema -->
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Cambiar entre modo claro y oscuro" aria-label="Cambiar tema">🌙</button>
+    <div class="sync-status" id="syncStatus"></div>
   </div>
 </div>
 
@@ -1892,17 +1960,6 @@ input.narrow{width:88px}input.mid{width:108px}
     <p class="home-hero-greeting" id="home-greeting">Hola, Baldi</p>
     <p class="home-hero-date" id="home-date"></p>
   </div>
-  <div class="home-hero-quick">
-    <button onclick="showPage('ing');showFormCot()" class="home-quick-btn primary">
-      <span style="font-size:18px">+</span><span>Nueva cotización</span>
-    </button>
-    <button onclick="showPage('calc')" class="home-quick-btn">
-      <span style="font-size:14px">📋</span><span>Cotizador</span>
-    </button>
-    <button onclick="showPage('est')" class="home-quick-btn">
-      <span style="font-size:14px">📊</span><span>Kanban</span>
-    </button>
-  </div>
 </div>
 
 <!-- KPIs grandes -->
@@ -2037,21 +2094,41 @@ input.narrow{width:88px}input.mid{width:108px}
   <div id="ing-lista"></div>
 </div>
 
+<div class="sc" id="sec-herramientas">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+    <div class="sc-title" style="margin:0">🛠 Mis herramientas</div>
+    <button onclick="openArtefactoModal()" style="padding:5px 12px;font-size:10px;font-weight:500;border:0.5px solid var(--border-accent);border-radius:var(--r-md);background:var(--accent-subtle);color:var(--accent);cursor:pointer;font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase">+ Agregar</button>
+  </div>
+  <p style="font-size:11px;color:var(--text-3);margin-bottom:12px">Calculadoras integradas y acceso rápido a tus artefactos de Claude.</p>
+
+  <!-- Calculadoras integradas -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
+    <button onclick="showPage('estimado')" style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:var(--r-md);cursor:pointer;text-align:left;transition:all .15s var(--ease-out)" onmouseover="this.style.borderColor='rgba(212,168,67,0.35)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.07)'">
+      <span style="font-size:22px;flex-shrink:0">🧮</span>
+      <div style="min-width:0">
+        <div style="font-size:12px;font-weight:500;color:var(--text);font-family:var(--font-display)">Estimado rápido</div>
+        <div style="font-size:10px;color:var(--text-3);margin-top:1px">Costo por m² directo</div>
+      </div>
+    </button>
+    <button onclick="showPage('programa')" style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:var(--r-md);cursor:pointer;text-align:left;transition:all .15s var(--ease-out)" onmouseover="this.style.borderColor='rgba(212,168,67,0.35)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.07)'">
+      <span style="font-size:22px;flex-shrink:0">📐</span>
+      <div style="min-width:0">
+        <div style="font-size:12px;font-weight:500;color:var(--text);font-family:var(--font-display)">Programa arquitectónico</div>
+        <div style="font-size:10px;color:var(--text-3);margin-top:1px">Presupuesto por ambientes</div>
+      </div>
+    </button>
+  </div>
+
+  <!-- Artefactos externos -->
+  <div id="artefactos-lista"></div>
+</div>
+
 <div class="sc" id="sc-terminados" style="display:none">
   <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="toggleTerminados()">
     <div class="sc-title" style="margin:0">📁 Proyectos terminados <span id="ing-term-count" style="color:var(--text-3);font-weight:400;letter-spacing:0;text-transform:none;font-family:var(--font-body);font-size:11px;margin-left:8px"></span></div>
     <span id="ing-term-chev" style="font-size:11px;color:var(--text-3);transition:transform .2s">▶</span>
   </div>
   <div id="ing-term-body" style="display:none;margin-top:12px"></div>
-</div>
-
-<div class="sc">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-    <div class="sc-title" style="margin:0">🔗 Mis herramientas y artefactos</div>
-    <button onclick="openArtefactoModal()" style="padding:5px 12px;font-size:10px;font-weight:500;border:0.5px solid var(--border-accent);border-radius:var(--r-md);background:var(--accent-subtle);color:var(--accent);cursor:pointer;font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase">+ Agregar</button>
-  </div>
-  <p style="font-size:11px;color:var(--text-3);margin-bottom:12px">Acceso rápido a otros artefactos de Claude que usás en tu trabajo.</p>
-  <div id="artefactos-lista"></div>
 </div>
 
 </div><!-- /pg-ing -->
@@ -2180,14 +2257,15 @@ const LOGO_B64 = 'iVBORw0KGgoAAAANSUhEUgAADUgAAAiYCAYAAAC/qKwIAAAgAElEQVR4nOzdaV
 let sprints = [
   {id:1,type:'f1',title:'Concepto y diseño arquitectónico',entregables:['Concepto','Diseño arq.'],clientNote:'Presentaremos las primeras ideas del proyecto y la propuesta espacial general.',needsFeedback:true,weeks:2},
   {id:2,type:'f1',title:'Modelado 3D y visualización',entregables:['Modelado 3D','Renders'],clientNote:'Recibirá imágenes 3D del proyecto para su revisión y aprobación.',needsFeedback:true,weeks:2},
-  {id:3,type:'f1',title:'Planimetría de anteproyecto',entregables:['Plantas amuebladas','Plantas techo','Elevaciones','Secciones'],clientNote:'Entrega completa del juego de planos de presentación.',needsFeedback:false,weeks:2},
+  {id:3,type:'f1',title:'Planimetría de anteproyecto',entregables:['Plantas amuebladas','Plantas de techo','Elevaciones','Secciones'],clientNote:'Entrega completa del juego de planos de presentación.',needsFeedback:false,weeks:2},
   {id:4,type:'hito',title:'Entrega Anteproyecto — Reunión aprobación cliente',entregables:[],clientNote:'Revisión final y aprobación del anteproyecto para continuar a constructivos.',needsFeedback:true,weeks:0},
-  {id:5,type:'f2',title:'Planos constructivos',entregables:[...PLANOS_CONSTRUCTIVOS],clientNote:'Elaboración del juego completo de planos arquitectónicos y estructurales.',needsFeedback:false,weeks:3,collapsible:true},
-  {id:6,type:'f2',title:'Planos hidráulicos',entregables:[...PLANOS_HIDRAULICOS],clientNote:'Plantas de instalación de agua potable, aguas negras y pluviales.',needsFeedback:false,weeks:1,collapsible:true},
-  {id:7,type:'f2',title:'Planos eléctricos',entregables:[...PLANOS_ELECTRICOS],clientNote:'Plantas de fuerza e iluminación.',needsFeedback:false,weeks:1,collapsible:true},
-  {id:8,type:'hito',title:'Entrega final — Cierre del proyecto',entregables:[],clientNote:'Entrega de archivos digitales y físicos. Pago del saldo final.',needsFeedback:false,weeks:0},
+  {id:5,type:'f2',title:'Planos generales',entregables:[],clientNote:'Especificaciones, planta de ubicación, localización y satelital.',needsFeedback:false,weeks:1,collapsible:true},
+  {id:6,type:'f2',title:'Planos constructivos',entregables:[],clientNote:'Elaboración del juego completo de planos arquitectónicos y estructurales.',needsFeedback:false,weeks:3,collapsible:true},
+  {id:7,type:'f2',title:'Planos hidráulicos',entregables:[],clientNote:'Instalaciones de agua potable, aguas negras, pluviales y más.',needsFeedback:false,weeks:1,collapsible:true},
+  {id:8,type:'f2',title:'Planos eléctricos',entregables:[],clientNote:'Fuerza, iluminación, HVAC, CCVT e instalaciones especiales.',needsFeedback:false,weeks:1,collapsible:true},
+  {id:9,type:'hito',title:'Entrega final — Cierre del proyecto',entregables:[],clientNote:'Entrega de archivos digitales y físicos. Pago del saldo final.',needsFeedback:false,weeks:0},
 ];
-let nextId = 9;
+let nextId = 10;
 let calView = 'tl';
 
 // ═══════ NAV ═══════
@@ -2280,12 +2358,55 @@ function toggleTheme(){
   }
 })();
 
+// ═══════════════════════════════════════════════
+// MENÚ ⚙ (configuración / datos)
+// ═══════════════════════════════════════════════
+function toggleMenuConfig(){
+  const m = document.getElementById('menuConfig');
+  if(!m) return;
+  const open = m.style.display === 'none' || m.style.display === '';
+  m.style.display = open ? 'block' : 'none';
+  if(open){
+    // Cerrar al click fuera
+    setTimeout(()=>{
+      document.addEventListener('click', cerrarMenuConfigFuera, { once:false });
+    }, 10);
+  } else {
+    document.removeEventListener('click', cerrarMenuConfigFuera);
+  }
+}
+
+function cerrarMenuConfigFuera(e){
+  const wrap = document.getElementById('menuConfigWrap');
+  if(wrap && !wrap.contains(e.target)){
+    const m = document.getElementById('menuConfig');
+    if(m) m.style.display = 'none';
+    document.removeEventListener('click', cerrarMenuConfigFuera);
+  }
+}
+
 function showPage(id) {
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.ntab').forEach(t=>t.classList.remove('active'));
   document.getElementById('pg-'+id).classList.add('active');
-  const idx={'home':0,'ing':1,'est':2,'estimado':3,'programa':4,'calc':5}[id]||0;
-  document.querySelectorAll('.ntab')[idx].classList.add('active');
+  const idx={'home':0,'ing':1,'est':2,'calc':3}[id];
+  if(idx !== undefined){
+    document.querySelectorAll('.ntab')[idx].classList.add('active');
+  } else if(id === 'estimado' || id === 'programa'){
+    const tabs = document.querySelectorAll('.ntab');
+    if(tabs[4]) tabs[4].classList.add('active');
+  }
+  // Sticky del Cotizador: mostrar solo en calc
+  const sticky = document.getElementById('cotSticky');
+  if(sticky){
+    if(id === 'calc'){
+      sticky.style.display = 'flex';
+      // Poblar sticky con valores actuales inmediatamente
+      calc();
+    } else {
+      sticky.style.display = 'none';
+    }
+  }
   if(id==='home'){renderHome();}
   if(id==='ing'){renderIngresos();}
   if(id==='est'){renderEstatus();}
@@ -2382,6 +2503,14 @@ function calc(){
     document.getElementById('s2').textContent=fmt(fee2);
     // Actualizar contadores por grupo
     if(typeof actualizarContadoresPlanos === 'function') actualizarContadoresPlanos();
+    // Sincronizar sprints F2 con los planos cotizados
+    if(typeof sincronizarSprintsF2 === 'function'){
+      const cambios = sincronizarSprintsF2();
+      if(cambios && typeof renderAll === 'function'){
+        // Re-render solo si hubo cambios para evitar loop
+        setTimeout(renderAll, 10);
+      }
+    }
   }
   const sub=fee1+fee2;
   const c3D=f1?fee1*(gv('col3D')/100):0;
@@ -2429,6 +2558,17 @@ function calc(){
   document.getElementById('rAntic').textContent=fmt(aA);
   document.getElementById('rF1pay').textContent=fmt(mA);
   document.getElementById('rSaldo').textContent=fmt(sA);
+  // ── Resumen sticky ──
+  const _stk = document.getElementById('cotSticky');
+  if(_stk && _stk.style.display !== 'none'){
+    document.getElementById('stkF1').textContent = f1 ? fmt(fee1) : '—';
+    document.getElementById('stkF2').textContent = f2 ? fmt(fee2) : '—';
+    const ivaEl = document.getElementById('stkIva');
+    ivaEl.textContent = iOn ? fmt(ia) : '—';
+    ivaEl.style.color = iOn ? 'var(--text-2)' : 'var(--text-3)';
+    document.getElementById('stkTotal').textContent = fmt(tot);
+    document.getElementById('stkUtil').textContent = fmt(tot - cTot - oh);
+  }
   // Capturar cantidades cotizadas por nombre de plano (para que el Kanban sepa qué entregar)
   const planosQty = {};
   if(typeof PLANO_NAMES !== 'undefined'){
@@ -2492,7 +2632,107 @@ function toggleSprintAccordion(id){const s=sprints.find(s=>s.id===id);if(!s)retu
 function toggleFb(id){const s=sprints.find(s=>s.id===id);if(s){s.needsFeedback=!s.needsFeedback;renderAll()}}
 function updTitle(id,v){const s=sprints.find(s=>s.id===id);if(s)s.title=v}
 function updNote(id,v){const s=sprints.find(s=>s.id===id);if(s)s.clientNote=v}
-function getEntOpts(type){return type==='f1'?ENT_F1:type==='f2'?ENT_F2:[]}
+// getEntOpts: devuelve TODAS las opciones disponibles para el desplegable.
+// Para sprints F2, devuelve los planos del grupo identificado por el título del sprint
+// (no solo los cotizados). Así el usuario puede tildar/destildar manualmente cualquiera.
+function getEntOpts(type, sprintTitle){
+  if(type === 'f1') return ENT_F1;
+  if(type === 'f2'){
+    const groupKey = grupoDeSprint(sprintTitle);
+    if(groupKey){
+      const grupo = PLANO_GROUPS.find(g => g.key === groupKey);
+      return grupo ? grupo.planos : [];
+    }
+    // Sprint F2 sin grupo identificado: mostrar todos los 32
+    return PLANO_NAMES;
+  }
+  return [];
+}
+
+// Identifica a qué grupo pertenece un sprint F2 según su título
+function grupoDeSprint(titulo){
+  const t = (titulo || '').toLowerCase();
+  if(t.includes('general')) return 'generales';
+  if(t.includes('construct')) return 'constructivos';
+  if(t.includes('hidrá') || t.includes('hidra')) return 'hidraulicos';
+  if(t.includes('eléctri') || t.includes('electri')) return 'electricos';
+  return null;
+}
+
+// Devuelve los planos efectivamente cotizados (cantidad > 0) en el orden de PLANO_NAMES
+function planosCotizados(){
+  const out = [];
+  PLANO_NAMES.forEach((name, idx) => {
+    const i = idx + 1;
+    const inp = document.getElementById('qp'+i);
+    const q = inp ? (parseFloat(inp.value) || 0) : 0;
+    if(q > 0) out.push(name);
+  });
+  return out;
+}
+
+// Snapshot anterior de cantidades por plano. Lo usamos para detectar cambios:
+// 0 → >0 = AGREGAR al sprint correspondiente
+// >0 → 0 = QUITAR del sprint correspondiente
+// (sin tocar lo que el usuario tildó/destildó manualmente entre cambios)
+let _planoQtyPrev = {};
+
+// Sincroniza sprints F2 según el DELTA entre cantidades previas y actuales.
+// Solo agrega/quita planos que cambiaron (0→>0 o >0→0), respetando los demás.
+function sincronizarSprintsF2(){
+  let cambios = false;
+  // Calcular delta
+  const cambiosDePlano = []; // [{name, accion: 'agregar' | 'quitar'}]
+  PLANO_NAMES.forEach((name, idx) => {
+    const i = idx + 1;
+    const inp = document.getElementById('qp'+i);
+    const ahora = inp ? (parseFloat(inp.value) || 0) : 0;
+    const antes = _planoQtyPrev[name] || 0;
+    if(antes === 0 && ahora > 0){
+      cambiosDePlano.push({ name, accion: 'agregar' });
+    } else if(antes > 0 && ahora === 0){
+      cambiosDePlano.push({ name, accion: 'quitar' });
+    }
+    _planoQtyPrev[name] = ahora;
+  });
+
+  if(cambiosDePlano.length === 0) return false;
+
+  // Aplicar cada cambio al sprint del grupo correspondiente
+  cambiosDePlano.forEach(({ name, accion }) => {
+    // Identificar el grupo del plano
+    const grupo = grupoDePlano(name);
+    if(!grupo) return;
+    // Buscar el sprint F2 del mismo grupo
+    const sprint = sprints.find(s => s.type === 'f2' && grupoDeSprint(s.title) === grupo.key);
+    if(!sprint) return;
+    if(!Array.isArray(sprint.entregables)) sprint.entregables = [];
+
+    if(accion === 'agregar'){
+      if(!sprint.entregables.includes(name)){
+        sprint.entregables.push(name);
+        cambios = true;
+      }
+    } else if(accion === 'quitar'){
+      const idx = sprint.entregables.indexOf(name);
+      if(idx !== -1){
+        sprint.entregables.splice(idx, 1);
+        cambios = true;
+      }
+    }
+  });
+  return cambios;
+}
+
+// Inicializa el snapshot de cantidades al cargar (para no disparar sincronización
+// la primera vez que llamamos calc())
+function inicializarPlanoQtyPrev(){
+  PLANO_NAMES.forEach((name, idx) => {
+    const i = idx + 1;
+    const inp = document.getElementById('qp'+i);
+    _planoQtyPrev[name] = inp ? (parseFloat(inp.value) || 0) : 0;
+  });
+}
 
 function addDays(d,n){const r=new Date(d);r.setDate(r.getDate()+n);return r}
 function fmtS(d){return d.toLocaleDateString('es-GT',{day:'2-digit',month:'short'})}
@@ -2522,7 +2762,7 @@ function renderEditor(){
   el.innerHTML=sprints.map((s,i)=>{
     if(s.type==='f1'&&!f1on)return'';
     if(s.type==='f2'&&!f2on)return'';
-    const opts=getEntOpts(s.type);
+    const opts=getEntOpts(s.type, s.title);
     const entTags=opts.map(e=>{
       const on=s.entregables.includes(e);
       const cls=on?(s.type==='f2'?'ent-tag f2-on':'ent-tag on'):'ent-tag';
@@ -4891,6 +5131,9 @@ document.addEventListener('DOMContentLoaded',()=>{
   n.setDate(t.getDate()+df);
   document.getElementById('projStart').value=n.toISOString().split('T')[0];
   document.getElementById('ing-year').value=new Date().getFullYear();
+  // Snapshot inicial de cantidades (antes de calc) para que la primera llamada
+  // no dispare la sincronización con un delta artificial
+  if(typeof inicializarPlanoQtyPrev === 'function') inicializarPlanoQtyPrev();
   calc();renderIngresos();renderArtefactos();renderHome();
 
   // ═══ Atajos de teclado globales ═══
@@ -6459,6 +6702,42 @@ if(typeof window !== 'undefined'){
   }
 }
 </script>
+
+<!-- ═══ RESUMEN STICKY DEL COTIZADOR ═══ -->
+<div id="cotSticky">
+  <div class="cot-sticky-col">
+    <span class="cot-sticky-label">Anteproyecto</span>
+    <span class="cot-sticky-value" id="stkF1">—</span>
+  </div>
+  <div class="cot-sticky-sep"></div>
+  <div class="cot-sticky-col">
+    <span class="cot-sticky-label">Planimetrías</span>
+    <span class="cot-sticky-value" id="stkF2">—</span>
+  </div>
+  <div class="cot-sticky-sep"></div>
+  <div class="cot-sticky-col">
+    <span class="cot-sticky-label">IVA</span>
+    <span class="cot-sticky-value" id="stkIva" style="color:var(--text-3)">—</span>
+  </div>
+  <div class="cot-sticky-sep"></div>
+  <div class="cot-sticky-col">
+    <span class="cot-sticky-label">Total a cobrar</span>
+    <span class="cot-sticky-value accent" id="stkTotal">—</span>
+  </div>
+  <div class="cot-sticky-sep"></div>
+  <div class="cot-sticky-col">
+    <span class="cot-sticky-label">Utilidad neta</span>
+    <span class="cot-sticky-value green" id="stkUtil">—</span>
+  </div>
+  <div class="cot-sticky-actions">
+    <button onclick="genCotizacion()" title="Generar cotización formal" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;font-size:10px;font-weight:600;border:none;border-radius:var(--r-md);background:var(--accent);color:var(--text-on-accent);cursor:pointer;font-family:var(--font-display);letter-spacing:.10em;text-transform:uppercase;transition:opacity .15s" onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">
+      📄 PDF
+    </button>
+    <button onclick="showPage('ing');showFormCot()" title="Registrar esta cotización en Proyectos" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;font-size:10px;font-weight:600;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text-2);cursor:pointer;font-family:var(--font-display);letter-spacing:.10em;text-transform:uppercase;transition:all .15s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border-2)';this.style.color='var(--text-2)'">
+      + Registrar
+    </button>
+  </div>
+</div>
 
 </body>
 </html>
