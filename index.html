@@ -1407,6 +1407,33 @@ input.narrow{width:88px}input.mid{width:108px}
 <!-- ═══════════════════════════════════════════════ PÁGINA: HONORARIOS -->
 <div class="page" id="pg-calc">
 
+<!-- Badge de borrador guardado (visible solo cuando hay borrador) -->
+<div id="draftBadge" style="
+  display:none;align-items:center;gap:10px;
+  padding:9px 14px;margin-bottom:14px;
+  background:rgba(212,168,67,0.07);
+  border:1px solid rgba(212,168,67,0.22);
+  border-radius:var(--r-md);
+  font-size:11px;color:var(--text-3);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  animation:fadeUp .3s var(--ease-out) both;
+">
+  <span style="font-size:13px">✦</span>
+  <span style="color:var(--text-2)">Borrador guardado</span>
+  <span id="draftTime" style="font-family:var(--font-mono);font-size:11px;color:var(--accent);font-weight:500">--:--</span>
+  <span style="flex:1"></span>
+  <button
+    onclick="clearDraft()"
+    style="padding:3px 11px;font-size:9.5px;font-weight:600;
+      border:1px solid rgba(255,255,255,0.10);border-radius:var(--r-sm);
+      background:rgba(255,255,255,0.04);color:var(--text-3);cursor:pointer;
+      font-family:var(--font-display);letter-spacing:0.09em;text-transform:uppercase;
+      transition:border-color .15s,color .15s"
+    onmouseover="this.style.borderColor='rgba(224,90,90,0.45)';this.style.color='var(--red)'"
+    onmouseout="this.style.borderColor='rgba(255,255,255,0.10)';this.style.color='var(--text-3)'"
+  >Limpiar borrador</button>
+</div>
+
 <div class="sc">
   <div class="sc-title">Información del proyecto</div>
   <div class="r2">
@@ -1553,6 +1580,34 @@ input.narrow{width:88px}input.mid{width:108px}
 </div>
 
 <div class="sc">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem">
+    <span class="pl p6" style="display:inline-block">ISR</span>
+    <label class="tog"><input type="checkbox" id="isrOn" onchange="toggleIsr()"><span class="tog-sl"></span></label>
+  </div>
+  <div id="isrBody" style="opacity:.35;pointer-events:none">
+    <!-- Selector de régimen -->
+    <div style="display:flex;gap:8px;margin-bottom:.8rem">
+      <label style="flex:1;display:flex;align-items:center;gap:8px;padding:9px 12px;border:1px solid rgba(255,255,255,0.08);border-radius:var(--r-md);cursor:pointer;background:rgba(255,255,255,0.03);transition:border-color .15s" id="isrOpt7Label">
+        <input type="radio" name="isrMode" id="isr7" value="7" checked onchange="calc()" style="accent-color:var(--accent)">
+        <div>
+          <div style="font-size:12px;font-weight:500;color:var(--text)">7% sobre ingresos</div>
+          <div style="font-size:10px;color:var(--text-3);margin-top:1px">Régimen simplificado / Pequeño contribuyente</div>
+        </div>
+      </label>
+      <label style="flex:1;display:flex;align-items:center;gap:8px;padding:9px 12px;border:1px solid rgba(255,255,255,0.08);border-radius:var(--r-md);cursor:pointer;background:rgba(255,255,255,0.03);transition:border-color .15s" id="isrOpt25Label">
+        <input type="radio" name="isrMode" id="isr25" value="25" onchange="calc()" style="accent-color:var(--accent)">
+        <div>
+          <div style="font-size:12px;font-weight:500;color:var(--text)">25% sobre utilidad</div>
+          <div style="font-size:10px;color:var(--text-3);margin-top:1px">Régimen sobre utilidades — SAT Guatemala</div>
+        </div>
+      </label>
+    </div>
+    <div class="metric"><p class="ml">ISR estimado a pagar</p><p class="mv" id="isrAmtDisplay" style="color:var(--red)">—</p></div>
+    <p class="nt" style="margin-top:.5rem">Se deduce de tu ingreso — no afecta lo que cobra el cliente.</p>
+  </div>
+</div>
+
+<div class="sc">
   <span class="pl p6" style="margin-bottom:.75rem;display:inline-block">Anticipo y saldo</span>
   <div style="margin-top:.65rem">
     <div class="fr" style="margin-bottom:.5rem"><span class="lbl" style="margin:0;min-width:170px">Anticipo al inicio</span><input type="range" id="pctAntic" min="0" max="90" step="5" value="30" oninput="calc()" style="flex:1"><span class="fv" id="pctAnticV">30%</span></div>
@@ -1585,7 +1640,8 @@ input.narrow{width:88px}input.mid{width:108px}
   <div class="sum-row" id="rF1Row"><span>Entrega Anteproyecto</span><span style="font-weight:500;color:var(--blue)" id="rF1pay">—</span></div>
   <div class="sum-row"><span>Saldo final</span><span class="sv-r" id="rSaldo">—</span></div>
   <div class="sep" style="margin:.6rem 0"></div>
-  <div class="sum-row"><span>Tu utilidad neta</span><span class="sv-g" id="sUtil">—</span></div>
+  <div class="sum-row" id="rowIsr" style="display:none"><span id="isrLabel" style="color:var(--red)">ISR</span><span class="sv-r" id="sIsr">—</span></div>
+  <div class="sum-row" style="font-weight:500"><span>Utilidad neta</span><span class="sv-g" id="sUtil">—</span></div>
 </div>
 
 <!-- Botón de acceso a Tiempos al final del Cotizador -->
@@ -1612,7 +1668,7 @@ input.narrow{width:88px}input.mid{width:108px}
     <div><label class="lbl">Cliente (sincronizado)</label><input type="text" id="calClientName" placeholder="Se sincroniza desde Cotizador" readonly style="opacity:.7;cursor:not-allowed"></div>
   </div>
   <div class="r2">
-    <div><label class="lbl">Fecha de inicio del proyecto</label><input type="date" id="projStart" oninput="renderAll()"></div>
+    <div><label class="lbl">Fecha de inicio del proyecto</label><input type="text" id="projStart" placeholder="DD/MM/AAAA" maxlength="10" oninput="renderAll()" style="font-family:var(--font-mono)"></div>
     <div><label class="lbl">Duración por sprint</label><div class="fr"><input type="range" id="sprintDur" min="1" max="3" step="1" value="2" oninput="renderAll()"><span class="fv" id="sprintDurV">2 sem</span></div></div>
   </div>
   <div class="sep"></div>
@@ -2058,7 +2114,7 @@ input.narrow{width:88px}input.mid{width:108px}
   </div>
 
   <div class="r2" style="margin-bottom:.75rem">
-    <div><label class="lbl">Fecha de aprobación</label><input type="date" id="fc-fecha"></div>
+    <div><label class="lbl">Fecha de aprobación</label><input type="text" id="fc-fecha" placeholder="DD/MM/AAAA" maxlength="10" style="font-family:var(--font-mono)"></div>
     <div><label class="lbl">Estado inicial</label>
       <select id="fc-estado">
         <option value="emitida">Cotización emitida</option>
@@ -2451,6 +2507,19 @@ function gv(id){return parseFloat(document.getElementById(id).value)||0}
 function svEl(id){return document.getElementById(id).value.trim()}
 function setVis(id,on){const el=document.getElementById(id);if(!el)return;el.style.opacity=on?'1':'0.35';el.style.pointerEvents=on?'':'none'}
 
+function toggleIsr(){
+  const on=document.getElementById('isrOn').checked;
+  const body=document.getElementById('isrBody');
+  body.style.opacity=on?'1':'.35';
+  body.style.pointerEvents=on?'':'none';
+  // Highlight active régimen option
+  ['isrOpt7Label','isrOpt25Label'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.style.borderColor='rgba(255,255,255,0.08)';
+  });
+  calc();
+}
+
 function toggleFase1(){
   const on=document.getElementById('fase1On').checked;
   setVis('fase1Body',on);setVis('colF1Row',on);setVis('colRendRow',on);
@@ -2554,7 +2623,25 @@ function calc(){
   document.getElementById('sBase').textContent=fmt(sub);
   document.getElementById('sIva').textContent=fmt(ia);
   document.getElementById('sTotal').textContent=fmt(tot);
-  document.getElementById('sUtil').textContent=fmt(tot-cTot-oh);
+  // ── ISR ──
+  const isrOn=document.getElementById('isrOn').checked;
+  const isrModeEl=document.querySelector('input[name="isrMode"]:checked');
+  const isrMode=isrModeEl?isrModeEl.value:'7';
+  let isrAmt=0;
+  if(isrOn){
+    if(isrMode==='7'){
+      isrAmt=Math.round(sub*0.07);                            // 7% flat sobre ingresos brutos
+    } else {
+      const utilBruta=sub-cTot-oh;
+      isrAmt=Math.round(Math.max(0,utilBruta)*0.25);          // 25% sobre utilidad operativa
+    }
+    document.getElementById('isrAmtDisplay').textContent='−'+fmt(isrAmt);
+    document.getElementById('sIsr').textContent='−'+fmt(isrAmt);
+    document.getElementById('isrLabel').textContent=isrMode==='7'?'ISR (7% s/ingresos)':'ISR (25% s/utilidad)';
+  }
+  document.getElementById('rowIsr').style.display=isrOn?'flex':'none';
+  const utilNeta=tot-cTot-oh-isrAmt;
+  document.getElementById('sUtil').textContent=fmt(utilNeta);
   document.getElementById('rAntic').textContent=fmt(aA);
   document.getElementById('rF1pay').textContent=fmt(mA);
   document.getElementById('rSaldo').textContent=fmt(sA);
@@ -2567,7 +2654,7 @@ function calc(){
     ivaEl.textContent = iOn ? fmt(ia) : '—';
     ivaEl.style.color = iOn ? 'var(--text-2)' : 'var(--text-3)';
     document.getElementById('stkTotal').textContent = fmt(tot);
-    document.getElementById('stkUtil').textContent = fmt(tot - cTot - oh);
+    document.getElementById('stkUtil').textContent = fmt(utilNeta);
   }
   // Capturar cantidades cotizadas por nombre de plano (para que el Kanban sepa qué entregar)
   const planosQty = {};
@@ -2579,6 +2666,7 @@ function calc(){
     });
   }
   window._st={m2,cur,f1,f2,fee1,fee2,sub,cTot,oh,iOn,ir,ia,tot,pa,pf,ps,aA,mA,sA,
+    isrOn,isrMode,isrAmt,utilNeta,
     colNombre3D:(document.getElementById('colNombre3D')||{}).value||'',
     colNombreRend:(document.getElementById('colNombreRend')||{}).value||'',
     colNombrePlanos:(document.getElementById('colNombrePlanos')||{}).value||'',
@@ -2737,10 +2825,27 @@ function inicializarPlanoQtyPrev(){
 function addDays(d,n){const r=new Date(d);r.setDate(r.getDate()+n);return r}
 function fmtS(d){return d.toLocaleDateString('es-GT',{day:'2-digit',month:'short'})}
 function fmtL(d){return d.toLocaleDateString('es-GT',{day:'2-digit',month:'long',year:'numeric'})}
+/* ── Formato DD/MM/AAAA ↔ YYYY-MM-DD ── */
+function parseFechaGT(s){
+  if(!s) return '';
+  const p=(s+'').trim().split('/');
+  if(p.length!==3) return '';
+  const d=parseInt(p[0]),m=parseInt(p[1]);
+  let y=p[2].trim();
+  if(isNaN(d)||isNaN(m)||!y) return '';
+  if(y.length===2) y=(parseInt(y)>=50?'19':'20')+y;
+  if(y.length!==4) return '';
+  return `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+}
+function fmtFechaGT(iso){
+  if(!iso) return '';
+  const p=(iso+'').split('-');
+  return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:iso;
+}
 function fmtDate(v){if(!v)return null;const[y,m,d]=v.split('-');const mo=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];return`${parseInt(d)} de ${mo[parseInt(m)-1]} de ${y}`}
 
 function getSprintDates(){
-  const sv=document.getElementById('projStart').value;
+  const sv=parseFechaGT(document.getElementById('projStart').value);
   const dur=parseInt(document.getElementById('sprintDur').value)||2;
   if(!sv)return[];
   let cur2=new Date(sv+'T12:00:00');
@@ -2812,7 +2917,7 @@ function renderEditor(){
 
 function renderTimeline(){
   const dates=getSprintDates();
-  const sv=document.getElementById('projStart').value;
+  const sv=parseFechaGT(document.getElementById('projStart').value);
   const f1on=document.getElementById('fase1On').checked,f2on=document.getElementById('fase2On').checked;
   if(!sv){document.getElementById('timelineContent').innerHTML='<p class="empty">Selecciona una fecha de inicio para ver la línea de tiempo.</p>';return}
   let tw=0;sprints.forEach(s=>{tw+=s.type==='hito'?0:(s.weeks||2)});tw=Math.max(tw,1);
@@ -2857,7 +2962,7 @@ function renderClienteView(){
   const pn=document.getElementById('calProjName').value||'Proyecto de diseño arquitectónico';
   const cn=document.getElementById('calClientName').value||'Cliente';
   const today=new Date().toLocaleDateString('es-GT',{day:'2-digit',month:'long',year:'numeric'});
-  const sv=document.getElementById('projStart').value;
+  const sv=parseFechaGT(document.getElementById('projStart').value);
   const rows=sprints.filter((s,i)=>{
     if(s.type==='f1'&&!f1on)return false;
     if(s.type==='f2'&&!f2on)return false;
@@ -2918,7 +3023,7 @@ function genCotizacion(){
     planosText = planosText.replace(/, $/,'');
   }
   // calendar section
-  const svDate=document.getElementById('projStart').value;
+  const svDate=parseFechaGT(document.getElementById('projStart').value);
   const dates=getSprintDates();
   const f1on=document.getElementById('fase1On').checked,f2on=document.getElementById('fase2On').checked;
   let calRows='';
@@ -3019,6 +3124,130 @@ ${calRows?`<div class="sec"><div class="sl">Plan de entregas</div><table style="
   const w=window.open('','_blank');w.document.write(html);w.document.close();setTimeout(()=>w.print(),500);
 }
 
+/* ──────────────────────────────────────────────────────────
+   genCotizacionDesde(id)
+   Genera el PDF de cotización a partir de una cotización
+   guardada en localStorage, sin necesidad de tener el
+   formulario del Cotizador cargado.
+   ────────────────────────────────────────────────────────── */
+function genCotizacionDesde(id){
+  const cots=loadCots();
+  const c=cots.find(x=>x.id===id);
+  if(!c){ alert('Cotización no encontrada.'); return; }
+
+  const f=n=>(c.cur||'GTQ')+' '+Math.round(n).toLocaleString();
+  const fechaObj=new Date(c.fecha+'T12:00:00');
+  const fecha=fechaObj.toLocaleDateString('es-GT',{day:'2-digit',month:'long',year:'numeric'});
+  const yy=c.fecha?c.fecha.replace(/-/g,'').slice(0,8):(''+(c.id)).slice(0,8);
+  const cotNum='COT-'+yy;
+  const cn=escapeHtmlK(c.cliente||'Cliente');
+  const pt=escapeHtmlK(c.proyecto||'Proyecto');
+  const pd=escapeHtmlK(c.desc||'');
+  const m2=c.m2||0;
+
+  /* Planos desde planosQty */
+  let planosText='';
+  if(c.planosQty && Object.keys(c.planosQty).length>0){
+    planosText=Object.entries(c.planosQty)
+      .map(([n,q])=>escapeHtmlK(n)+(q>1?` (${q})`:''))
+      .join(', ');
+  }
+
+  const f1on=c.f1>0, f2on=c.f2>0;
+  const iOn=c.iva>0;
+  const pa=c.tot>0?Math.round(c.antic/c.tot*100):0;
+  const pf=c.tot>0?Math.round(c.mid/c.tot*100):0;
+  const ps=Math.max(0,100-pa-pf);
+
+  const html=`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">
+<title>Cotización ${cotNum} — Estudio AVIT</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#1a1a18;background:#fff;font-size:12px;line-height:1.7}
+.page{max-width:760px;margin:0 auto}
+.lh{background:#111;padding:28px 44px 24px;display:flex;justify-content:space-between;align-items:center}
+.lh img{height:40px;width:auto}
+.lh-r{text-align:right;color:#888;font-size:10px;line-height:1.8}
+.lh-r .cn{font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:#555;margin-bottom:3px}
+.bw{padding:36px 44px 48px}
+.cb{margin-bottom:24px;padding-bottom:18px;border-bottom:1px solid #e8e8e8;display:flex;justify-content:space-between;align-items:flex-start}
+.cl{font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:#aaa;margin-bottom:3px}
+.cn2{font-size:17px;font-weight:300;color:#1a1a18}
+.pn{font-size:11px;color:#666;margin-top:2px}
+.badge{background:#f0f0ec;border-radius:3px;padding:3px 8px;font-size:9px;letter-spacing:.8px;text-transform:uppercase;color:#666}
+.sec{margin-bottom:26px}
+.sl{font-size:9.5px;text-transform:uppercase;letter-spacing:1px;color:#888;padding-bottom:6px;border-bottom:.5px solid #ddd;margin-bottom:10px}
+.sd{font-size:12px;color:#444;line-height:1.8;margin-bottom:8px;padding-left:28px}
+.svc{display:flex;justify-content:space-between;padding:8px 0 8px 28px;border-bottom:.5px solid #f0f0f0}
+.svc:last-child{border-bottom:none}
+.sn{font-size:12px;color:#333}
+.snt{font-size:10.5px;color:#aaa;margin-top:1px}
+.sa{font-size:12px;font-weight:500;color:#1a1a18;white-space:nowrap}
+.tb{margin-top:32px;border-top:2px solid #1a1a18;padding-top:18px}
+.tr2{display:flex;justify-content:space-between;padding:5px 0;font-size:12px;color:#666;border-bottom:.5px solid #f4f4f4}
+.tr2:last-child{border-bottom:none}
+.tg{display:flex;justify-content:space-between;padding:12px 0 0;margin-top:5px;border-top:1px solid #1a1a18}
+.tgl{font-size:13px;font-weight:500}
+.tga{font-size:21px;font-weight:300;letter-spacing:-.5px}
+.pg{display:flex;gap:10px;margin-top:20px}
+.pb{flex:1;border-radius:4px;padding:12px 14px}
+.pb-a{background:#f4faf7;border:1px solid #c8e6d8}
+.pb-m{background:#EEF4FF;border:1px solid #B5D4F4}
+.pb-s{background:#fdf4f4;border:1px solid #e8c8c8}
+.pl2{font-size:9px;text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px;font-weight:500}
+.pb-a .pl2{color:#2d6a4f}.pb-m .pl2{color:#0C447C}.pb-s .pl2{color:#7b2020}
+.pa2{font-size:16px;font-weight:400}
+.pb-a .pa2{color:#1a5c3c}.pb-m .pa2{color:#185FA5}.pb-s .pa2{color:#8b1a1a}
+.psb2{font-size:10px;color:#aaa;margin-top:2px}
+.cl2{margin-top:32px;padding-top:24px;border-top:1px solid #e8e8e8;font-size:12px;color:#555;line-height:1.8}
+.fb{margin-top:36px;display:flex;justify-content:space-between}
+.fb-l{font-size:11px;color:#888;line-height:1.8}
+.fb-l strong{display:block;font-size:13px;color:#1a1a18;font-weight:400;margin-bottom:1px}
+.ft{background:#f8f8f6;padding:14px 44px;border-top:1px solid #ebebeb}
+.ft p{font-size:9.5px;color:#bbb;line-height:1.6}
+@media print{body{background:white}.page{padding:0}.lh{-webkit-print-color-adjust:exact;print-color-adjust:exact}.pb-a,.pb-m,.pb-s{-webkit-print-color-adjust:exact;print-color-adjust:exact}@page{margin:0;size:A4}}
+</style></head><body><div class="page">
+<div class="lh"><img src="data:image/png;base64,${LOGO_B64}" alt="Estudio AVIT"><div class="lh-r"><div class="cn">${cotNum}</div><div>${fecha}</div></div></div>
+<div class="bw">
+<div class="cb"><div><div class="cl">Presentado a</div><div class="cn2">${cn}</div><div class="pn">${pt}</div></div>${m2?`<div class="badge">${m2} m²</div>`:''}</div>
+<p style="font-size:13px;margin-bottom:8px">Estimado/a ${cn},</p>
+<p style="font-size:12px;color:#555;line-height:1.8;margin-bottom:28px">Por medio de la presente, me es grato presentarle la cotización formal de servicios ${f1on&&f2on?'de diseño arquitectónico y planos constructivos':f1on?'de diseño arquitectónico':'de planos constructivos'} para el proyecto <strong>${pt}</strong>.${pd?' '+pd+'.':''} A continuación encontrará el detalle de los servicios propuestos y las condiciones de contratación.</p>
+${f1on?`<div class="sec"><div class="sl">Anteproyecto</div>${m2?`<p class="sd">Desarrollo integral del diseño arquitectónico para un área de <strong>${m2} m²</strong>, incluyendo concepto, modelado 3D, visualización y documentación.</p>`:''}<div><div class="svc"><div><div class="sn">Diseño arquitectónico e imagen del proyecto</div><div class="snt">Modelado 3D, renderización y planos de presentación</div></div><div class="sa">${f(c.f1)}</div></div></div></div>`:''}
+${f2on?`<div class="sec"><div class="sl">Planimetrías</div>${planosText?`<p class="sd">Elaboración del juego completo de planos técnicos: ${planosText}.</p>`:''}<div><div class="svc"><div><div class="sn">Documentación técnica constructiva</div><div class="snt">Juego completo de planos para ejecución de obra</div></div><div class="sa">${f(c.f2)}</div></div></div></div>`:''}
+<div class="tb">
+  ${f1on?`<div class="tr2"><span>Anteproyecto</span><span>${f(c.f1)}</span></div>`:''}
+  ${f2on?`<div class="tr2"><span>Planimetrías</span><span>${f(c.f2)}</span></div>`:''}
+  ${iOn?`<div class="tr2"><span>IVA</span><span>${f(c.iva)}</span></div>`:''}
+  <div class="tg"><span class="tgl">Total de honorarios</span><span class="tga">${f(c.tot)}</span></div>
+</div>
+<div class="pg">
+  ${c.antic>0?`<div class="pb pb-a"><div class="pl2">Anticipo al inicio</div><div class="pa2">${f(c.antic)}</div><div class="psb2">${pa}% — al firmar contrato</div></div>`:''}
+  ${c.mid>0?`<div class="pb pb-m"><div class="pl2">Entrega Anteproyecto</div><div class="pa2">${f(c.mid)}</div><div class="psb2">${pf}% — al entregar anteproyecto</div></div>`:''}
+  ${c.saldo>0?`<div class="pb pb-s"><div class="pl2">Saldo final</div><div class="pa2">${f(c.saldo)}</div><div class="psb2">${ps}% — contra entrega final</div></div>`:''}
+</div>
+<div class="cl2"><p>Los honorarios reflejan el alcance descrito. Cualquier modificación fuera del alcance acordado será cotizada por separado previo a su ejecución.</p><p style="margin-top:8px">Agradezco su confianza y quedo a sus órdenes.</p></div>
+<div style="margin:28px 0 24px;padding:20px 24px;background:#f8f8f8;border-radius:8px;border-left:3px solid #222">
+  <div style="font-size:12px;font-weight:700;color:#222;margin-bottom:12px;text-transform:uppercase;letter-spacing:.5px">Observaciones generales</div>
+  <ul style="margin:0;padding-left:16px;font-size:10.5px;color:#444;line-height:1.9">
+    ${!f2on?`<li>No incluye planos hidráulicos, eléctricos ni constructivos de ningún tipo.</li>`:''}
+    <li>No incluye cálculo ni asesoría estructural.</li>
+    <li>Las imágenes fotorrealistas (renders) pueden ser utilizadas con fines publicitarios por Estudio AVIT. Si desea reservar el contenido en privado, indicarlo al aceptar esta cotización.</li>
+    <li>Esta cotización no incluye trámites de permisos, licencias gubernamentales, cálculos ni planos estructurales oficiales.</li>
+    <li>Todo lo que no se describe en este documento no está incluido y puede cotizarse como rubro adicional.</li>
+    <li>No incluye impresión de planos.</li>
+  </ul>
+</div>
+<div class="fb"><div class="fb-l"><strong>Estudio AVIT</strong><span>Servicios de diseño arquitectónico</span><span style="margin-top:2px;display:block">${fecha}</span></div><div style="font-size:10px;color:#ccc">Vigencia: 30 días</div></div>
+</div>
+<div class="ft"><p>Cotización ${cotNum} · ${fecha} · No incluye gastos de construcción, permisos ni estudios de suelos.</p></div>
+</div></body></html>`;
+
+  const w=window.open('','_blank');
+  w.document.write(html);
+  w.document.close();
+  setTimeout(()=>w.print(),500);
+}
+
 // ═══════ INGRESOS ═══════
 const MESES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
 const MESES_FULL = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
@@ -3047,7 +3276,7 @@ function showFormCot(){
     // carry collaborator name into the form note field
     if(s.colNombre) document.getElementById('fc-proyecto').dataset.colNombre=s.colNombre;
   }
-  document.getElementById('fc-fecha').value=new Date().toISOString().split('T')[0];
+  document.getElementById('fc-fecha').value=fmtFechaGT(new Date().toISOString().split('T')[0]);
   document.getElementById('formCot').style.display='block';
   calcFormTotals();
 }
@@ -3147,7 +3376,7 @@ function confirmarGuardarConWarnings(){
   const antic=parseFloat(document.getElementById('fc-antic').value)||0;
   const mid=parseFloat(document.getElementById('fc-mid').value)||0;
   const cur=document.getElementById('fc-cur').value;
-  const fecha=document.getElementById('fc-fecha').value||new Date().toISOString().split('T')[0];
+  const fecha=parseFechaGT(document.getElementById('fc-fecha').value)||new Date().toISOString().split('T')[0];
   const estado=document.getElementById('fc-estado').value;
   const sub=f1+f2,tot=sub+iva;
   guardarCotConfirmado({clienteRaw, proyectoRaw, f1, f2, oh, colab, iva, antic, mid, cur, fecha, estado, sub, tot});
@@ -3185,7 +3414,7 @@ function saveCot(){
   const antic=parseFloat(document.getElementById('fc-antic').value)||0;
   const mid=parseFloat(document.getElementById('fc-mid').value)||0;
   const cur=document.getElementById('fc-cur').value;
-  const fecha=document.getElementById('fc-fecha').value||new Date().toISOString().split('T')[0];
+  const fecha=parseFechaGT(document.getElementById('fc-fecha').value)||new Date().toISOString().split('T')[0];
   const estado=document.getElementById('fc-estado').value;
   const sub=f1+f2,tot=sub+iva;
 
@@ -3236,8 +3465,11 @@ function guardarCotConfirmado(d){
   const colNombreRend=(window._st?window._st.colNombreRend:'')||'';
   const colNombrePlanos=(window._st?window._st.colNombrePlanos:'')||'';
   const planosQty=(window._st?window._st.planosQty:null)||{};
+  /* Capturar m² y descripción para el PDF regenerable */
+  const m2Saved=parseFloat((document.getElementById('m2S')||{}).value)||0;
+  const descSaved=((document.getElementById('projDesc')||{}).value||'').trim();
   const cots=loadCots();
-  cots.push({id:Date.now(),cliente:clienteRaw,proyecto:proyectoRaw,f1,f2,oh,colab,iva,sub,tot,util,antic,mid,saldo,cobrado,cur,fecha,estado,colNombre3D,colNombreRend,colNombrePlanos,planosQty});
+  cots.push({id:Date.now(),cliente:clienteRaw,proyecto:proyectoRaw,f1,f2,oh,colab,iva,sub,tot,util,antic,mid,saldo,cobrado,cur,fecha,estado,colNombre3D,colNombreRend,colNombrePlanos,planosQty,m2:m2Saved,desc:descSaved});
   saveCots(cots);
   hideFormCot();
   // reset form mini
@@ -3258,6 +3490,8 @@ function guardarCotConfirmado(d){
   document.getElementById('colPlanos').value=0;
   ['cRevit','cD5','cCanva','cElec','cGas','cViat'].forEach(id=>document.getElementById(id).value=25);
   document.getElementById('ivaOn').checked=false;
+  document.getElementById('isrOn').checked=false;
+  if(typeof toggleIsr==='function') toggleIsr();
   document.getElementById('pctAntic').value=30;
   document.getElementById('pctF1pay').value=40;
   document.getElementById('fase1On').checked=true;
@@ -3289,15 +3523,59 @@ function verReciboAnticipo(id){
   const cots = loadCots();
   const c = cots.find(x => x.id === id);
   if(!c){ alert('Cotización no encontrada.'); return; }
-  if(!c.antic || c.antic <= 0){
-    if(!confirm('Esta cotización no tiene un anticipo definido. ¿Querés generar un recibo de todos modos?')) return;
+  if(!c.tot || c.tot <= 0){
+    alert('Esta cotización no tiene monto definido. No se puede generar un recibo.');
+    return;
   }
 
-  // Obtener datos guardados/sugeridos del recibo
+  // ── Calcular opciones de pago según lo configurado en el Cotizador ──
+  const tot=c.tot||0;
+  const pagoOpts=[];
+  if(c.antic>0){
+    const pa=tot>0?Math.round(c.antic/tot*100):0;
+    pagoOpts.push({
+      val:'anticipo',
+      lbl:`Anticipo de Anteproyecto — ${pa}%`,
+      monto:c.antic,
+      concepto:`Anticipo de Anteproyecto — ${escapeHtmlK(c.proyecto)}`
+    });
+  }
+  if(c.mid>0){
+    const pf=tot>0?Math.round(c.mid/tot*100):0;
+    pagoOpts.push({
+      val:'entrega_f1',
+      lbl:`Anticipo de Planimetría — ${pf}%`,
+      monto:c.mid,
+      concepto:`Anticipo de Planimetría al entregar Anteproyecto — ${escapeHtmlK(c.proyecto)}`
+    });
+  }
+  if(c.saldo>0){
+    const ps=tot>0?Math.round(c.saldo/tot*100):0;
+    pagoOpts.push({
+      val:'saldo',
+      lbl:`Pago contra entrega — ${ps}%`,
+      monto:c.saldo,
+      concepto:`Pago contra entrega final — ${escapeHtmlK(c.proyecto)}`
+    });
+  }
+  if(pagoOpts.length===0){
+    pagoOpts.push({val:'total',lbl:'Total',monto:tot,concepto:`Pago de honorarios — ${escapeHtmlK(c.proyecto)}`});
+  }
+
+  // ── Datos guardados de recibos anteriores ──
   const recibos = JSON.parse(localStorage.getItem('avit_recibos')||'{}');
   const r = recibos[id] || {};
 
-  // Modal de configuración previa
+  const hoy = new Date().toISOString().split('T')[0];
+  const correlativoSugerido = r.numero || `REC-${hoy.replace(/-/g,'')}-${String(c.id).slice(-4)}`;
+  const lugarSugerido = r.lugar || 'Ciudad de Guatemala';
+  const formaPagoSugerida = r.formaPago || 'Transferencia bancaria';
+  // Determine initial option
+  const initOpt = pagoOpts.find(o=>o.val===r.tipoPago) || pagoOpts[0];
+  const montoSugerido = r.monto || initOpt.monto;
+  const conceptoSugerido = r.concepto || initOpt.concepto;
+  const fechaSugerida = fmtFechaGT(r.fecha || hoy);
+
   const existing = document.getElementById('reciboConfigModal');
   if(existing) existing.remove();
   const modal = document.createElement('div');
@@ -3305,22 +3583,21 @@ function verReciboAnticipo(id){
   modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9998;display:flex;align-items:flex-start;justify-content:center;padding:40px 20px;overflow-y:auto';
   modal.onclick = e => { if(e.target === modal) modal.remove(); };
 
-  const hoy = new Date().toISOString().split('T')[0];
-  // Correlativo automático: REC-AAAAMMDD-XXXX (último dígitos del id de la cot)
-  const correlativoSugerido = r.numero || `REC-${hoy.replace(/-/g,'')}-${String(c.id).slice(-4)}`;
-  const montoSugerido = r.monto || c.antic || 0;
-  const conceptoSugerido = r.concepto || `Anticipo por servicios profesionales — ${c.proyecto}`;
-  const fechaSugerida = r.fecha || hoy;
-  const lugarSugerido = r.lugar || 'Ciudad de Guatemala';
-  const formaPagoSugerida = r.formaPago || 'Transferencia bancaria';
-
   modal.innerHTML = `
     <div style="background:var(--bg-surface-2,#1a1b1e);border:1px solid var(--border-accent);border-radius:var(--r-lg);padding:24px 28px;width:100%;max-width:520px;font-family:var(--font-body)" onclick="event.stopPropagation()">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-        <div style="font-family:var(--font-display);font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)">🧾 Generar recibo del anticipo</div>
+        <div style="font-family:var(--font-display);font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)">🧾 Generar recibo de pago</div>
         <button onclick="document.getElementById('reciboConfigModal').remove()" style="background:transparent;border:0;color:var(--text-3);font-size:20px;cursor:pointer">×</button>
       </div>
       <div style="font-size:11px;color:var(--text-3);margin-bottom:16px">${escapeHtmlK(c.cliente)} — ${escapeHtmlK(c.proyecto)}</div>
+
+      <!-- ── Selector de tipo de cobro ── -->
+      <div style="margin-bottom:14px">
+        <label class="lbl">¿Qué están abonando?</label>
+        <select id="rec-tipopago" onchange="actualizarCamposRecibo(this)" style="width:100%;padding:8px 11px;background:rgba(255,255,255,0.04);border:1px solid var(--border-accent);border-radius:var(--r-md);color:var(--text);font-size:12.5px;font-family:var(--font-body);font-weight:500">
+          ${pagoOpts.map(o=>`<option value="${o.val}" data-monto="${o.monto}" data-concepto="${o.concepto}" ${initOpt.val===o.val?'selected':''}>${o.lbl} · ${c.cur} ${Math.round(o.monto).toLocaleString('es-GT')}</option>`).join('')}
+        </select>
+      </div>
 
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
         <div>
@@ -3329,7 +3606,7 @@ function verReciboAnticipo(id){
         </div>
         <div>
           <label class="lbl">Fecha</label>
-          <input type="date" id="rec-fecha" value="${fechaSugerida}" style="width:100%;padding:7px 10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.10);border-radius:var(--r-md);color:var(--text);font-size:12px;font-family:var(--font-mono)">
+          <input type="text" id="rec-fecha" value="${fechaSugerida}" placeholder="DD/MM/AAAA" maxlength="10" style="width:100%;padding:7px 10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.10);border-radius:var(--r-md);color:var(--text);font-size:12px;font-family:var(--font-mono)">
         </div>
         <div>
           <label class="lbl">Monto (${c.cur})</label>
@@ -3348,7 +3625,7 @@ function verReciboAnticipo(id){
 
       <div style="margin-top:10px">
         <label class="lbl">Concepto</label>
-        <input type="text" id="rec-concepto" value="${escapeHtmlK(conceptoSugerido)}" style="width:100%;padding:7px 10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.10);border-radius:var(--r-md);color:var(--text);font-size:12px;font-family:var(--font-body)">
+        <input type="text" id="rec-concepto" value="${conceptoSugerido}" oninput="this.dataset.edited=1" style="width:100%;padding:7px 10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.10);border-radius:var(--r-md);color:var(--text);font-size:12px;font-family:var(--font-body)">
       </div>
 
       <div style="margin-top:10px">
@@ -3366,22 +3643,34 @@ function verReciboAnticipo(id){
   setTimeout(()=>document.getElementById('rec-numero').focus(), 50);
 }
 
+/* Auto-rellena monto y concepto al cambiar el tipo de cobro */
+function actualizarCamposRecibo(sel){
+  const opt = sel.options[sel.selectedIndex];
+  if(!opt) return;
+  const montoEl = document.getElementById('rec-monto');
+  const concEl  = document.getElementById('rec-concepto');
+  if(montoEl) montoEl.value = parseFloat(opt.dataset.monto)||0;
+  if(concEl && !concEl.dataset.edited) concEl.value = opt.dataset.concepto||'';
+}
+
 function generarReciboHTML(id){
   const cots = loadCots();
   const c = cots.find(x => x.id === id);
   if(!c) return;
   const numero = document.getElementById('rec-numero').value.trim();
-  const fecha = document.getElementById('rec-fecha').value;
+  const fecha = parseFechaGT(document.getElementById('rec-fecha').value);
   const monto = parseFloat(document.getElementById('rec-monto').value)||0;
   const formaPago = document.getElementById('rec-formapago').value;
   const concepto = document.getElementById('rec-concepto').value.trim();
   const lugar = document.getElementById('rec-lugar').value.trim();
+  const tipoPagoEl = document.getElementById('rec-tipopago');
+  const tipoPago = tipoPagoEl ? tipoPagoEl.value : 'anticipo';
 
   if(!numero || !fecha || !monto){ alert('Completá número, fecha y monto.'); return; }
 
   // Guardar para próxima vez
   const recibos = JSON.parse(localStorage.getItem('avit_recibos')||'{}');
-  recibos[id] = { numero, fecha, monto, concepto, lugar, formaPago };
+  recibos[id] = { numero, fecha, monto, concepto, lugar, formaPago, tipoPago };
   localStorage.setItem('avit_recibos', JSON.stringify(recibos));
   if(typeof triggerAutoSync==='function') triggerAutoSync();
 
@@ -3948,13 +4237,14 @@ function cardCot(c, isTerminado, getEstadoOpts, estadoAOpcion, estadoLabel){
       ${isTerminado
         ? `<button class="btn-editar" onclick="reactivarCot(${c.id})" style="border-color:rgba(76,175,114,0.30);color:var(--green)">↺ Reactivar</button>
            <button class="btn-ver" onclick="verCot(${c.id})">Ver</button>
+           <button class="btn-recibo" onclick="genCotizacionDesde(${c.id})" title="Ver cotización PDF">📄 PDF</button>
            <button class="btn-recibo" onclick="verReciboAnticipo(${c.id})" title="Ver recibo del anticipo">🧾 Recibo</button>
            <button onclick="deleteCot(${c.id})" style="padding:4px 10px;font-size:11px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--red);cursor:pointer">Eliminar</button>`
         : `<select onchange="updateEstado(${c.id},this.value)" style="flex:1;padding:4px 7px;font-size:11px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:var(--surface);color:var(--text)">
              ${getEstadoOpts(c).map(o=>`<option value="${o.v}" ${estadoAOpcion(c)===o.v?'selected':''}>${o.l}</option>`).join('')}
            </select>
            <button class="btn-ver" onclick="verCot(${c.id})">Ver</button>
-           <button class="btn-editar" onclick="editCot(${c.id})">Editar</button>
+           <button class="btn-recibo" onclick="genCotizacionDesde(${c.id})" title="Ver cotización PDF">📄 PDF</button>
            <button class="btn-recibo" onclick="verReciboAnticipo(${c.id})" title="Ver recibo del anticipo">🧾 Recibo</button>
            <button onclick="deleteCot(${c.id})" style="padding:4px 10px;font-size:11px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--red);cursor:pointer">Eliminar</button>`}
     </div>
@@ -4761,11 +5051,11 @@ function openItemDetails(cotId, spId, itemId){
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px">
         <div>
           <label class="lbl">Fecha estimada</label>
-          <input type="date" id="itd-duedate" value="${it.dueDate}" style="width:100%;padding:6px 10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.10);border-radius:var(--r-md);color:var(--text);font-size:12px;font-family:var(--font-mono)">
+          <input type="text" id="itd-duedate" value="${fmtFechaGT(it.dueDate||'')}" placeholder="DD/MM/AAAA" maxlength="10" style="width:100%;padding:6px 10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.10);border-radius:var(--r-md);color:var(--text);font-size:12px;font-family:var(--font-mono)">
         </div>
         <div>
           <label class="lbl">Fecha real ${it.done?'(completado)':''}</label>
-          <input type="date" id="itd-completed" value="${it.completedDate}" ${!it.done?'disabled style="opacity:.5"':''} style="width:100%;padding:6px 10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.10);border-radius:var(--r-md);color:var(--text);font-size:12px;font-family:var(--font-mono)">
+          <input type="text" id="itd-completed" value="${fmtFechaGT(it.completedDate||'')}" placeholder="DD/MM/AAAA" maxlength="10" ${!it.done?'disabled style="opacity:.5;width:100%;padding:6px 10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.10);border-radius:var(--r-md);color:var(--text);font-size:12px;font-family:var(--font-mono)"':'style="width:100%;padding:6px 10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.10);border-radius:var(--r-md);color:var(--text);font-size:12px;font-family:var(--font-mono)"'}>
         </div>
       </div>
 
@@ -4857,8 +5147,8 @@ function saveItemDetails(cotId, spId, itemId){
   const colabPct = document.getElementById('itd-colabPct');
   if(blocked) it.blocked = blocked.checked;
   if(reason) it.blockReason = reason.value.trim();
-  if(dueDate) it.dueDate = dueDate.value;
-  if(completed) it.completedDate = completed.value;
+  if(dueDate) it.dueDate = parseFechaGT(dueDate.value);
+  if(completed) it.completedDate = parseFechaGT(completed.value);
   if(notes) it.notes = notes.value.trim();
   if(colabRol) it.colabRol = colabRol.value;
   if(colabPct) it.colabPct = parseFloat(colabPct.value) || 0;
@@ -5049,7 +5339,7 @@ function editCot(id){
       </div>
     </div>
     <div class="r2" style="margin-bottom:.75rem">
-      <div><label class="lbl">Fecha</label><input type="date" id="ed-fecha" value="${c.fecha}"></div>
+      <div><label class="lbl">Fecha</label><input type="text" id="ed-fecha" value="${fmtFechaGT(c.fecha)}" placeholder="DD/MM/AAAA" maxlength="10" style="font-family:var(--font-mono)"></div>
       <div><label class="lbl">Estado</label>
         <select id="ed-estado">
           <option value="emitida" ${(!c.estado||c.estado==='emitida'||c.estado==='aprobada')?'selected':''}>Cotización emitida</option>
@@ -5105,7 +5395,7 @@ function saveEditCot(id){
     proyecto:document.getElementById('ed-proyecto').value.trim()||c.proyecto,
     f1,f2,oh,colab,iva,sub,tot,util,antic,mid,saldo,
     cur:document.getElementById('ed-cur').value,
-    fecha:document.getElementById('ed-fecha').value||c.fecha,
+    fecha:parseFechaGT(document.getElementById('ed-fecha').value)||c.fecha,
     estado:document.getElementById('ed-estado').value,
     cobrado:(()=>{
       const est=document.getElementById('ed-estado').value;
@@ -5129,7 +5419,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   renderPlanosRows();
   const t=new Date(),n=new Date(t),dy=t.getDay(),df=dy===1?7:(8-dy)%7||7;
   n.setDate(t.getDate()+df);
-  document.getElementById('projStart').value=n.toISOString().split('T')[0];
+  document.getElementById('projStart').value=fmtFechaGT(n.toISOString().split('T')[0]);
   document.getElementById('ing-year').value=new Date().getFullYear();
   // Snapshot inicial de cantidades (antes de calc) para que la primera llamada
   // no dispare la sincronización con un delta artificial
@@ -6701,6 +6991,190 @@ if(typeof window !== 'undefined'){
     renderEstimado(); renderPrograma();
   }
 }
+</script>
+
+<!-- ════════════════════════════════════════════════════
+     AUTO-GUARDADO DE BORRADOR — Cotizador
+     Clave: localStorage['avit_calc_draft']
+     • Guarda al dispararse cualquier input del formulario
+     • Restaura al cargar la página y al navegar al Cotizador
+     • Badge "Borrador guardado HH:MM" + botón Limpiar
+  ════════════════════════════════════════════════════ -->
+<script>
+(function(){
+  'use strict';
+
+  /* ── Constantes ─────────────────────────────────────── */
+  const DRAFT_KEY = 'avit_calc_draft';
+  const DEBOUNCE_MS = 700;
+  let _draftTimer = null;
+
+  /* ── Campos del formulario a persistir ──────────────── */
+  const TEXT_FIELDS  = ['clientName','projTitle','projDesc',
+                        'colNombre3D','colNombreRend','colNombrePlanos'];
+  const NUM_FIELDS   = ['m2S','m2Rate','p1Extra',
+                        'col3D','colRend','colPlanos',
+                        'cRevit','cD5','cCanva','cElec','cGas','cViat',
+                        'ivaRate','pctAntic','pctF1pay',
+                        'timbreCosto','sprintDur'];
+  const CHECK_FIELDS = ['fase1On','fase2On','ivaOn','timbresOn','isrOn'];
+
+  /* ── Helpers DOM ─────────────────────────────────────── */
+  const $  = id => document.getElementById(id);
+  const gv = id => { const e=$(id); return e ? e.value : null; };
+  const gc = id => { const e=$(id); return e ? e.checked : null; };
+  const sv = (id,v) => { const e=$(id); if(e && v!=null) e.value=v; };
+  const sc = (id,v) => { const e=$(id); if(e && v!=null) e.checked=!!v; };
+
+  /* ── Badge de borrador ───────────────────────────────── */
+  function _showBadge(ts){
+    const badge = $('draftBadge');
+    if(!badge) return;
+    const tEl = $('draftTime');
+    if(tEl && ts){
+      try {
+        const d = new Date(ts);
+        tEl.textContent = d.toLocaleTimeString('es-GT',{hour:'2-digit',minute:'2-digit'});
+      } catch(e){ tEl.textContent = '--:--'; }
+    }
+    badge.style.display = 'flex';
+  }
+
+  function _hideBadge(){
+    const badge = $('draftBadge');
+    if(badge) badge.style.display = 'none';
+  }
+
+  /* ── saveDraft() ─────────────────────────────────────── */
+  window.saveDraft = function(){
+    clearTimeout(_draftTimer);
+    _draftTimer = setTimeout(function(){
+      try {
+        const N = (typeof PLANO_NAMES !== 'undefined') ? PLANO_NAMES.length : 9;
+        const now = Date.now();
+        const draft = { _ts: now, _v: 1 };
+
+        TEXT_FIELDS.forEach( id => { draft[id] = gv(id); });
+        NUM_FIELDS.forEach(  id => { draft[id] = gv(id); });
+        CHECK_FIELDS.forEach(id => { draft[id] = gc(id); });
+
+        draft.cur      = (typeof cur !== 'undefined') ? cur : 'GTQ';
+        draft.projStart = gv('projStart');
+        /* isrMode: valor del radio activo */
+        const isrModeEl = document.querySelector('input[name="isrMode"]:checked');
+        draft.isrMode = isrModeEl ? isrModeEl.value : '7';
+
+        /* Tabla de planos: cantidad + costo unitario qp1..qpN / cp1..cpN */
+        draft.planos = [];
+        for(let i = 1; i <= N; i++){
+          draft.planos.push({ q: gv('qp'+i), c: gv('cp'+i) });
+        }
+
+        localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+        _showBadge(now);
+      } catch(e){}
+    }, DEBOUNCE_MS);
+  };
+
+  /* ── loadDraft() ─────────────────────────────────────── */
+  window.loadDraft = function(){
+    try {
+      const raw = localStorage.getItem(DRAFT_KEY);
+      if(!raw) return false;
+      const d = JSON.parse(raw);
+      if(!d || !d._v) return false;
+
+      TEXT_FIELDS.forEach( id => { if(d[id]!=null) sv(id, d[id]); });
+      NUM_FIELDS.forEach(  id => { if(d[id]!=null) sv(id, d[id]); });
+      CHECK_FIELDS.forEach(id => { if(d[id]!=null) sc(id, d[id]); });
+
+      if(d.projStart) sv('projStart', d.projStart);
+
+      /* Restaurar modo ISR */
+      if(d.isrMode){
+        const isrR = document.querySelector(`input[name="isrMode"][value="${d.isrMode}"]`);
+        if(isrR) isrR.checked = true;
+      }
+
+      /* Moneda */
+      if(d.cur && typeof setCur === 'function') setCur(d.cur);
+
+      /* Planos qp1..qpN + cp1..cpN */
+      if(Array.isArray(d.planos)){
+        d.planos.forEach(function(pl, idx){
+          sv('qp'+(idx+1), pl.q);
+          sv('cp'+(idx+1), pl.c);
+        });
+      }
+
+      /* Re-sincronizar estados de UI dependientes de checkboxes */
+      if(typeof toggleFase1    === 'function') toggleFase1();
+      if(typeof toggleFase2    === 'function') toggleFase2();
+      if(typeof toggleIsr      === 'function') toggleIsr();
+      if(typeof toggleTimbres  === 'function') toggleTimbres();
+      if(typeof syncToCalendar === 'function') syncToCalendar();
+
+      _showBadge(d._ts);
+      return true;
+    } catch(e){ return false; }
+  };
+
+  /* ── clearDraft() ────────────────────────────────────── */
+  window.clearDraft = function(){
+    try { localStorage.removeItem(DRAFT_KEY); } catch(e){}
+    _hideBadge();
+    /* Feedback rápido en syncStatus */
+    const ss = $('syncStatus');
+    if(ss){
+      clearTimeout(ss._avitClearFade);
+      ss.textContent = '🗑 Borrador eliminado';
+      ss._avitClearFade = setTimeout(()=>{
+        if(ss.textContent === '🗑 Borrador eliminado') ss.textContent = '';
+      }, 2200);
+    }
+  };
+
+  /* ── Parchear funciones clave (al vuelo, DOMContentLoaded) ── */
+  document.addEventListener('DOMContentLoaded', function(){
+
+    /* 1. calc() → guardar borrador tras recalcular */
+    if(typeof calc === 'function'){
+      const _calcOrig = calc;
+      window.calc = function(){
+        _calcOrig.apply(this, arguments);
+        window.saveDraft();
+      };
+    }
+
+    /* 2. guardarCotConfirmado() → limpiar borrador al registrar */
+    if(typeof guardarCotConfirmado === 'function'){
+      const _gOrig = guardarCotConfirmado;
+      window.guardarCotConfirmado = function(){
+        _gOrig.apply(this, arguments);
+        window.clearDraft();
+      };
+    }
+
+    /* 3. showPage('calc') → cargar borrador al navegar al Cotizador */
+    if(typeof showPage === 'function'){
+      const _spOrig = showPage;
+      window.showPage = function(id){
+        _spOrig.apply(this, arguments);
+        if(id === 'calc'){
+          const restored = window.loadDraft();
+          /* Si se restauraron valores, recalcular con ellos */
+          if(restored && typeof calc === 'function') calc();
+        }
+      };
+    }
+
+    /* 4. Carga inicial: restaurar borrador al abrir la página */
+    const restored = window.loadDraft();
+    if(restored && typeof calc === 'function') calc();
+
+  }, false /* captura = false → corre después del primer DOMContentLoaded */ );
+
+})();
 </script>
 
 <!-- ═══ RESUMEN STICKY DEL COTIZADOR ═══ -->
