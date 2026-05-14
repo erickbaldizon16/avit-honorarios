@@ -1367,6 +1367,64 @@ input.narrow{width:88px}input.mid{width:108px}
   background:rgba(0,0,0,0.05)!important;
 }
 
+
+/* ═══ PROJECT MANAGER — Gantt ═══ */
+.pm-sp{position:absolute;top:7px;height:22px;border-radius:var(--r-sm);cursor:grab;display:flex;align-items:center;padding:0 7px;font-size:10px;font-weight:500;white-space:nowrap;overflow:hidden;user-select:none;transition:filter .1s;font-family:var(--font-body)}
+.pm-sp:active{cursor:grabbing;filter:brightness(1.1)}
+.pm-sp.f1{background:rgba(58,130,217,0.22);color:#5AABF0;border:1px solid rgba(58,130,217,0.35)}
+.pm-sp.pe{background:rgba(212,130,46,0.18);color:#E07B2E;border:1px solid rgba(212,130,46,0.3)}
+.pm-sp.f2{background:rgba(76,175,114,0.18);color:#5BC68A;border:1px solid rgba(76,175,114,0.3)}
+.pm-sp.done{opacity:.45;filter:grayscale(.4)}
+.pm-hito{position:absolute;top:8px;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--accent);cursor:default;z-index:4}
+.pm-sp-rz{position:absolute;right:0;top:0;width:7px;height:100%;cursor:ew-resize;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s}
+.pm-sp:hover .pm-sp-rz{opacity:1}
+.pm-sp-rz-handle{width:2px;height:12px;border-radius:1px;background:rgba(255,255,255,0.35)}
+.pm-proj-row{border-bottom:0.5px solid var(--border)}
+.pm-proj-row:last-child{border-bottom:none}
+.pm-proj-header{display:flex;height:52px;cursor:pointer;transition:background .1s}
+.pm-proj-header:hover{background:rgba(255,255,255,0.025)}
+.pm-proj-meta{flex-shrink:0;width:184px;padding:8px 12px;display:flex;flex-direction:column;justify-content:center;border-right:0.5px solid var(--border)}
+.pm-proj-track{flex:1;position:relative;overflow:hidden}
+.pm-expand{border-top:0.5px solid var(--border);background:rgba(0,0,0,0.07)}
+.pm-sp-row{display:flex;height:36px;border-bottom:0.5px solid rgba(255,255,255,0.04)}
+.pm-sp-row:last-child{border-bottom:none}
+.pm-sp-lbl{flex-shrink:0;width:184px;padding:0 12px 0 28px;display:flex;align-items:center;gap:6px;border-right:0.5px solid var(--border);font-size:10.5px;color:var(--text-3);overflow:hidden}
+.pm-sp-track{flex:1;position:relative;overflow:hidden}
+.pm-ruler-month-el{position:absolute;top:0;height:100%;border-left:0.5px solid var(--border);display:flex;align-items:center;padding-left:5px;font-size:9.5px;font-weight:500;color:var(--text-3);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;overflow:hidden}
+.pm-ruler-week-el{position:absolute;top:0;height:100%;border-left:0.5px solid rgba(255,255,255,0.05);display:flex;align-items:center;padding-left:4px;font-size:10px;color:var(--text-3);font-family:var(--font-mono);white-space:nowrap;overflow:hidden}
+.pm-pip{font-size:9px;padding:1px 5px;border-radius:3px;font-weight:600;letter-spacing:.04em}
+.pm-pip-f1{background:rgba(58,130,217,0.18);color:#5AABF0}
+.pm-pip-pe{background:rgba(212,130,46,0.15);color:#E07B2E}
+.pm-pip-f2{background:rgba(76,175,114,0.15);color:#5BC68A}
+
+/* ═══ CLIENTES ═══════════════════════════════════════════════════ */
+.cli-card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r-lg);
+  padding:14px 16px;cursor:pointer;transition:border-color .15s,background .15s;margin-bottom:8px}
+.cli-card:hover{border-color:var(--accent);background:rgba(212,168,67,0.04)}
+.cli-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.cli-name{font-size:13px;font-weight:500;color:var(--text)}
+.cli-empresa{font-size:11px;color:var(--text-3);margin-top:1px}
+.cli-nit{font-size:10px;color:var(--text-3);font-family:var(--font-mono)}
+.cli-contact{display:flex;gap:12px;margin-top:6px;flex-wrap:wrap}
+.cli-contact span{font-size:11px;color:var(--text-3)}
+.cli-stats{display:flex;gap:14px;margin-top:8px;padding-top:8px;border-top:0.5px solid var(--border)}
+.cli-stat{font-size:11px;color:var(--text-3)}
+.cli-stat strong{color:var(--text-2);font-weight:500}
+.cli-captacion{font-size:10px;padding:2px 7px;border-radius:3px;font-weight:500;
+  background:rgba(212,168,67,0.10);color:var(--accent);border:1px solid rgba(212,168,67,0.2);
+  white-space:nowrap}
+.cli-detail-back{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--text-3);
+  cursor:pointer;margin-bottom:16px;padding:4px 0;transition:color .15s}
+.cli-detail-back:hover{color:var(--accent)}
+.cli-detail-header{background:var(--surface);border:0.5px solid var(--border);
+  border-radius:var(--r-lg);padding:18px 20px;margin-bottom:14px}
+.cli-proj-row{display:flex;align-items:center;gap:10px;padding:10px 0;
+  border-bottom:0.5px solid var(--border)}
+.cli-proj-row:last-child{border-bottom:none}
+.cli-proj-name{font-size:12px;font-weight:500;color:var(--text);flex:1;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cli-proj-sub{font-size:10px;color:var(--text-3);margin-top:1px}
+.cli-empty{padding:32px;text-align:center;font-size:12px;color:var(--text-3)}
 </style>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 </head>
@@ -1378,19 +1436,51 @@ input.narrow{width:88px}input.mid{width:108px}
     <span style="font-size:20px;font-weight:600;letter-spacing:0.06em;color:#D0D0D0;font-family:var(--font-display);line-height:1">AVIT</span>
   </div>
   <div class="nav-tabs">
-    <button class="ntab active" onclick="showPage('home')">Inicio</button>
+    <button class="ntab active" data-page="home" onclick="showPage('home')">Inicio</button>
     <div style="width:1px;height:20px;background:rgba(255,255,255,0.08);align-self:center;margin:0 4px;flex-shrink:0"></div>
-    <button class="ntab" onclick="showPage('ing')">Proyectos</button>
-    <button class="ntab" onclick="showPage('est')">Kanban</button>
-    <button class="ntab" onclick="showPage('calc')">Cotizador</button>
-    <div style="width:1px;height:20px;background:rgba(255,255,255,0.08);align-self:center;margin:0 4px;flex-shrink:0"></div>
-    <button class="ntab" onclick="showPage('ing');setTimeout(()=>document.getElementById('sec-herramientas')?.scrollIntoView({behavior:'smooth'}),120)">Mis Herramientas</button>
+    <button class="ntab" data-page="ing" onclick="showPage('ing')">Proyectos</button>
+    <button class="ntab" data-page="est" onclick="showPage('est')">Kanban</button>
+    <button class="ntab" data-page="pm" onclick="showPage('pm')">PM</button>
+    <!-- Studio dropdown -->
+    <div style="position:relative" id="studioMenuWrap">
+      <button onclick="toggleStudioMenu()" id="studioMenuBtn"
+        style="display:inline-flex;align-items:center;gap:5px;padding:6px 12px;font-size:11px;font-weight:500;
+        border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;
+        color:var(--text-2);cursor:pointer;font-family:var(--font-display);letter-spacing:.08em;
+        text-transform:uppercase;transition:all .15s var(--ease-out)"
+        onmouseover="this.style.borderColor='rgba(212,168,67,0.4)';this.style.color='var(--accent)'"
+        onmouseout="if(!document.getElementById('studioMenu').dataset.open){this.style.borderColor='';this.style.color='var(--text-2)';}">
+        📋 Studio <span id="studioChevron" style="font-size:9px;transition:transform .15s">▾</span>
+      </button>
+      <div id="studioMenu" style="display:none;position:absolute;top:calc(100% + 7px);right:0;
+        background:var(--bg-surface-2,#1a1b1e);border:1px solid var(--border-accent);
+        border-radius:var(--r-lg);padding:6px;min-width:190px;
+        box-shadow:0 10px 40px rgba(0,0,0,0.5);z-index:200;animation:popIn .15s var(--ease-out)">
+        <div style="padding:4px 10px 3px;font-family:var(--font-display);font-size:8px;
+          letter-spacing:.18em;text-transform:uppercase;color:var(--text-3)">Studio</div>
+        <button onclick="showPage('clientes');toggleStudioMenu()" class="menu-config-item" data-page="clientes">
+          👥 Clientes
+        </button>
+        <button onclick="toggleStudioMenu()" class="menu-config-item" disabled
+          style="opacity:.38;cursor:not-allowed" title="Próximamente">
+          📈 Administrador
+        </button>
+        <button onclick="toggleStudioMenu()" class="menu-config-item" disabled
+          style="opacity:.38;cursor:not-allowed" title="Próximamente">
+          📲 Marketing
+        </button>
+        <div style="height:1px;background:rgba(255,255,255,0.06);margin:4px 0"></div>
+        <button onclick="showPage('calc');toggleStudioMenu()" class="menu-config-item" data-page="calc">
+          🧮 Cotizador
+        </button>
+        <button onclick="showPage('ing');setTimeout(()=>document.getElementById('sec-herramientas')?.scrollIntoView({behavior:'smooth'}),120);toggleStudioMenu()" class="menu-config-item" data-page="herramientas">
+          🔧 Mis herramientas
+        </button>
+      </div>
+    </div>
   </div>
   <div class="topbar-actions" style="min-width:auto;gap:6px;align-items:center">
-    <!-- Botón +Nueva global -->
-    <button onclick="showPage('ing');showFormCot()" title="Nueva cotización" style="display:inline-flex;align-items:center;gap:5px;padding:6px 13px;font-size:10px;font-weight:600;border:1px solid var(--accent);border-radius:var(--r-md);background:var(--accent);color:var(--text-on-accent);cursor:pointer;font-family:var(--font-display);letter-spacing:.10em;text-transform:uppercase;transition:all .2s var(--ease-out)">
-      <span style="font-size:14px;line-height:1">+</span> Nueva
-    </button>
+    <!-- +Nueva movido al home-hero -->
     <!-- Menú ⚙ -->
     <div style="position:relative" id="menuConfigWrap">
       <button onclick="toggleMenuConfig()" title="Herramientas y datos" style="display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:var(--r-md);border:0.5px solid var(--border-2);background:transparent;color:var(--text-2);cursor:pointer;font-size:15px;transition:all .2s var(--ease-out)">⚙</button>
@@ -1399,6 +1489,9 @@ input.narrow{width:88px}input.mid{width:108px}
         <button onclick="exportarJSON();toggleMenuConfig()" class="menu-config-item">⬇ Exportar JSON</button>
         <button onclick="exportarExcel();toggleMenuConfig()" class="menu-config-item">📊 Exportar Excel</button>
         <label class="menu-config-item" style="cursor:pointer">⬆ Importar JSON<input type="file" id="importInput" accept=".json" style="display:none" onchange="importarJSON(event);toggleMenuConfig()"></label>
+        <div style="height:1px;background:rgba(255,255,255,0.06);margin:4px 0"></div>
+        <div style="padding:5px 10px 3px;font-family:var(--font-display);font-size:8.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-3)">Ayuda</div>
+        <button onclick="mostrarAtajos();toggleMenuConfig()" class="menu-config-item">⌨ Atajos de teclado</button>
         <div style="height:1px;background:rgba(255,255,255,0.06);margin:4px 0"></div>
         <div style="padding:5px 10px 3px;font-family:var(--font-display);font-size:8.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-3)">Sincronización</div>
         <button onclick="togglePanelNube();toggleMenuConfig()" class="menu-config-item" id="btnNube">☁ Nube <span id="syncStatusMenu" style="font-family:var(--font-mono);font-size:9px;color:var(--green);margin-left:4px"></span></button>
@@ -1520,43 +1613,64 @@ input.narrow{width:88px}input.mid{width:108px}
   <span class="pl p3" style="margin-bottom:.75rem;display:inline-block">Colaborador / dibujante</span>
   <p class="nt" style="margin:.2rem 0 .75rem">Asigná nombre y % del honorario para cada tarea</p>
 
-  <div class="colab-row" id="colF1Row">
-    <div style="flex:1">
-      <div style="font-size:12px;color:var(--text-2);margin-bottom:3px">Modelado 3D (F1)</div>
-      <input type="text" id="colNombre3D" placeholder="Nombre del colaborador" style="font-size:11px;padding:4px 7px;margin-bottom:0" oninput="calc()">
+  <!-- ─── Anteproyecto (F1) budget bar ─── -->
+  <div id="colF1Row">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px">
+      <span style="font-size:10px;text-transform:uppercase;letter-spacing:.09em;color:var(--text-3);font-weight:500">Anteproyecto F1 — presupuesto colaboradores</span>
+      <span id="colF1BudgetPct" style="font-size:10px;font-family:var(--font-mono);color:var(--text-3)">0%</span>
     </div>
-    <div class="colab-r">
-      <input class="colab-pct" type="number" id="col3D" value="25" min="0" max="100" oninput="calc()">
-      <span style="font-size:11px;color:var(--text-3)">%</span>
-      <span class="colab-amt" id="colAmt3D">—</span>
+    <!-- budget bar -->
+    <div style="height:4px;border-radius:2px;background:rgba(255,255,255,0.06);margin-bottom:10px;overflow:hidden">
+      <div id="colF1BudgetBar" style="height:100%;border-radius:2px;background:var(--accent);width:0%;transition:width .2s,background .2s"></div>
+    </div>
+    <!-- warning -->
+    <div id="colF1Warn" style="display:none;margin-bottom:8px;padding:7px 11px;background:rgba(224,90,90,0.08);border:1px solid rgba(224,90,90,0.25);border-radius:var(--r-md);font-size:11px;color:var(--red)">
+      ⚠ Los porcentajes de Modelado 3D + Renderización suman más del 100% del honorario de Anteproyecto. Estarías pagando más de lo que cobrás.
+    </div>
+
+    <div class="colab-row">
+      <div style="flex:1">
+        <div style="font-size:12px;color:var(--text-2);margin-bottom:3px">Modelado 3D</div>
+        <input type="text" id="colNombre3D" placeholder="Nombre del colaborador" style="font-size:11px;padding:4px 7px;margin-bottom:0" oninput="calc()">
+      </div>
+      <div class="colab-r">
+        <input class="colab-pct" type="number" id="col3D" value="25" min="0" max="100" oninput="calc()">
+        <span style="font-size:11px;color:var(--text-3)">% de F1</span>
+        <span class="colab-amt" id="colAmt3D">—</span>
+      </div>
+    </div>
+
+    <div class="colab-row">
+      <div style="flex:1">
+        <div style="font-size:12px;color:var(--text-2);margin-bottom:3px">Renderización</div>
+        <input type="text" id="colNombreRend" placeholder="Nombre del colaborador" style="font-size:11px;padding:4px 7px;margin-bottom:0" oninput="calc()">
+      </div>
+      <div class="colab-r">
+        <input class="colab-pct" type="number" id="colRend" value="0" min="0" max="100" oninput="calc()">
+        <span style="font-size:11px;color:var(--text-3)">% de F1</span>
+        <span class="colab-amt" id="colAmtRend">—</span>
+      </div>
     </div>
   </div>
 
-  <div class="colab-row" id="colRendRow">
-    <div style="flex:1">
-      <div style="font-size:12px;color:var(--text-2);margin-bottom:3px">Renderización (F1)</div>
-      <input type="text" id="colNombreRend" placeholder="Nombre del colaborador" style="font-size:11px;padding:4px 7px;margin-bottom:0" oninput="calc()">
-    </div>
-    <div class="colab-r">
-      <input class="colab-pct" type="number" id="colRend" value="0" min="0" max="100" oninput="calc()">
-      <span style="font-size:11px;color:var(--text-3)">%</span>
-      <span class="colab-amt" id="colAmtRend">—</span>
-    </div>
-  </div>
-
-  <div class="colab-row" id="colPlanosRow">
+  <!-- ─── Planimetrías (F2) ─── -->
+  <div class="colab-row" id="colPlanosRow" style="margin-top:8px;padding-top:10px;border-top:0.5px solid var(--border)">
     <div style="flex:1">
       <div style="font-size:12px;color:var(--text-2);margin-bottom:3px">Planos constructivos (F2)</div>
       <input type="text" id="colNombrePlanos" placeholder="Nombre del colaborador" style="font-size:11px;padding:4px 7px;margin-bottom:0" oninput="calc()">
     </div>
     <div class="colab-r">
       <input class="colab-pct" type="number" id="colPlanos" value="0" min="0" max="100" oninput="calc()">
-      <span style="font-size:11px;color:var(--text-3)">%</span>
+      <span style="font-size:11px;color:var(--text-3)">% de F2</span>
       <span class="colab-amt" id="colAmtPlanos">—</span>
     </div>
   </div>
+  <!-- F2 individual >100% warning -->
+  <div id="colF2Warn" style="display:none;margin-top:6px;padding:7px 11px;background:rgba(224,90,90,0.08);border:1px solid rgba(224,90,90,0.25);border-radius:var(--r-md);font-size:11px;color:var(--red)">
+    ⚠ El porcentaje de Planos constructivos supera el 100% del honorario de Planimetrías.
+  </div>
 
-  <div style="display:flex;justify-content:space-between;padding-top:6px;margin-top:3px;border-top:0.5px solid var(--border)">
+  <div style="display:flex;justify-content:space-between;padding-top:8px;margin-top:6px;border-top:0.5px solid var(--border)">
     <span style="font-size:11px;color:var(--text-2)">Total colaboradores</span>
     <span style="font-size:12px;font-weight:500" id="colTotal">—</span>
   </div>
@@ -1667,22 +1781,46 @@ input.narrow{width:88px}input.mid{width:108px}
   <span>Los datos del cliente, proyecto y fases se toman directamente del Cotizador.</span>
 </div>
 
+<!-- Inputs ocultos de compatibilidad JS -->
+<input type="hidden" id="calProjName">
+<input type="hidden" id="calClientName">
+<input type="hidden" id="sprintDur" value="2">
+<span id="sprintDurV" style="display:none">2 sem</span>
+
 <div class="sc">
   <div class="sc-title">Configuración del proyecto</div>
-  <div class="r2" style="margin-bottom:.75rem">
-    <div><label class="lbl">Nombre del proyecto (sincronizado)</label><input type="text" id="calProjName" placeholder="Se sincroniza desde Cotizador" readonly style="opacity:.7;cursor:not-allowed"></div>
-    <div><label class="lbl">Cliente (sincronizado)</label><input type="text" id="calClientName" placeholder="Se sincroniza desde Cotizador" readonly style="opacity:.7;cursor:not-allowed"></div>
+
+  <!-- Nombre y cliente como continuación del Cotizador -->
+  <div id="calProjClientPill" style="display:flex;align-items:center;gap:10px;padding:10px 13px;margin-bottom:14px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:var(--r-md)">
+    <svg width="13" height="13" viewBox="0 0 14 14" fill="none" style="color:var(--accent);flex-shrink:0"><path d="M7 1v2M7 11v2M1 7h2M11 7h2M2.93 2.93l1.41 1.41M9.66 9.66l1.41 1.41M2.93 11.07l1.41-1.41M9.66 4.34l1.41-1.41" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+    <div style="flex:1;min-width:0">
+      <span id="calProjNameDisplay" style="font-size:13px;font-weight:500;color:var(--text);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">—</span>
+      <span id="calClientNameDisplay" style="font-size:11px;color:var(--text-3)">—</span>
+    </div>
+    <div style="display:flex;gap:6px;flex-shrink:0">
+      <div id="calFaseF1Indicator"><span class="pl p1" style="font-size:9px" id="calF1Badge">F1 ON</span></div>
+      <div id="calFaseF2Indicator"><span class="pl p2" style="font-size:9px" id="calF2Badge">F2 ON</span></div>
+    </div>
   </div>
+
+  <!-- Fechas -->
   <div class="r2">
-    <div><label class="lbl">Fecha de inicio del proyecto</label><input type="text" id="projStart" placeholder="DD/MM/AAAA" maxlength="10" oninput="renderAll()" style="font-family:var(--font-mono)"></div>
-    <div><label class="lbl">Duración por sprint</label><div class="fr"><input type="range" id="sprintDur" min="1" max="3" step="1" value="2" oninput="renderAll()"><span class="fv" id="sprintDurV">2 sem</span></div></div>
-  </div>
-  <div class="sep"></div>
-  <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
-    <span style="font-size:11px;color:var(--text-2)">Fases activas:</span>
-    <div id="calFaseF1Indicator" style="display:flex;align-items:center;gap:5px"><span class="pl p1" style="font-size:10px" id="calF1Badge">Anteproyecto — ON</span></div>
-    <div id="calFaseF2Indicator" style="display:flex;align-items:center;gap:5px"><span class="pl p2" style="font-size:10px" id="calF2Badge">Planimetrías — ON</span></div>
-    <p class="nt" style="margin:0">Se actualiza automáticamente al activar o desactivar fases.</p>
+    <div>
+      <label class="lbl">Fecha de inicio del proyecto</label>
+      <input type="text" id="projStart" placeholder="DD/MM/AAAA" maxlength="10"
+        oninput="onProjStartChange()"
+        style="font-family:var(--font-mono)">
+    </div>
+    <div>
+      <label class="lbl" style="display:flex;align-items:center;gap:6px">
+        Fecha de entrega final
+        <button onclick="recalcProjEnd()" title="Recalcular desde duración de sprints"
+          style="font-size:9px;padding:1px 7px;border:0.5px solid var(--border-2);border-radius:var(--r-sm);background:transparent;color:var(--text-3);cursor:pointer;font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase">↺ recalc</button>
+      </label>
+      <input type="text" id="projEnd" placeholder="DD/MM/AAAA" maxlength="10"
+        oninput="_projEndManual=true;renderAll()"
+        style="font-family:var(--font-mono)">
+    </div>
   </div>
 </div>
 
@@ -2016,6 +2154,134 @@ input.narrow{width:88px}input.mid{width:108px}
 
 
 <!-- ═══════════════════════════════════════════════ PÁGINA: INICIO (Home Dashboard) -->
+
+<!-- ═══════════════════════════════════════════════ PÁGINA: PROJECT MANAGER -->
+<div class="page" id="pg-pm">
+<div style="padding:0 0 24px">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+    <span style="font-family:var(--font-display);font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)">Project Manager</span>
+    <div style="display:flex;align-items:center;gap:8px">
+      <span style="font-size:11px;color:var(--text-3)" id="pm-range-label"></span>
+      <div style="display:flex;gap:3px">
+        <button onclick="pmSetZoom('day')"   id="pmz-day"   style="padding:3px 9px;font-size:11px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text-3);cursor:pointer;font-family:var(--font-display);letter-spacing:.06em;text-transform:uppercase">Día</button>
+        <button onclick="pmSetZoom('week')"  id="pmz-week"  style="padding:3px 9px;font-size:11px;border:0.5px solid var(--accent);border-radius:var(--r-md);background:rgba(212,168,67,0.08);color:var(--accent);cursor:pointer;font-family:var(--font-display);letter-spacing:.06em;text-transform:uppercase">Sem</button>
+        <button onclick="pmSetZoom('month')" id="pmz-month" style="padding:3px 9px;font-size:11px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text-3);cursor:pointer;font-family:var(--font-display);letter-spacing:.06em;text-transform:uppercase">Mes</button>
+      </div>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px">
+    <div class="sc" style="padding:10px 14px!important"><div style="font-size:22px;font-weight:500;color:var(--text)" id="pm-kpi-active">—</div><div style="font-size:10px;color:var(--text-3);margin-top:3px;text-transform:uppercase;letter-spacing:.07em">Proyectos activos</div></div>
+    <div class="sc" style="padding:10px 14px!important"><div style="font-size:22px;font-weight:500;color:var(--red)" id="pm-kpi-late">—</div><div style="font-size:10px;color:var(--text-3);margin-top:3px;text-transform:uppercase;letter-spacing:.07em">Sprints atrasados</div></div>
+    <div class="sc" style="padding:10px 14px!important"><div style="font-size:22px;font-weight:500;color:var(--text)" id="pm-kpi-week">—</div><div style="font-size:10px;color:var(--text-3);margin-top:3px;text-transform:uppercase;letter-spacing:.07em">Hitos esta semana</div></div>
+    <div class="sc" style="padding:10px 14px!important"><div style="font-size:22px;font-weight:500;color:var(--green)" id="pm-kpi-done">—</div><div style="font-size:10px;color:var(--text-3);margin-top:3px;text-transform:uppercase;letter-spacing:.07em">Cerrados este mes</div></div>
+  </div>
+  <div style="border:0.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden;background:var(--bg)">
+    <div style="display:flex;border-bottom:0.5px solid var(--border);background:var(--surface)" id="pm-ruler-row">
+      <div style="flex-shrink:0;width:184px;border-right:0.5px solid var(--border)"></div>
+      <div style="flex:1;overflow:hidden;position:relative;height:46px" id="pm-ruler-track">
+        <div style="position:absolute;top:0;left:0;right:0;height:22px;border-bottom:0.5px solid var(--border);display:flex" id="pm-ruler-months"></div>
+        <div style="position:absolute;top:23px;left:0;right:0;height:23px" id="pm-ruler-weeks"></div>
+        <div id="pm-today-ruler" style="position:absolute;top:0;bottom:0;width:2px;background:var(--accent);z-index:9;pointer-events:none">
+          <span style="position:absolute;top:2px;left:3px;font-size:9px;color:var(--accent);font-family:var(--font-mono);white-space:nowrap;font-weight:600">hoy</span>
+        </div>
+      </div>
+    </div>
+    <div id="pm-body" style="background:var(--bg)"><p style="padding:24px;font-size:12px;color:var(--text-3);text-align:center">Cargando...</p></div>
+  </div>
+  <div id="pm-tooltip" style="position:fixed;display:none;background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r-md);padding:8px 11px;font-size:11px;color:var(--text);z-index:9000;pointer-events:none;max-width:210px">
+    <div id="pm-tt-title" style="font-weight:500;margin-bottom:2px"></div>
+    <div id="pm-tt-detail" style="color:var(--text-3);font-size:10px"></div>
+  </div>
+</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════ PÁGINA: CLIENTES -->
+<div class="page" id="pg-clientes">
+  <!-- Vista lista -->
+  <div id="cli-list-view">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+      <span style="font-family:var(--font-display);font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)">Clientes</span>
+      <button onclick="cliShowForm()" style="display:inline-flex;align-items:center;gap:5px;padding:7px 14px;font-size:10px;font-weight:600;border:1px solid var(--accent);border-radius:var(--r-md);background:var(--accent);color:var(--text-on-accent);cursor:pointer;font-family:var(--font-display);letter-spacing:.10em;text-transform:uppercase">
+        + Nuevo cliente
+      </button>
+    </div>
+    <!-- KPIs -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px" id="cli-kpis"></div>
+    <!-- Búsqueda -->
+    <div style="position:relative;margin-bottom:12px">
+      <span style="position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:13px;pointer-events:none">🔍</span>
+      <input type="text" id="cli-search" placeholder="Buscar por nombre, empresa o NIT..."
+        oninput="cliRenderList()"
+        style="width:100%;padding:8px 12px 8px 34px;background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r-md);color:var(--text);font-size:12px;font-family:var(--font-body)">
+    </div>
+    <!-- Lista -->
+    <div id="cli-list-body"></div>
+  </div>
+
+  <!-- Vista detalle (oculta por defecto) -->
+  <div id="cli-detail-view" style="display:none">
+    <div class="cli-detail-back" onclick="cliShowList()">← Clientes</div>
+    <div id="cli-detail-body"></div>
+  </div>
+
+  <!-- Formulario nuevo/editar (oculto por defecto) -->
+  <div id="cli-form-view" style="display:none">
+    <div class="cli-detail-back" onclick="cliHideForm()">← Cancelar</div>
+    <div class="sc">
+      <div class="sc-title" id="cli-form-title">Nuevo cliente</div>
+      <input type="hidden" id="cli-form-id">
+      <div class="r2" style="margin-bottom:.75rem">
+        <div>
+          <label class="lbl">Nombre *</label>
+          <input type="text" id="cli-f-nombre" placeholder="Juan García">
+        </div>
+        <div>
+          <label class="lbl">Empresa</label>
+          <input type="text" id="cli-f-empresa" placeholder="Constructora García">
+        </div>
+      </div>
+      <div class="r2" style="margin-bottom:.75rem">
+        <div>
+          <label class="lbl">NIT</label>
+          <input type="text" id="cli-f-nit" placeholder="1234567-8 o CF" style="font-family:var(--font-mono)">
+        </div>
+        <div>
+          <label class="lbl">Teléfono</label>
+          <input type="text" id="cli-f-tel" placeholder="3004-0000" style="font-family:var(--font-mono)">
+        </div>
+      </div>
+      <div style="margin-bottom:.75rem">
+        <label class="lbl">Email</label>
+        <input type="email" id="cli-f-email" placeholder="juan@email.com">
+      </div>
+      <div style="margin-bottom:.75rem">
+        <label class="lbl">Método de captación</label>
+        <select id="cli-f-captacion" style="width:100%;padding:8px 11px;background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r-md);color:var(--text);font-size:12px;font-family:var(--font-body)">
+          <option value="">— Seleccionar —</option>
+          <option>Referido</option>
+          <option>Instagram</option>
+          <option>Facebook</option>
+          <option>LinkedIn</option>
+          <option>Sitio web</option>
+          <option>Evento / expo</option>
+          <option>Contacto directo</option>
+          <option>Otro</option>
+        </select>
+      </div>
+      <div style="margin-bottom:1rem">
+        <label class="lbl">Notas internas</label>
+        <textarea id="cli-f-notas" rows="3" placeholder="Observaciones sobre el cliente..."
+          style="width:100%;padding:8px 11px;background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r-md);color:var(--text);font-size:12px;font-family:var(--font-body);resize:vertical"></textarea>
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:8px;padding-top:10px;border-top:0.5px solid var(--border)">
+        <button onclick="cliHideForm()" style="padding:7px 14px;font-size:11px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text-2);cursor:pointer;font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase">Cancelar</button>
+        <button onclick="cliGuardar()" style="padding:7px 18px;font-size:11px;border:1px solid var(--accent);border-radius:var(--r-md);background:var(--accent);color:var(--text-on-accent);cursor:pointer;font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase">Guardar cliente</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="page active" id="pg-home">
 
 <div class="home-hero">
@@ -2023,6 +2289,14 @@ input.narrow{width:88px}input.mid{width:108px}
     <p class="home-hero-greeting" id="home-greeting">Hola, Baldi</p>
     <p class="home-hero-date" id="home-date"></p>
   </div>
+  <button onclick="showPage('programa')" title="Iniciar nuevo proyecto desde Programa Arquitectónico"
+    style="display:inline-flex;align-items:center;gap:7px;padding:9px 18px;font-size:11px;font-weight:600;
+    border:1px solid var(--accent);border-radius:var(--r-md);background:var(--accent);
+    color:var(--text-on-accent);cursor:pointer;font-family:var(--font-display);
+    letter-spacing:.10em;text-transform:uppercase;transition:all .2s var(--ease-out);flex-shrink:0"
+    onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">
+    <span style="font-size:15px;line-height:1">+</span> Nuevo proyecto
+  </button>
 </div>
 
 <!-- KPIs grandes -->
@@ -2423,8 +2697,470 @@ function toggleTheme(){
 })();
 
 // ═══════════════════════════════════════════════
+
+/* ─── Modal de atajos de teclado ─── */
+function mostrarAtajos(){
+  const existing = document.getElementById('modalAtajos');
+  if(existing){ existing.remove(); return; }
+  const modal = document.createElement('div');
+  modal.id = 'modalAtajos';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
+  modal.onclick = e => { if(e.target===modal) modal.remove(); };
+  const atajos = [
+    ['H', 'Inicio'],
+    ['P', 'Proyectos'],
+    ['K', 'Kanban'],
+    ['M', 'Project Manager (PM)'],
+    ['E', 'Cotizador'],
+    ['R', 'Estimado rápido'],
+    ['C', 'Vista cliente / Gantt'],
+    ['N', 'Nueva cotización'],
+    ['Ctrl+K', 'Búsqueda global'],
+    ['?', 'Este panel de atajos'],
+    ['Esc', 'Cerrar modales'],
+  ];
+  modal.innerHTML = `
+    <div style="background:var(--bg-surface-2,#1a1b1e);border:1px solid var(--border-accent);border-radius:var(--r-lg);padding:24px 28px;width:100%;max-width:420px;font-family:var(--font-body)" onclick="event.stopPropagation()">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <span style="font-family:var(--font-display);font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)">⌨ Atajos de teclado</span>
+        <button onclick="document.getElementById('modalAtajos').remove()" style="background:transparent;border:0;color:var(--text-3);font-size:20px;cursor:pointer;line-height:1">×</button>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:3px">
+        ${atajos.map(([k,d])=>`
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:0.5px solid rgba(255,255,255,0.05)">
+            <span style="font-size:12px;color:var(--text-2)">${d}</span>
+            <kbd style="font-family:var(--font-mono);font-size:11px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:5px;padding:2px 8px;color:var(--accent);letter-spacing:.04em">${k}</kbd>
+          </div>`).join('')}
+      </div>
+      <p style="margin-top:14px;font-size:10px;color:var(--text-3);text-align:center">Presioná <kbd style="font-family:var(--font-mono);font-size:10px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);border-radius:4px;padding:1px 6px">?</kbd> en cualquier momento para ver este panel</p>
+    </div>`;
+  document.body.appendChild(modal);
+}
+
 // MENÚ ⚙ (configuración / datos)
 // ═══════════════════════════════════════════════
+
+/* ══════════════════════════════════════════════════════════════
+   MÓDULO CLIENTES
+   localStorage['avit_clients'] = [{ id, nombre, empresa, nit,
+     tel, email, captacion, notas, creadoEn }]
+   avit_cots[n].clienteId = id  (nuevo campo, fallback por nombre)
+   ══════════════════════════════════════════════════════════════ */
+
+const CAPTACION_OPTS = ['Referido','Instagram','Facebook','LinkedIn',
+  'Sitio web','Evento / expo','Contacto directo','Otro'];
+
+/* ── Storage ──────────────────────────────────────────────── */
+function cliLoad(){ try{ return JSON.parse(localStorage.getItem('avit_clients')||'[]'); }catch(e){ return []; } }
+function cliSave(arr){ localStorage.setItem('avit_clients', JSON.stringify(arr)); }
+
+/* ── Helpers ──────────────────────────────────────────────── */
+function cliCotsDeCliente(cli){
+  const cots = loadCots ? loadCots() : JSON.parse(localStorage.getItem('avit_cots')||'[]');
+  return cots.filter(c => c.clienteId === cli.id || (!c.clienteId && c.cliente === cli.nombre));
+}
+
+function cliEstadoIcon(estado){
+  const m = {'emitida':'💬','en_progreso':'🎨','pre_entrega':'🔄',
+             'f1_entregada':'📐','cobrado_f1':'📐','f2_entregada':'✓','cobrado_total':'✓','completada':'✓'};
+  return m[estado] || '💬';
+}
+
+function cliEstadoLabel(estado){
+  const m = STATUS_LABELS_MAP || {};
+  return m[estado] || estado || '—';
+}
+
+/* ── Vincular cliente al cotizar (selector) ────────────────── */
+let _cliSelectedId = null;
+
+function cliRenderSelectorCotizador(){
+  const wrap = document.getElementById('cliSelectorWrap');
+  if(!wrap) return;
+  const clientes = cliLoad();
+  const selEl = document.getElementById('clientName');
+  const selNombre = selEl ? selEl.value.trim() : '';
+
+  // Find if current name matches a client
+  if(!_cliSelectedId && selNombre){
+    const match = clientes.find(c => c.nombre === selNombre);
+    if(match) _cliSelectedId = match.id;
+  }
+
+  const sel = _cliSelectedId ? clientes.find(c=>c.id===_cliSelectedId) : null;
+
+  wrap.innerHTML = sel ? `
+    <div style="display:flex;align-items:center;gap:8px;padding:7px 11px;background:rgba(212,168,67,0.07);border:1px solid rgba(212,168,67,0.22);border-radius:var(--r-md);margin-top:6px">
+      <span style="font-size:13px">👤</span>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:12px;font-weight:500;color:var(--text)">${escapeHtmlK(sel.nombre)}</div>
+        ${sel.empresa?`<div style="font-size:10px;color:var(--text-3)">${escapeHtmlK(sel.empresa)}</div>`:''}
+      </div>
+      <button onclick="cliDeselectCotizador()" style="background:transparent;border:0;color:var(--text-3);cursor:pointer;font-size:16px;line-height:1;padding:0 2px" title="Desvincular cliente">×</button>
+    </div>` :
+    `<div style="display:flex;gap:7px;margin-top:6px">
+      <div style="position:relative;flex:1">
+        <input type="text" id="cliSelectorInput" placeholder="🔍 Buscar cliente existente..."
+          oninput="cliSelectorFilter(this.value)"
+          style="width:100%;padding:7px 11px;background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r-md);color:var(--text);font-size:12px;font-family:var(--font-body)">
+        <div id="cliSelectorDropdown" style="display:none;position:absolute;top:calc(100%+4px);left:0;right:0;background:var(--bg-surface-2,#1a1b1e);border:1px solid var(--border-accent);border-radius:var(--r-md);z-index:100;max-height:180px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,0.4)"></div>
+      </div>
+      <button onclick="cliShowFormMini()" style="padding:7px 12px;font-size:10px;font-weight:600;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text-2);cursor:pointer;font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap">+ Nuevo</button>
+    </div>`;
+}
+
+function cliSelectorFilter(q){
+  const dd = document.getElementById('cliSelectorDropdown');
+  if(!dd) return;
+  const clientes = cliLoad();
+  const fil = q.trim().toLowerCase()
+    ? clientes.filter(c=>(c.nombre+c.empresa+c.nit).toLowerCase().includes(q.trim().toLowerCase()))
+    : clientes;
+  if(!fil.length){ dd.style.display='none'; return; }
+  dd.innerHTML = fil.map(c=>`
+    <div onclick="cliSelectCotizador('${c.id}')"
+      style="padding:8px 12px;cursor:pointer;border-bottom:0.5px solid var(--border);transition:background .1s"
+      onmouseover="this.style.background='rgba(255,255,255,0.04)'" onmouseout="this.style.background=''">
+      <div style="font-size:12px;font-weight:500;color:var(--text)">${escapeHtmlK(c.nombre)}</div>
+      ${c.empresa?`<div style="font-size:10px;color:var(--text-3)">${escapeHtmlK(c.empresa)}</div>`:''}
+    </div>`).join('');
+  dd.style.display='block';
+}
+
+function cliSelectCotizador(id){
+  const cli = cliLoad().find(c=>c.id===id);
+  if(!cli) return;
+  _cliSelectedId = id;
+  const nameEl = document.getElementById('clientName');
+  if(nameEl){ nameEl.value = cli.nombre; if(typeof calc==='function') calc(); }
+  cliRenderSelectorCotizador();
+}
+
+function cliDeselectCotizador(){
+  _cliSelectedId = null;
+  cliRenderSelectorCotizador();
+}
+
+/* Mini form inside cotizador to create new client on the fly */
+function cliShowFormMini(){
+  const existing = document.getElementById('cliMiniModal');
+  if(existing){ existing.remove(); return; }
+  const modal = document.createElement('div');
+  modal.id='cliMiniModal';
+  modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:9990;display:flex;align-items:center;justify-content:center;padding:20px';
+  modal.onclick=e=>{ if(e.target===modal) modal.remove(); };
+  modal.innerHTML=`
+    <div style="background:var(--bg-surface-2,#1a1b1e);border:1px solid var(--border-accent);border-radius:var(--r-lg);padding:22px 26px;width:100%;max-width:420px" onclick="event.stopPropagation()">
+      <div style="font-family:var(--font-display);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:14px">👤 Nuevo cliente</div>
+      <div class="r2" style="margin-bottom:.65rem">
+        <div><label class="lbl">Nombre *</label><input type="text" id="cliMini-nombre" placeholder="Juan García"></div>
+        <div><label class="lbl">Empresa</label><input type="text" id="cliMini-empresa" placeholder="Empresa S.A."></div>
+      </div>
+      <div class="r2" style="margin-bottom:.65rem">
+        <div><label class="lbl">NIT</label><input type="text" id="cliMini-nit" placeholder="CF" style="font-family:var(--font-mono)"></div>
+        <div><label class="lbl">Teléfono</label><input type="text" id="cliMini-tel" placeholder="3004-0000" style="font-family:var(--font-mono)"></div>
+      </div>
+      <div style="margin-bottom:.65rem">
+        <label class="lbl">Captación</label>
+        <select id="cliMini-cap" style="width:100%;padding:7px 10px;background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r-md);color:var(--text);font-size:12px;font-family:var(--font-body)">
+          <option value="">— Seleccionar —</option>
+          ${CAPTACION_OPTS.map(o=>`<option>${o}</option>`).join('')}
+        </select>
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:14px">
+        <button onclick="document.getElementById('cliMiniModal').remove()" style="padding:6px 13px;font-size:11px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text-2);cursor:pointer;font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase">Cancelar</button>
+        <button onclick="cliGuardarMini()" style="padding:6px 16px;font-size:11px;border:1px solid var(--accent);border-radius:var(--r-md);background:var(--accent);color:var(--text-on-accent);cursor:pointer;font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase">Guardar y vincular</button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+  setTimeout(()=>document.getElementById('cliMini-nombre')?.focus(),60);
+}
+
+function cliGuardarMini(){
+  const nombre = (document.getElementById('cliMini-nombre')?.value||'').trim();
+  if(!nombre){ alert('El nombre es obligatorio.'); return; }
+  const cli = {
+    id: 'cli_'+Date.now(),
+    nombre,
+    empresa: (document.getElementById('cliMini-empresa')?.value||'').trim(),
+    nit:     (document.getElementById('cliMini-nit')?.value||'').trim(),
+    tel:     (document.getElementById('cliMini-tel')?.value||'').trim(),
+    email:'', captacion: document.getElementById('cliMini-cap')?.value||'',
+    notas:'', creadoEn: Date.now()
+  };
+  const all = cliLoad(); all.push(cli); cliSave(all);
+  document.getElementById('cliMiniModal')?.remove();
+  cliSelectCotizador(cli.id);
+  const ss=document.getElementById('syncStatus');
+  if(ss){ ss.textContent='✦ Cliente guardado'; setTimeout(()=>{ if(ss.textContent==='✦ Cliente guardado') ss.textContent=''; },2000); }
+}
+
+/* ── Render lista ──────────────────────────────────────────── */
+function cliRenderKPIs(){
+  const el = document.getElementById('cli-kpis');
+  if(!el) return;
+  const clientes = cliLoad();
+  const cots = loadCots ? loadCots() : [];
+  let facturado=0, cobrado=0, activos=0;
+  clientes.forEach(c=>{
+    const cs = cliCotsDeCliente(c);
+    cs.forEach(ct=>{ facturado+=ct.tot||0; cobrado+=ct.cobrado||0; });
+    if(cs.some(ct=>!['cobrado_total','completada'].includes(ct.estado||''))) activos++;
+  });
+  const fmt = n=>'GTQ '+Math.round(n).toLocaleString('es-GT');
+  el.innerHTML = [
+    ['Clientes', clientes.length, 'var(--text)'],
+    ['Con proyectos activos', activos, 'var(--accent)'],
+    ['Total facturado', fmt(facturado), 'var(--text)'],
+    ['Total cobrado', fmt(cobrado), 'var(--green)'],
+  ].map(([l,v,c])=>`
+    <div class="sc" style="padding:10px 14px!important">
+      <div style="font-size:${typeof v==='number'?'22':'14'}px;font-weight:500;color:${c}">${v}</div>
+      <div style="font-size:10px;color:var(--text-3);margin-top:3px;text-transform:uppercase;letter-spacing:.07em">${l}</div>
+    </div>`).join('');
+}
+
+function cliRenderList(){
+  const body = document.getElementById('cli-list-body');
+  if(!body) return;
+  cliRenderKPIs();
+  const clientes = cliLoad();
+  const q = (document.getElementById('cli-search')?.value||'').trim().toLowerCase();
+  const fil = q ? clientes.filter(c=>(c.nombre+' '+c.empresa+' '+c.nit).toLowerCase().includes(q)) : clientes;
+  if(!fil.length){
+    body.innerHTML=`<div class="cli-empty">${clientes.length?'Sin resultados para esa búsqueda.':'Ningún cliente registrado aún.<br><br><button onclick="cliShowForm()" style="padding:8px 18px;font-size:11px;border:1px solid var(--accent);border-radius:var(--r-md);background:var(--accent);color:var(--text-on-accent);cursor:pointer;font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase">+ Nuevo cliente</button>'}</div>`;
+    return;
+  }
+  body.innerHTML = fil.map(cli=>{
+    const cs = cliCotsDeCliente(cli);
+    const facturado = cs.reduce((s,c)=>s+(c.tot||0),0);
+    const cobrado   = cs.reduce((s,c)=>s+(c.cobrado||0),0);
+    const activo = cs.find(c=>!['cobrado_total','completada'].includes(c.estado||''));
+    const fmt = n=>'GTQ '+Math.round(n).toLocaleString('es-GT');
+    return `
+    <div class="cli-card" onclick="cliShowDetail('${cli.id}')">
+      <div class="cli-card-top">
+        <div>
+          <div class="cli-name">${escapeHtmlK(cli.nombre)}</div>
+          ${cli.empresa?`<div class="cli-empresa">${escapeHtmlK(cli.empresa)}</div>`:''}
+          ${cli.nit?`<div class="cli-nit">NIT ${escapeHtmlK(cli.nit)}</div>`:''}
+        </div>
+        <div style="display:flex;align-items:center;gap:7px;flex-shrink:0">
+          ${cli.captacion?`<span class="cli-captacion">${escapeHtmlK(cli.captacion)}</span>`:''}
+          <span style="font-size:16px;color:var(--text-3)">›</span>
+        </div>
+      </div>
+      ${cli.tel||cli.email?`<div class="cli-contact">
+        ${cli.tel?`<span>📞 ${escapeHtmlK(cli.tel)}</span>`:''}
+        ${cli.email?`<span>✉ ${escapeHtmlK(cli.email)}</span>`:''}
+      </div>`:''}
+      <div class="cli-stats">
+        <span class="cli-stat"><strong>${cs.length}</strong> proyecto${cs.length!==1?'s':''}</span>
+        ${facturado?`<span class="cli-stat"><strong>${fmt(facturado)}</strong> facturado</span>`:''}
+        ${cobrado?`<span class="cli-stat" style="color:var(--green)"><strong>${fmt(cobrado)}</strong> cobrado</span>`:''}
+        ${activo?`<span class="cli-stat">Activo: ${escapeHtmlK(activo.proyecto||'—')}</span>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ── Render detalle ────────────────────────────────────────── */
+function cliShowDetail(id){
+  const cli = cliLoad().find(c=>c.id===id);
+  if(!cli) return;
+  document.getElementById('cli-list-view').style.display='none';
+  document.getElementById('cli-form-view').style.display='none';
+  document.getElementById('cli-detail-view').style.display='block';
+  const cs = cliCotsDeCliente(cli);
+  const facturado = cs.reduce((s,c)=>s+(c.tot||0),0);
+  const cobrado   = cs.reduce((s,c)=>s+(c.cobrado||0),0);
+  const pct = facturado>0 ? Math.round(cobrado/facturado*100) : 0;
+  const fmt = n=>'GTQ '+Math.round(n).toLocaleString('es-GT');
+  const body = document.getElementById('cli-detail-body');
+  body.innerHTML=`
+    <div class="cli-detail-header">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
+        <div>
+          <div style="font-size:17px;font-weight:500;color:var(--text)">${escapeHtmlK(cli.nombre)}</div>
+          ${cli.empresa?`<div style="font-size:12px;color:var(--text-3);margin-top:2px">${escapeHtmlK(cli.empresa)}</div>`:''}
+        </div>
+        <div style="display:flex;gap:7px">
+          <button onclick="cliShowFormEditar('${cli.id}')" style="padding:5px 12px;font-size:10px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text-2);cursor:pointer;font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase">✎ Editar</button>
+          <button onclick="cliEliminar('${cli.id}')" style="padding:5px 10px;font-size:10px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--red);cursor:pointer;font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase">Eliminar</button>
+        </div>
+      </div>
+      <div style="display:flex;gap:14px;margin-top:10px;flex-wrap:wrap">
+        ${cli.nit?`<span style="font-size:11px;color:var(--text-3)">NIT <strong style="color:var(--text-2);font-family:var(--font-mono)">${escapeHtmlK(cli.nit)}</strong></span>`:''}
+        ${cli.tel?`<span style="font-size:11px;color:var(--text-3)">📞 ${escapeHtmlK(cli.tel)}</span>`:''}
+        ${cli.email?`<span style="font-size:11px;color:var(--text-3)">✉ ${escapeHtmlK(cli.email)}</span>`:''}
+        ${cli.captacion?`<span style="font-size:11px;color:var(--text-3)">📣 ${escapeHtmlK(cli.captacion)}</span>`:''}
+      </div>
+      ${cli.notas?`<div style="margin-top:10px;padding-top:10px;border-top:0.5px solid var(--border);font-size:11px;color:var(--text-3);line-height:1.7">${escapeHtmlK(cli.notas)}</div>`:''}
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px">
+      <div class="sc" style="padding:10px 14px!important">
+        <div style="font-size:20px;font-weight:500;color:var(--text)">${cs.length}</div>
+        <div style="font-size:10px;color:var(--text-3);margin-top:2px;text-transform:uppercase;letter-spacing:.07em">Proyectos</div>
+      </div>
+      <div class="sc" style="padding:10px 14px!important">
+        <div style="font-size:14px;font-weight:500;color:var(--text)">${fmt(facturado)}</div>
+        <div style="font-size:10px;color:var(--text-3);margin-top:2px;text-transform:uppercase;letter-spacing:.07em">Facturado</div>
+      </div>
+      <div class="sc" style="padding:10px 14px!important">
+        <div style="font-size:14px;font-weight:500;color:var(--green)">${fmt(cobrado)}</div>
+        <div style="font-size:10px;color:var(--text-3);margin-top:2px;text-transform:uppercase;letter-spacing:.07em">Cobrado (${pct}%)</div>
+      </div>
+    </div>
+
+    <div class="sc">
+      <div class="sc-title">Proyectos</div>
+      ${cs.length ? cs.map(c=>`
+        <div class="cli-proj-row">
+          <span style="font-size:16px">${cliEstadoIcon(c.estado)}</span>
+          <div style="flex:1;min-width:0">
+            <div class="cli-proj-name">${escapeHtmlK(c.proyecto||'—')}</div>
+            <div class="cli-proj-sub">${cliEstadoLabel(c.estado)} · ${c.fecha||'—'}</div>
+          </div>
+          <span style="font-size:11px;font-weight:500;color:var(--text-2);white-space:nowrap">GTQ ${Math.round(c.tot||0).toLocaleString('es-GT')}</span>
+          <button onclick="showPage('ing')" style="padding:3px 10px;font-size:10px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text-3);cursor:pointer;margin-left:6px">Ver</button>
+        </div>`).join('') :
+        '<div class="cli-empty">Sin proyectos registrados</div>'
+      }
+    </div>`;
+}
+
+function cliShowList(){
+  document.getElementById('cli-detail-view').style.display='none';
+  document.getElementById('cli-form-view').style.display='none';
+  document.getElementById('cli-list-view').style.display='block';
+  cliRenderList();
+}
+
+/* ── Formulario ─────────────────────────────────────────────── */
+function cliShowForm(id){
+  document.getElementById('cli-list-view').style.display='none';
+  document.getElementById('cli-detail-view').style.display='none';
+  document.getElementById('cli-form-view').style.display='block';
+  const isEdit = !!id;
+  document.getElementById('cli-form-title').textContent = isEdit ? 'Editar cliente' : 'Nuevo cliente';
+  document.getElementById('cli-form-id').value = id||'';
+  if(isEdit){
+    const cli = cliLoad().find(c=>c.id===id)||{};
+    document.getElementById('cli-f-nombre').value   = cli.nombre||'';
+    document.getElementById('cli-f-empresa').value  = cli.empresa||'';
+    document.getElementById('cli-f-nit').value      = cli.nit||'';
+    document.getElementById('cli-f-tel').value      = cli.tel||'';
+    document.getElementById('cli-f-email').value    = cli.email||'';
+    document.getElementById('cli-f-captacion').value= cli.captacion||'';
+    document.getElementById('cli-f-notas').value    = cli.notas||'';
+  } else {
+    ['cli-f-nombre','cli-f-empresa','cli-f-nit','cli-f-tel','cli-f-email','cli-f-notas'].forEach(i=>{ document.getElementById(i).value=''; });
+    document.getElementById('cli-f-captacion').value='';
+  }
+  setTimeout(()=>document.getElementById('cli-f-nombre').focus(),60);
+}
+
+function cliShowFormEditar(id){ cliShowList(); setTimeout(()=>cliShowForm(id),10); }
+
+function cliHideForm(){
+  document.getElementById('cli-form-view').style.display='none';
+  document.getElementById('cli-list-view').style.display='block';
+  cliRenderList();
+}
+
+function cliGuardar(){
+  const nombre = document.getElementById('cli-f-nombre').value.trim();
+  if(!nombre){ alert('El nombre del cliente es obligatorio.'); return; }
+  const id = document.getElementById('cli-form-id').value||'';
+  const all = cliLoad();
+  const cli = {
+    id: id||('cli_'+Date.now()),
+    nombre,
+    empresa:  document.getElementById('cli-f-empresa').value.trim(),
+    nit:      document.getElementById('cli-f-nit').value.trim(),
+    tel:      document.getElementById('cli-f-tel').value.trim(),
+    email:    document.getElementById('cli-f-email').value.trim(),
+    captacion:document.getElementById('cli-f-captacion').value,
+    notas:    document.getElementById('cli-f-notas').value.trim(),
+    creadoEn: id ? (all.find(c=>c.id===id)?.creadoEn||Date.now()) : Date.now()
+  };
+  if(id){ const i=all.findIndex(c=>c.id===id); if(i>=0) all[i]=cli; else all.push(cli); }
+  else all.push(cli);
+  cliSave(all);
+  cliHideForm();
+  const ss=document.getElementById('syncStatus');
+  if(ss){ ss.textContent='✦ Cliente guardado'; setTimeout(()=>{ if(ss.textContent==='✦ Cliente guardado') ss.textContent=''; },2000); }
+}
+
+function cliEliminar(id){
+  const cli = cliLoad().find(c=>c.id===id);
+  if(!cli) return;
+  if(!confirm('¿Eliminar a '+cli.nombre+'? Las cotizaciones vinculadas no se borran.')) return;
+  cliSave(cliLoad().filter(c=>c.id!==id));
+  cliShowList();
+}
+
+/* ── Auto-vincular al registrar cotización ──────────────────── */
+// Parchear guardarCotConfirmado para guardar clienteId
+const _guardarCotOrig = typeof guardarCotConfirmado !== 'undefined' ? guardarCotConfirmado : null;
+// (El patch se aplica en DOMContentLoaded abajo)
+
+/* ── Inicialización ─────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', ()=>{
+
+  // Patch showPage para Clientes
+  const _spCliOrig = window.showPage;
+  window.showPage = function(id){
+    _spCliOrig.apply(this, arguments);
+    if(id === 'clientes'){ cliRenderList(); }
+  };
+
+  // Patch guardarCotConfirmado para guardar clienteId
+  if(typeof guardarCotConfirmado === 'function'){
+    const _gccOrig = guardarCotConfirmado;
+    window.guardarCotConfirmado = function(){
+      _gccOrig.apply(this, arguments);
+      // Si hay cliente seleccionado, actualizar el último cot con clienteId
+      if(_cliSelectedId){
+        const cots = loadCots();
+        if(cots.length){
+          cots[cots.length-1].clienteId = _cliSelectedId;
+          saveCots(cots);
+        }
+        _cliSelectedId = null;
+      }
+    };
+  }
+
+  // Inyectar selector en Cotizador (después de que el DOM esté listo)
+  const nameField = document.getElementById('clientName');
+  if(nameField && nameField.parentElement){
+    const wrap = document.createElement('div');
+    wrap.id = 'cliSelectorWrap';
+    nameField.parentElement.appendChild(wrap);
+    cliRenderSelectorCotizador();
+  }
+
+}, false);
+
+/* ── toggleStudioMenu ───────────────────────────────────────── */
+function toggleStudioMenu(){
+  const menu = document.getElementById('studioMenu');
+  const btn  = document.getElementById('studioMenuBtn');
+  const chev = document.getElementById('studioChevron');
+  if(!menu) return;
+  const open = menu.style.display === 'none' || !menu.style.display;
+  menu.style.display = open ? 'block' : 'none';
+  menu.dataset.open  = open ? '1' : '';
+  if(chev) chev.style.transform = open ? 'rotate(180deg)' : '';
+  if(btn){ btn.style.borderColor=open?'rgba(212,168,67,0.4)':''; btn.style.color=open?'var(--accent)':''; }
+  if(open){
+    const close = e=>{ if(!document.getElementById('studioMenuWrap')?.contains(e.target)){ menu.style.display='none'; menu.dataset.open=''; if(chev) chev.style.transform=''; if(btn){ btn.style.borderColor=''; btn.style.color=''; } document.removeEventListener('click',close); } };
+    setTimeout(()=>document.addEventListener('click',close),10);
+  }
+}
+
 function toggleMenuConfig(){
   const m = document.getElementById('menuConfig');
   if(!m) return;
@@ -2453,12 +3189,13 @@ function showPage(id) {
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.ntab').forEach(t=>t.classList.remove('active'));
   document.getElementById('pg-'+id).classList.add('active');
-  const idx={'home':0,'ing':1,'est':2,'calc':3}[id];
-  if(idx !== undefined){
-    document.querySelectorAll('.ntab')[idx].classList.add('active');
-  } else if(id === 'estimado' || id === 'programa'){
-    const tabs = document.querySelectorAll('.ntab');
-    if(tabs[4]) tabs[4].classList.add('active');
+  // Activar tab por data-page (robusto, no depende del orden)
+  const activeTab = document.querySelector('.ntab[data-page="'+id+'"]');
+  if(activeTab){ activeTab.classList.add('active'); }
+  else if(id === 'estimado' || id === 'programa'){
+    // Mis Herramientas contiene estimado/programa
+    const htab = document.querySelector('.ntab[data-page="herramientas"]');
+    if(htab) htab.classList.add('active');
   }
   // Sticky del Cotizador: mostrar solo en calc
   const sticky = document.getElementById('cotSticky');
@@ -2484,7 +3221,17 @@ function toggleTiempos(){
   const open=sec.style.display==='none'||sec.style.display==='';
   sec.style.display=open?'block':'none';
   chev.style.transform=open?'rotate(180deg)':'rotate(0deg)';
-  if(open){syncToCalendar();renderAll();}
+  if(open){
+    syncToCalendar();
+    // Asegurar projStart con valor por default si está vacío
+    const _ps2 = document.getElementById('projStart');
+    if(_ps2 && !_ps2.value.trim()){
+      _ps2.value = (typeof fmtFechaGT === 'function')
+        ? fmtFechaGT(new Date().toISOString().split('T')[0])
+        : '';
+    }
+    if(!_projEndManual) recalcProjEnd(); else renderAll();
+  }
 }
 
 // ═══════ SYNC ═══════
@@ -2495,6 +3242,10 @@ function syncToCalendar() {
   const f2 = document.getElementById('fase2On').checked;
   document.getElementById('calClientName').value = cn;
   document.getElementById('calProjName').value = pt;
+  const dispProj = document.getElementById('calProjNameDisplay');
+  const dispClient = document.getElementById('calClientNameDisplay');
+  if(dispProj) dispProj.textContent = pt || '—';
+  if(dispClient) dispClient.textContent = cn || '—';
   document.getElementById('calF1Badge').textContent = 'Anteproyecto — ' + (f1?'ON':'OFF');
   document.getElementById('calF1Badge').className = 'pl ' + (f1?'p1':'p6');
   document.getElementById('calF2Badge').textContent = 'Planimetrías — ' + (f2?'ON':'OFF');
@@ -2590,14 +3341,31 @@ function calc(){
     }
   }
   const sub=fee1+fee2;
-  const c3D=f1?fee1*(gv('col3D')/100):0;
-  const cRd=f1?fee1*(gv('colRend')/100):0;
-  const cPl=f2?fee2*(gv('colPlanos')/100):0;
+  const p3D=gv('col3D'), pRd=gv('colRend'), pPl=gv('colPlanos');
+  const c3D=f1?fee1*(p3D/100):0;
+  const cRd=f1?fee1*(pRd/100):0;
+  const cPl=f2?fee2*(pPl/100):0;
   const cTot=c3D+cRd+cPl;
   document.getElementById('colAmt3D').textContent=fmt(c3D);
   document.getElementById('colAmtRend').textContent=fmt(cRd);
   document.getElementById('colAmtPlanos').textContent=fmt(cPl);
   document.getElementById('colTotal').textContent=fmt(cTot);
+  // ── F1 budget bar (3D + Render combined) ──
+  const f1Combined=p3D+pRd;
+  const barEl=document.getElementById('colF1BudgetBar');
+  const pctEl=document.getElementById('colF1BudgetPct');
+  const warnF1=document.getElementById('colF1Warn');
+  if(barEl){
+    const pct=Math.min(f1Combined,120);
+    barEl.style.width=Math.min(pct,100)+'%';
+    barEl.style.background=f1Combined>100?'var(--red)':f1Combined>80?'var(--amber)':'var(--accent)';
+  }
+  if(pctEl) pctEl.textContent=f1Combined+'%';
+  if(pctEl) pctEl.style.color=f1Combined>100?'var(--red)':f1Combined>80?'var(--amber)':'var(--text-3)';
+  if(warnF1) warnF1.style.display=f1Combined>100?'block':'none';
+  // ── F2 individual warning ──
+  const warnF2=document.getElementById('colF2Warn');
+  if(warnF2) warnF2.style.display=pPl>100?'block':'none';
   const cm=['cRevit','cD5','cCanva','cElec','cGas','cViat'].reduce((a,id)=>a+gv(id),0);
   const oh=cm; // costos fijos directos, sin porcentaje
   document.getElementById('ohAmt').textContent=fmt(oh);
@@ -2686,10 +3454,10 @@ function calc(){
 function addSprint(type){
   const d={f1:{title:'Nuevo sprint — Anteproyecto',entregables:[],clientNote:'',needsFeedback:false,weeks:2},pe:{title:'Nuevo sprint — Pre entrega',entregables:[],clientNote:'',needsFeedback:false,weeks:1},f2:{title:'Nuevo sprint — Planimetrías',entregables:[],clientNote:'',needsFeedback:false,weeks:2},hito:{title:'Nuevo hito',entregables:[],clientNote:'',needsFeedback:false,weeks:0}};
   sprints.push({id:nextId++,type,...d[type]});
-  renderAll();
+  if(typeof _projEndManual!=='undefined'&&!_projEndManual&&typeof recalcProjEnd==='function') recalcProjEnd(); else renderAll();
   setTimeout(()=>{const ins=document.querySelectorAll('.sprint-title-inp');if(ins.length)ins[ins.length-1].focus()},50);
 }
-function deleteSprint(id){sprints=sprints.filter(s=>s.id!==id);renderAll()}
+function deleteSprint(id){sprints=sprints.filter(s=>s.id!==id);if(typeof _projEndManual!=='undefined'&&!_projEndManual&&typeof recalcProjEnd==='function') recalcProjEnd(); else renderAll();}
 
 // ═══ Drag & drop para reordenar sprints ═══
 let _draggedSprintId = null;
@@ -2836,14 +3604,19 @@ function fmtL(d){return d.toLocaleDateString('es-GT',{day:'2-digit',month:'long'
 /* ── Formato DD/MM/AAAA ↔ YYYY-MM-DD ── */
 function parseFechaGT(s){
   if(!s) return '';
-  const p=(s+'').trim().split('/');
-  if(p.length!==3) return '';
-  const d=parseInt(p[0]),m=parseInt(p[1]);
-  let y=p[2].trim();
-  if(isNaN(d)||isNaN(m)||!y) return '';
-  if(y.length===2) y=(parseInt(y)>=50?'19':'20')+y;
-  if(y.length!==4) return '';
-  return `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+  const str = (s+'').trim();
+  // ISO YYYY-MM-DD → devolver tal cual
+  if(/^\d{4}-\d{2}-\d{2}$/.test(str)) return str;
+  // DD/MM/AAAA o DD-MM-AAAA (separador / o -)
+  const p = str.includes('/') ? str.split('/') : str.split('-');
+  if(p.length !== 3) return '';
+  // Si el primer token tiene 4 dígitos es ISO (ya cubierto arriba)
+  let d = parseInt(p[0]), m = parseInt(p[1]);
+  let y = p[2].trim();
+  if(isNaN(d) || isNaN(m) || !y) return '';
+  if(y.length === 2) y = (parseInt(y) >= 50 ? '19' : '20') + y;
+  if(y.length !== 4) return '';
+  return y+'-'+String(m).padStart(2,'0')+'-'+String(d).padStart(2,'0');
 }
 function fmtFechaGT(iso){
   if(!iso) return '';
@@ -2853,17 +3626,56 @@ function fmtFechaGT(iso){
 function fmtDate(v){if(!v)return null;const[y,m,d]=v.split('-');const mo=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];return`${parseInt(d)} de ${mo[parseInt(m)-1]} de ${y}`}
 
 function getSprintDates(){
+  /* Returns {[sprintId]: {start, end, wk}}.
+     
+     Non-hito sprints: calculated in original array order.
+     Each one advances the cursor normally — they can overlap across phases
+     when there are multiple collaborators working simultaneously.
+     
+     Hitos: purely visual markers, placed at the END of the last
+     non-hito sprint that belongs to the same phase. They do NOT
+     advance the cursor and do NOT block the next phase from starting. */
   const sv=parseFechaGT(document.getElementById('projStart').value);
-  const dur=parseInt(document.getElementById('sprintDur').value)||2;
-  if(!sv)return[];
-  let cur2=new Date(sv+'T12:00:00');
-  return sprints.map(s=>{
-    const start=new Date(cur2);
-    const wk=s.type==='hito'?0:(s.weeks||dur);
-    const end=wk>0?addDays(start,wk*7-1):new Date(start);
-    if(wk>0) cur2=addDays(start,wk*7);
-    return{start,end,wk};
+  if(!sv) return {};
+
+  const result={};
+
+  // ── Pass 1: date all non-hito sprints in original order ────
+  let cur=new Date(sv+'T12:00:00');
+  sprints.forEach(s=>{
+    if(s.type==='hito') return;
+    const wk=parseFloat(s.weeks)||2;
+    const start=new Date(cur);
+    const end=addDays(start,Math.round(wk*7)-1);
+    result[s.id]={start,end,wk};
+    cur=addDays(start,Math.round(wk*7));
   });
+
+  // ── Pass 2: place each hito at end of its phase's non-hito sprints ──
+  // A hito "belongs to" the phase of the nearest preceding non-hito sprint.
+  // Its date = day after the LAST non-hito sprint end-date of that phase.
+  sprints.forEach((s,i)=>{
+    if(s.type!=='hito') return;
+
+    // Find the phase this hito follows
+    let phase=null;
+    for(let j=i-1;j>=0;j--){
+      if(sprints[j].type!=='hito'){ phase=sprints[j].type; break; }
+    }
+
+    // Latest end-date among all non-hito sprints of that phase
+    let latestEnd=new Date(sv+'T12:00:00');
+    sprints.forEach(x=>{
+      if(x.type===phase && result[x.id]){
+        if(result[x.id].end>latestEnd) latestEnd=new Date(result[x.id].end);
+      }
+    });
+
+    const hitoStart=addDays(latestEnd,1);
+    result[s.id]={start:hitoStart,end:hitoStart,wk:0};
+  });
+
+  return result;
 }
 
 function renderEditor(){
@@ -2881,7 +3693,9 @@ function renderEditor(){
       const cls=on?(s.type==='f2'?'ent-tag f2-on':s.type==='pe'?'ent-tag pe-on':'ent-tag on'):'ent-tag';
       return`<span class="${cls}" onclick="toggleEnt(${s.id},'${e}')">${on?'✓ ':'+'}${e}</span>`;
     }).join('');
-    const wkOpts=s.type==='hito'?'':[1,2,3,4].map(w=>`<option value="${w}" ${(s.weeks||dur)===w?'selected':''}>${w} sem${w>1?'s':''}</option>`).join('');
+    const _wkVal=parseFloat(s.weeks)||2;
+    const _wkList=[{v:0.143,l:'1 día'},{v:0.5,l:'½ sem'},{v:1,l:'1 sem'},{v:2,l:'2 sems'},{v:3,l:'3 sems'},{v:4,l:'4 sems'}];
+    const wkOpts=s.type==='hito'?'':`<option value="" disabled>— Duración —</option>`+_wkList.map(({v,l})=>`<option value="${v}" ${Math.abs(_wkVal-v)<0.01?'selected':''}>${l}</option>`).join('');
     const tl=s.type==='f1'?'Anteproyecto':s.type==='f2'?'Planimetrías':s.type==='pe'?'Pre entrega':'Hito';
     // Acordeón opcional para sprints con listas largas (collapsible:true)
     const isCollapsible = s.collapsible === true;
@@ -2916,7 +3730,7 @@ function renderEditor(){
       ${entSection}
       <textarea class="client-note" rows="2" oninput="updNote(${s.id},this.value)" placeholder="Nota para el cliente...">${s.clientNote}</textarea>
       <div class="sprint-meta">
-        ${s.type!=='hito'?`<div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-3)">Duración:<select style="width:auto;padding:2px 6px;font-size:11px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:var(--surface);color:var(--text)" onchange="sprints.find(x=>x.id===${s.id}).weeks=parseInt(this.value);renderAll()">${wkOpts}</select></div>`:''}
+        ${s.type!=='hito'?`<div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-3)">Duración:<select style="width:auto;padding:2px 6px;font-size:11px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:var(--surface);color:var(--text)" onchange="sprints.find(x=>x.id===${s.id}).weeks=parseFloat(this.value);if(!_projEndManual){recalcProjEnd();}else{renderAll();}">${wkOpts}</select></div>`:''}
         <button class="feedback-btn ${s.needsFeedback?'on':''}" onclick="toggleFb(${s.id})">${s.needsFeedback?'✓ Requiere aprobación':'+ Marcar aprobación cliente'}</button>
       </div>
     </div>`;
@@ -2928,15 +3742,16 @@ function renderTimeline(){
   const sv=parseFechaGT(document.getElementById('projStart').value);
   const f1on=document.getElementById('fase1On').checked,f2on=document.getElementById('fase2On').checked;
   if(!sv){document.getElementById('timelineContent').innerHTML='<p class="empty">Selecciona una fecha de inicio para ver la línea de tiempo.</p>';return}
-  let tw=0;sprints.forEach(s=>{tw+=s.type==='hito'?0:(s.weeks||2)});tw=Math.max(tw,1);
+  let tw=0;sprints.forEach(s=>{if(s.type!=='hito')tw+=(parseFloat(s.weeks)||2)});tw=Math.max(tw,1);
   const ps=new Date(sv+'T12:00:00'),pe=addDays(ps,tw*7);
-  const WL=Array.from({length:tw},(_,w)=>fmtS(addDays(ps,w*7)));
+  const twInt=Math.ceil(tw);
+  const WL=Array.from({length:twInt},(_,w)=>fmtS(addDays(ps,w*7)));
   const IW=28,BW=72;
-  const rows=sprints.map((s,i)=>{
+  const rows=sprints.map((s)=>{
     if(s.type==='f1'&&!f1on)return'';
     if(s.type==='f2'&&!f2on)return'';
-    if(s.type==='pe'&&!f1on)return''; // Pre entrega requiere Anteproyecto
-    const d=dates[i];if(!d)return'';
+    if(s.type==='pe'&&!f1on)return'';
+    const d=dates[s.id];if(!d)return'';
     const off=Math.max(0,(d.start-ps)/(7*24*3600*1000));
     const dw=s.type==='hito'?.4:(d.end-d.start)/(7*24*3600*1000)+1;
     const l=(off/tw*100).toFixed(1),w=(dw/tw*100).toFixed(1);
@@ -2950,12 +3765,12 @@ function renderTimeline(){
         <div>${tags}</div>
       </div>
       <div style="position:relative;height:28px">
-        ${Array.from({length:tw},(_,w)=>`<div style="position:absolute;left:${(w/tw*100).toFixed(1)}%;top:0;bottom:0;width:${(100/tw).toFixed(1)}%;border-left:0.5px solid var(--border)"></div>`).join('')}
+        ${Array.from({length:twInt},(_,w)=>`<div style="position:absolute;left:${(w/twInt*100).toFixed(1)}%;top:0;bottom:0;width:${(100/twInt).toFixed(1)}%;border-left:0.5px solid var(--border)"></div>`).join('')}
         <div class="tl-bar ${bc}" style="left:${l}%;width:${w}%">${s.type!=='hito'&&dw>1?s.title.slice(0,18):''}</div>
       </div>
     </div>`;
   }).join('');
-  const hdr=`<div style="display:grid;grid-template-columns:${IW}% ${BW}%;margin-bottom:4px"><div></div><div style="position:relative;height:18px">${WL.map((l,w)=>`<span style="position:absolute;left:${(w/tw*100).toFixed(1)}%;font-size:9px;color:var(--text-3);white-space:nowrap">${l}</span>`).join('')}</div></div>`;
+  const hdr=`<div style="display:grid;grid-template-columns:${IW}% ${BW}%;margin-bottom:4px"><div></div><div style="position:relative;height:18px">${WL.map((l,w)=>`<span style="position:absolute;left:${(w/twInt*100).toFixed(1)}%;font-size:9px;color:var(--text-3);white-space:nowrap">${l}</span>`).join('')}</div></div>`;
   const leg=`<div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap">
     <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text-2)"><div style="width:10px;height:10px;border-radius:2px;background:var(--blue)"></div>Anteproyecto</div>
     <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text-2)"><div style="width:10px;height:10px;border-radius:2px;background:#E07B2E"></div>Pre entrega</div>
@@ -2963,7 +3778,16 @@ function renderTimeline(){
     <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text-2)"><div style="width:8px;height:8px;border-radius:50%;background:var(--amber)"></div>Hito</div>
     <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text-2)"><span class="tl-tag tl-feedback" style="margin:0">Aprobación</span>Requiere OK</div>
   </div>`;
-  document.getElementById('timelineContent').innerHTML=`<div style="overflow-x:auto"><div style="min-width:500px">${hdr}${rows||'<p class="empty">Activa una fase para ver el timeline.</p>'}</div></div>${leg}<p class="nt" style="margin-top:6px">${tw} semanas · ${fmtL(ps)} → ${fmtL(pe)}</p>`;
+  // Fecha de entrega (override o calculada)
+  const projEndEl=document.getElementById('projEnd');
+  const projEndIso=parseFechaGT(projEndEl?projEndEl.value:'')||pe.toISOString().split('T')[0];
+  const projEndDate=new Date(projEndIso+'T12:00:00');
+  const endOff=Math.min(1,Math.max(0,(projEndDate-ps)/(tw*7*24*3600*1000)));
+  const endMarker=`<div style="position:absolute;left:${(endOff*100).toFixed(1)}%;top:-4px;bottom:0;border-left:2px dashed var(--accent);z-index:2">
+    <span style="position:absolute;top:-16px;left:3px;font-size:9px;color:var(--accent);white-space:nowrap;font-family:var(--font-mono);font-weight:600">Entrega: ${fmtS(projEndDate)}</span>
+  </div>`;
+  const bwWithMarker=`<div style="position:relative">${endMarker}<div style="min-width:500px">${hdr}${rows||'<p class="empty">Activa una fase para ver el timeline.</p>'}</div></div>`;
+  document.getElementById('timelineContent').innerHTML=`<div style="overflow-x:auto;padding-top:18px">${bwWithMarker}</div>${leg}<p class="nt" style="margin-top:6px">${tw} semanas · Inicio: <strong>${fmtL(ps)}</strong> · Entrega: <strong>${fmtL(projEndDate)}</strong></p>`;
 }
 
 function renderClienteView(){
@@ -2973,13 +3797,13 @@ function renderClienteView(){
   const cn=document.getElementById('calClientName').value||'Cliente';
   const today=new Date().toLocaleDateString('es-GT',{day:'2-digit',month:'long',year:'numeric'});
   const sv=parseFechaGT(document.getElementById('projStart').value);
-  const rows=sprints.filter((s,i)=>{
+  const rows=sprints.filter((s)=>{
     if(s.type==='f1'&&!f1on)return false;
     if(s.type==='f2'&&!f2on)return false;
     if(s.type==='pe'&&!f1on)return false;
-    return dates[i];
+    return dates[s.id];
   }).map(s=>{
-    const i=sprints.indexOf(s);const d=dates[i];
+    const d=dates[s.id];
     const ds=s.type==='hito'?fmtL(d.start):`${fmtS(d.start)} – ${fmtS(d.end)}`;
     const entCls=s.type==='f2'?'cv-tag cv-ent-f2':s.type==='pe'?'cv-tag cv-ent-pe':'cv-tag cv-ent';
     const entTags=s.entregables.map(e=>`<span class="${entCls}">${e}</span>`).join('');
@@ -3009,9 +3833,37 @@ function switchView(v){
   });
 }
 
+let _projEndManual = false;
+
+function calcProjEndDate(){
+  // Sum all sprint weeks, return ISO date or ''
+  const sv=parseFechaGT(document.getElementById('projStart').value);
+  if(!sv) return '';
+  let tw=0;
+  sprints.forEach(s=>{ if(s.type!=='hito') tw+=(parseFloat(s.weeks)||2); });
+  if(!tw) return sv;
+  const end=addDays(new Date(sv+'T12:00:00'), Math.round(tw*7));
+  return end.toISOString().split('T')[0];
+}
+
+function recalcProjEnd(){
+  _projEndManual=false;
+  const iso=calcProjEndDate();
+  const el=document.getElementById('projEnd');
+  if(el) el.value=fmtFechaGT(iso);
+  renderAll();
+}
+
+function onProjStartChange(){
+  if(!_projEndManual){
+    const iso=calcProjEndDate();
+    const el=document.getElementById('projEnd');
+    if(el) el.value=fmtFechaGT(iso);
+  }
+  renderAll();
+}
+
 function renderAll(){
-  const dur=parseInt(document.getElementById('sprintDur').value)||2;
-  document.getElementById('sprintDurV').textContent=dur+' sem';
   renderEditor();renderTimeline();renderClienteView();
 }
 
@@ -3039,8 +3891,8 @@ function genCotizacion(){
   const f1on=document.getElementById('fase1On').checked,f2on=document.getElementById('fase2On').checked;
   let calRows='';
   if(svDate){
-    sprints.filter((sp,i)=>{if(sp.type==='f1'&&!f1on)return false;if(sp.type==='f2'&&!f2on)return false;return dates[i];}).forEach(sp=>{
-      const i=sprints.indexOf(sp);const d=dates[i];
+    sprints.filter((sp)=>{if(sp.type==='f1'&&!f1on)return false;if(sp.type==='f2'&&!f2on)return false;return dates[sp.id];}).forEach(sp=>{
+      const d=dates[sp.id];
       const ds=sp.type==='hito'?fmtL(d.start):`${fmtS(d.start)} – ${fmtS(d.end)}`;
       const dotC=sp.type==='f1'?'#185FA5':sp.type==='f2'?'#1D9E75':'#BA7517';
       const entTags=sp.entregables.map(e=>`<span style="font-size:9px;padding:1px 5px;border-radius:20px;background:${sp.type==='f2'?'#EAF3DE':'#E6F1FB'};color:${sp.type==='f2'?'#27500A':'#0C447C'};margin:1px">${e}</span>`).join('');
@@ -3128,7 +3980,9 @@ ${calRows?`<div class="sec"><div class="sl">Plan de entregas</div><table style="
 </div>
 <div class="ft-sep"></div>
 <div class="ft"><p>Cotización ${cotNum} &nbsp;·&nbsp; ${fecha} &nbsp;·&nbsp; No incluye gastos de construcción, permisos ni estudios de suelos. Trabajo adicional requiere aprobación escrita.</p></div>
-</div></body></html>`;
+</div>
+
+</body></html>`;
   const w=window.open('','_blank');w.document.write(html);w.document.close();setTimeout(()=>w.print(),500);
 }
 
@@ -3245,7 +4099,8 @@ ${f2on?`<div class="sec"><div class="sl">Planimetrías</div>${planosText?`<p cla
 </div>
 <div class="ft-sep"></div>
 <div class="ft"><p>Cotización ${cotNum} &nbsp;·&nbsp; ${fecha} &nbsp;·&nbsp; No incluye gastos de construcción, permisos ni estudios de suelos.</p></div>
-</div></body></html>`;
+</div>
+</body></html>`;
 
   const w=window.open('','_blank');
   w.document.write(html);
@@ -3474,7 +4329,10 @@ function guardarCotConfirmado(d){
   const m2Saved=parseFloat((document.getElementById('m2S')||{}).value)||0;
   const descSaved=((document.getElementById('projDesc')||{}).value||'').trim();
   const cots=loadCots();
-  cots.push({id:Date.now(),cliente:clienteRaw,proyecto:proyectoRaw,f1,f2,oh,colab,iva,sub,tot,util,antic,mid,saldo,cobrado,cur,fecha,estado,colNombre3D,colNombreRend,colNombrePlanos,planosQty,m2:m2Saved,desc:descSaved});
+  const projStartSaved=((document.getElementById('projStart')||{}).value||'').trim()||fecha;
+  const sprintsSaved=JSON.parse(JSON.stringify(typeof sprints!=='undefined'?sprints:[]));
+  const nowTs=Date.now();
+  cots.push({id:nowTs,cliente:clienteRaw,proyecto:proyectoRaw,f1,f2,oh,colab,iva,sub,tot,util,antic,mid,saldo,cobrado,cur,fecha,estado,colNombre3D,colNombreRend,colNombrePlanos,planosQty,m2:m2Saved,desc:descSaved,projStart:projStartSaved,sprints:sprintsSaved,updatedAt:nowTs});
   saveCots(cots);
   hideFormCot();
   // reset form mini
@@ -3514,7 +4372,7 @@ function updateEstado(id,estado){
   const cots=loadCots();
   const c=cots.find(x=>x.id===id);
   if(!c)return;
-  c.estado=estado;
+  c.estado=estado; c.updatedAt=Date.now();
   // El cobrado NO se modifica automáticamente al cambiar de columna o estado.
   // Los cobros se registran solo cuando el usuario marca explícitamente
   // los checks de milestones en el Kanban (anticipo, entrega F2, cobrado).
@@ -3759,7 +4617,8 @@ body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#1a1a18;backg
 </div>
 
 <div class="ft"><p>Este recibo es válido como comprobante de pago. Estudio AVIT — Arquitectura e interiorismo.</p></div>
-</div></body></html>`;
+</div>
+</body></html>`;
 
   const w = window.open('','_blank');
   w.document.write(html);
@@ -3882,17 +4741,26 @@ function renderHome(){
   const hoy0 = new Date(); hoy0.setHours(0,0,0,0);
   const en30dias = new Date(hoy0); en30dias.setDate(en30dias.getDate()+30);
   cotsActuales.forEach(c => {
+    // Hitos de sprints con dueDate (tracker)
     const sps = (tracker[c.id]?.sprints) || [];
     sps.forEach(sp => {
       (sp.items||[]).forEach(it => {
         if(it.dueDate && !it.done){
           const due = new Date(it.dueDate+'T12:00:00');
           if(due >= hoy0 && due <= en30dias){
-            proximasEntregas.push({ c, sp, it, due });
+            proximasEntregas.push({ c, sp, it, due, tipo: sp.type||'f1' });
           }
         }
       });
     });
+    // Proyectos en pre_entrega — mostrar como entrega próxima
+    if(c.estado === 'pre_entrega'){
+      proximasEntregas.push({
+        c, sp:{title:'Pre entrega', type:'pe'}, due: hoy0,
+        it:{name:'Revisión y ajustes con cliente'},
+        tipo:'pe', esEstado: true
+      });
+    }
   });
   proximasEntregas.sort((a,b) => a.due - b.due);
   const top5Entregas = proximasEntregas.slice(0,5);
@@ -3908,9 +4776,10 @@ function renderHome(){
         const color = dias <= 3 ? 'var(--red)' : dias <= 7 ? 'var(--accent)' : 'var(--text-2)';
         return `
           <div class="home-summary-item" onclick="showPage('est')">
+            <div style="width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:2px;background:${x.tipo==='pe'?'#E07B2E':x.tipo==='f2'?'#4CAF72':'#5A9ED4'}"></div>
             <div style="flex:1;min-width:0">
               <div class="home-summary-item-main" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtmlK(x.it.name)}</div>
-              <div class="home-summary-item-sub" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtmlK(x.c.cliente)} · ${escapeHtmlK(x.c.proyecto)}</div>
+              <div class="home-summary-item-sub" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${x.esEstado?'🔄 Pre entrega · ':''} ${escapeHtmlK(x.c.cliente)} · ${escapeHtmlK(x.c.proyecto)}</div>
             </div>
             <div class="home-summary-item-value" style="color:${color}">${diasLbl}</div>
           </div>
@@ -5490,6 +6359,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       case 'h': showPage('home'); e.preventDefault(); break;
       case 'p': showPage('ing'); e.preventDefault(); break;
       case 'k': showPage('est'); e.preventDefault(); break;
+      case 'm': showPage('pm'); e.preventDefault(); break;
       case 'e': showPage('estimado'); e.preventDefault(); break;
       case 'r': showPage('programa'); e.preventDefault(); break;
       case 'c': showPage('calc'); e.preventDefault(); break;
@@ -6401,6 +7271,105 @@ async function ejecutarAutoSync(key){
   }
 }
 
+/* ─── Merge inteligente ───────────────────────────────────────────────────
+   Reglas:
+   1. El campo decisivo es `updatedAt` (timestamp ms).
+   2. Si la cotización (mismo id) existe en ambos lados → gana la más reciente.
+   3. Si solo existe en la nube → se agrega (nunca se borra nada local).
+   4. Si solo existe en local → se preserva (base de merge = local + nube).
+   5. Modal de preview antes de aplicar: X nuevas, Y actualizadas, Z sin cambios.
+──────────────────────────────────────────────────────────────────────────── */
+function mergeCotsInteligente(local, nube){
+  const localMap = new Map(local.map(c=>[c.id, c]));
+  const nubeMap  = new Map(nube.map(c=>[c.id, c]));
+  const resultado = [];
+  const stats = { nuevas:0, actualizadas:0, sinCambio:0 };
+
+  // Todos los ids de ambos lados
+  const allIds = new Set([...localMap.keys(), ...nubeMap.keys()]);
+
+  allIds.forEach(id => {
+    const loc = localMap.get(id);
+    const nub = nubeMap.get(id);
+
+    if(loc && !nub){
+      // Solo local → preservar
+      resultado.push(loc);
+      // No suma a stats (no viene de la nube)
+    } else if(nub && !loc){
+      // Solo en nube → agregar
+      resultado.push(nub);
+      stats.nuevas++;
+    } else {
+      // En ambos → comparar updatedAt
+      const tsLoc = loc.updatedAt || loc.id || 0;
+      const tsNub = nub.updatedAt || nub.id || 0;
+      if(tsNub > tsLoc){
+        resultado.push(nub);
+        stats.actualizadas++;
+      } else if(tsLoc > tsNub){
+        resultado.push(loc);
+        stats.sinCambio++;
+      } else {
+        resultado.push(loc); // iguales → local
+        stats.sinCambio++;
+      }
+    }
+  });
+
+  // Ordenar por fecha (más reciente primero)
+  resultado.sort((a,b)=>(b.updatedAt||b.id||0)-(a.updatedAt||a.id||0));
+  return { resultado, stats };
+}
+
+function mostrarModalMerge(stats, nubeTotal, onConfirm){
+  const existing = document.getElementById('modalMerge');
+  if(existing) existing.remove();
+
+  const modal = document.createElement('div');
+  modal.id = 'modalMerge';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.70);z-index:9998;display:flex;align-items:center;justify-content:center;padding:20px';
+  modal.innerHTML = `
+    <div style="background:var(--bg-surface-2,#1a1b1e);border:1px solid var(--border-accent);border-radius:var(--r-lg);padding:24px 28px;width:100%;max-width:420px;font-family:var(--font-body)" onclick="event.stopPropagation()">
+      <div style="font-family:var(--font-display);font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:6px">☁ Preview de sincronización</div>
+      <p style="font-size:11px;color:var(--text-3);margin-bottom:18px">La nube tiene <strong style="color:var(--text)">${nubeTotal}</strong> cotizaciones. Así quedaría después del merge:</p>
+
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px">
+        <div style="text-align:center;padding:12px 8px;background:rgba(76,175,114,0.08);border:1px solid rgba(76,175,114,0.2);border-radius:var(--r-md)">
+          <div style="font-size:24px;font-weight:500;color:var(--green)">${stats.nuevas}</div>
+          <div style="font-size:10px;color:var(--text-3);margin-top:3px;text-transform:uppercase;letter-spacing:.06em">Nuevas</div>
+          <div style="font-size:9px;color:var(--text-3);margin-top:1px">Solo en nube → se agregan</div>
+        </div>
+        <div style="text-align:center;padding:12px 8px;background:rgba(90,158,212,0.08);border:1px solid rgba(90,158,212,0.2);border-radius:var(--r-md)">
+          <div style="font-size:24px;font-weight:500;color:#5AABF0">${stats.actualizadas}</div>
+          <div style="font-size:10px;color:var(--text-3);margin-top:3px;text-transform:uppercase;letter-spacing:.06em">Actualizadas</div>
+          <div style="font-size:9px;color:var(--text-3);margin-top:1px">Nube más reciente</div>
+        </div>
+        <div style="text-align:center;padding:12px 8px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:var(--r-md)">
+          <div style="font-size:24px;font-weight:500;color:var(--text-2)">${stats.sinCambio}</div>
+          <div style="font-size:10px;color:var(--text-3);margin-top:3px;text-transform:uppercase;letter-spacing:.06em">Sin cambio</div>
+          <div style="font-size:9px;color:var(--text-3);margin-top:1px">Local más reciente</div>
+        </div>
+      </div>
+
+      <p style="font-size:10.5px;color:var(--text-3);margin-bottom:16px">
+        Las cotizaciones que solo existen en local se <strong style="color:var(--text)">preservan</strong>. Nunca se borran datos locales.
+      </p>
+
+      <div style="display:flex;gap:8px;justify-content:flex-end">
+        <button onclick="document.getElementById('modalMerge').remove()"
+          style="padding:7px 14px;font-size:11px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text-2);cursor:pointer;font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase">
+          Cancelar
+        </button>
+        <button onclick="document.getElementById('modalMerge').remove();(${onConfirm.toString()})()"
+          style="padding:7px 18px;font-size:11px;border:1px solid var(--accent);border-radius:var(--r-md);background:var(--accent);color:var(--text-on-accent);cursor:pointer;font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase">
+          ✓ Aplicar merge
+        </button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+}
+
 async function bajarNube(){
   const key=document.getElementById('nubeKey').value.trim();
   if(!key){alert('Escribe tu clave personal primero.');return;}
@@ -6424,7 +7393,7 @@ async function bajarNube(){
     const result=await resp.json();
     let datos=result.record||result;
 
-    // Si el payload viene cifrado, descifrar
+    // Descifrar si aplica
     if(esPayloadCifrado(datos)){
       msg.style.color='var(--text-2)';
       msg.textContent='Datos cifrados. Pidiendo password…';
@@ -6438,7 +7407,6 @@ async function bajarNube(){
       try {
         datos = await descifrarPayload(datos, pass);
       } catch(e){
-        // Password incorrecta — limpiar de memoria para que la próxima vez la pida de nuevo
         _cryptoPassword = null;
         msg.style.color='var(--red,#c0392b)';
         msg.textContent='✗ Password incorrecta. Los datos locales NO se modificaron.';
@@ -6446,30 +7414,41 @@ async function bajarNube(){
       }
     }
 
-    const n=JSON.parse(datos.avit_cots||'[]').length;
-    if(!confirm(`¿Bajar ${n} cotización(es) de la nube? Esto reemplazará los datos de este navegador.`))return;
-    localStorage.setItem('avit_cots',datos.avit_cots||'[]');
-    if(datos.avit_sprint_tracker) localStorage.setItem('avit_sprint_tracker',datos.avit_sprint_tracker);
-    if(datos.avit_calc) localStorage.setItem('avit_calc',datos.avit_calc);
-    if(datos.avit_artifacts) localStorage.setItem('avit_artifacts',datos.avit_artifacts);
-    if(datos.avit_recibos) localStorage.setItem('avit_recibos',datos.avit_recibos);
-    msg.style.color='var(--green)';
-    msg.textContent=`✓ ${n} cotizaciones cargadas desde la nube`;
-    document.getElementById('syncStatus').textContent='☁ Bajado '+new Date().toLocaleDateString('es-GT');
-    // Persistir clave para auto-sync
-    const inpKey = document.getElementById('nubeKey');
-    if(inpKey && inpKey.value.trim()) localStorage.setItem('avit_nube_key', inpKey.value.trim());
-    renderIngresos();
-    renderArtefactos();
-    if(document.getElementById('pg-est').classList.contains('active'))renderEstatus();
-    // Recargar estado de calculadora
-    if(typeof cargarCalc==='function') cargarCalc();
-    const pgEst2 = document.getElementById('pg-estimado');
-    const pgPro2 = document.getElementById('pg-programa');
-    if(pgEst2){ delete pgEst2.dataset.hydrated; }
-    if(pgPro2){ delete pgPro2.dataset.hydrated; }
-    if(typeof renderEstimado==='function') renderEstimado();
-    if(typeof renderPrograma==='function') renderPrograma();
+    // ── Merge inteligente ──────────────────────────────────────────
+    const cotsNube  = JSON.parse(datos.avit_cots||'[]');
+    const cotsLocal = loadCots();
+    const { resultado, stats } = mergeCotsInteligente(cotsLocal, cotsNube);
+
+    msg.textContent=`Merge calculado: ${stats.nuevas} nuevas, ${stats.actualizadas} actualizadas, ${stats.sinCambio} sin cambio.`;
+
+    // Función que aplica el merge (se pasa como callback al modal)
+    function aplicarMerge(){
+      saveCots(resultado);
+      if(datos.avit_sprint_tracker) localStorage.setItem('avit_sprint_tracker',datos.avit_sprint_tracker);
+      if(datos.avit_calc) localStorage.setItem('avit_calc',datos.avit_calc);
+      if(datos.avit_artifacts) localStorage.setItem('avit_artifacts',datos.avit_artifacts);
+      if(datos.avit_recibos) localStorage.setItem('avit_recibos',datos.avit_recibos);
+      msg.style.color='var(--green)';
+      const total = resultado.length;
+      msg.textContent=`✓ Merge aplicado: ${total} cotizaciones · ${stats.nuevas} nuevas · ${stats.actualizadas} actualizadas · ${stats.sinCambio} sin cambio`;
+      document.getElementById('syncStatus').textContent='☁ Sync '+new Date().toLocaleDateString('es-GT');
+      const inpKey = document.getElementById('nubeKey');
+      if(inpKey && inpKey.value.trim()) localStorage.setItem('avit_nube_key', inpKey.value.trim());
+      renderIngresos();
+      if(typeof renderArtefactos==='function') renderArtefactos();
+      if(document.getElementById('pg-est').classList.contains('active')) renderEstatus();
+      if(typeof cargarCalc==='function') cargarCalc();
+      const pgEst2 = document.getElementById('pg-estimado');
+      const pgPro2 = document.getElementById('pg-programa');
+      if(pgEst2){ delete pgEst2.dataset.hydrated; }
+      if(pgPro2){ delete pgPro2.dataset.hydrated; }
+      if(typeof renderEstimado==='function') renderEstimado();
+      if(typeof renderPrograma==='function') renderPrograma();
+    }
+
+    // Mostrar modal de preview
+    mostrarModalMerge(stats, cotsNube.length, aplicarMerge);
+
   }catch(err){
     msg.style.color='var(--red,#c0392b)';
     msg.textContent='✗ Error: '+err.message;
@@ -7054,7 +8033,7 @@ if(typeof window !== 'undefined'){
                         'col3D','colRend','colPlanos',
                         'cRevit','cD5','cCanva','cElec','cGas','cViat',
                         'ivaRate','pctAntic','pctF1pay',
-                        'timbreCosto','sprintDur'];
+                        'timbreCosto'];
   const CHECK_FIELDS = ['fase1On','fase2On','ivaOn','timbresOn','isrOn'];
 
   /* ── Helpers DOM ─────────────────────────────────────── */
@@ -7101,6 +8080,8 @@ if(typeof window !== 'undefined'){
         /* isrMode: valor del radio activo */
         const isrModeEl = document.querySelector('input[name="isrMode"]:checked');
         draft.isrMode = isrModeEl ? isrModeEl.value : '7';
+        draft.projEnd = gv('projEnd');
+        draft._projEndManual = _projEndManual;
 
         /* Tabla de planos: cantidad + costo unitario qp1..qpN / cp1..cpN */
         draft.planos = [];
@@ -7126,7 +8107,13 @@ if(typeof window !== 'undefined'){
       NUM_FIELDS.forEach(  id => { if(d[id]!=null) sv(id, d[id]); });
       CHECK_FIELDS.forEach(id => { if(d[id]!=null) sc(id, d[id]); });
 
-      if(d.projStart) sv('projStart', d.projStart);
+      if(d.projStart){
+        // Normalizar a DD/MM/AAAA: si viene en ISO lo convertimos antes de mostrarlo
+        const _iso = parseFechaGT(d.projStart); // tolera ambos formatos → ISO
+        sv('projStart', _iso ? fmtFechaGT(_iso) : d.projStart);
+      }
+      if(d.projEnd) sv('projEnd', d.projEnd);
+      if(d._projEndManual !== undefined) _projEndManual = !!d._projEndManual;
 
       /* Restaurar modo ISR */
       if(d.isrMode){
@@ -7200,8 +8187,15 @@ if(typeof window !== 'undefined'){
         _spOrig.apply(this, arguments);
         if(id === 'calc'){
           const restored = window.loadDraft();
-          /* Si se restauraron valores, recalcular con ellos */
           if(restored && typeof calc === 'function') calc();
+          // Asegurar que projStart tenga valor en DD/MM/AAAA
+          const _ps = document.getElementById('projStart');
+          if(_ps && !_ps.value.trim()){
+            _ps.value = (typeof fmtFechaGT === 'function')
+              ? fmtFechaGT(new Date().toISOString().split('T')[0])
+              : '';
+          }
+          if(typeof recalcProjEnd === 'function' && !_projEndManual) recalcProjEnd();
         }
       };
     }
@@ -7210,7 +8204,18 @@ if(typeof window !== 'undefined'){
     const restored = window.loadDraft();
     if(restored && typeof calc === 'function') calc();
 
-  }, false /* captura = false → corre después del primer DOMContentLoaded */ );
+    /* 5. Si projStart sigue vacío, inicializar con hoy en DD/MM/AAAA */
+    const _psElInit = document.getElementById('projStart');
+    if(_psElInit && !_psElInit.value.trim()){
+      const _hoyIso = new Date().toISOString().split('T')[0];
+      _psElInit.value = (typeof fmtFechaGT === 'function') ? fmtFechaGT(_hoyIso) : _hoyIso;
+    }
+
+    /* 6. Calcular projEnd automáticamente al iniciar */
+    if(typeof recalcProjEnd === 'function' && !_projEndManual) recalcProjEnd();
+    if(typeof renderAll === 'function') renderAll();
+
+  }, false /* captura = false → después del DOMContentLoaded principal */ );
 
 })();
 </script>
@@ -7249,7 +8254,403 @@ if(typeof window !== 'undefined'){
       + Registrar
     </button>
   </div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   PROJECT MANAGER — Gantt engine
+   Lee avit_cots[], usa sprints+projStart guardados por proyecto.
+   Drag → auto-save al soltar.
+   ═══════════════════════════════════════════════════════════════ */
+(function(){
+
+const PM_WINDOW = 91;                 // días visibles
+const PM_MONTHS_ES = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+const PM_MONTHS_FULL = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const PM_ACCENT = '#D4A843';
+
+let pmZoom = 'week';
+let pmPxPerDay = 32;
+let pmExpanded = new Set();
+let pmDrag = null;
+let pmAutoSaveTimer = null;
+
+const pmToday = new Date(); pmToday.setHours(12,0,0,0);
+const pmWinStart = new Date(pmToday); pmWinStart.setDate(pmWinStart.getDate()-30); pmWinStart.setHours(12,0,0,0);
+
+function pmAddDays(d,n){ const r=new Date(d); r.setDate(r.getDate()+n); return r; }
+function pmDayOff(d){ return Math.round((d-pmWinStart)/86400000); }
+function pmFmtS(d){ return d.getDate()+' '+PM_MONTHS_ES[d.getMonth()]; }
+function pmFmtL(d){ return d.getDate()+' '+PM_MONTHS_FULL[d.getMonth()]+' '+d.getFullYear(); }
+function pmParseDate(s){
+  if(!s) return null;
+  const iso=(s+'').match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if(iso){ const d=new Date(s+'T12:00:00'); return isNaN(d)?null:d; }
+  const gt=(s+'').match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if(gt){ const d=new Date(`${gt[3]}-${gt[2].padStart(2,'0')}-${gt[1].padStart(2,'0')}T12:00:00`); return isNaN(d)?null:d; }
+  return null;
+}
+
+function pmGetActive(){
+  const cots = loadCots ? loadCots() : JSON.parse(localStorage.getItem('avit_cots')||'[]');
+  return cots.filter(c => !['cobrado_total','completada'].includes(c.estado||''));
+}
+
+function pmCalcBlocks(proj){
+  const sps = proj.sprints || [];
+  const start = pmParseDate(proj.projStart) || pmParseDate(proj.fecha) || pmToday;
+  const blocks = [];
+  let cur = new Date(start);
+
+  // Pass 1: non-hito sprints in order
+  sps.forEach(s=>{
+    if(s.type==='hito') return;
+    const wk = parseFloat(s.weeks)||2;
+    const days = Math.max(1, Math.round(wk*7));
+    blocks.push({sprint:s, start:new Date(cur), end:pmAddDays(cur,days-1), days});
+    cur = pmAddDays(cur, days);
+  });
+
+  // Pass 2: hitos at end of their phase
+  sps.forEach((s,i)=>{
+    if(s.type!=='hito') return;
+    let phase = null;
+    for(let j=i-1;j>=0;j--){ if(sps[j].type!=='hito'){ phase=sps[j].type; break; } }
+    let latest = new Date(start);
+    blocks.forEach(b=>{ if(b.sprint.type===phase && b.end>latest) latest=new Date(b.end); });
+    const hd = pmAddDays(latest,1);
+    blocks.push({sprint:s, start:hd, end:hd, days:0});
+  });
+
+  return blocks;
+}
+
+function pmSaveBlocks(proj, blocks){
+  // Write modified weeks back to the project's sprints array
+  blocks.forEach(b=>{
+    if(b.sprint.type==='hito') return;
+    const sp = (proj.sprints||[]).find(s=>s.id===b.sprint.id);
+    if(sp) sp.weeks = parseFloat((b.days/7).toFixed(3));
+  });
+  // Save projStart from first non-hito block
+  const first = blocks.find(b=>b.sprint.type!=='hito');
+  if(first) proj.projStart = first.start.toISOString().split('T')[0];
+
+  // Persist to localStorage
+  clearTimeout(pmAutoSaveTimer);
+  pmAutoSaveTimer = setTimeout(()=>{
+    try {
+      const key = 'avit_cots';
+      const all = JSON.parse(localStorage.getItem(key)||'[]');
+      const idx = all.findIndex(c=>c.id===proj.id);
+      if(idx>=0){ all[idx]=proj; localStorage.setItem(key,JSON.stringify(all)); }
+      const ss = document.getElementById('syncStatus');
+      if(ss){ ss.textContent='✦ PM guardado'; setTimeout(()=>{ if(ss.textContent==='✦ PM guardado') ss.textContent=''; },2000); }
+    } catch(e){}
+  }, 400);
+}
+
+function pmKPIs(active){
+  const wEnd = pmAddDays(pmToday,7);
+  let late=0, week=0, done=0;
+  active.forEach(p=>{
+    const b=pmCalcBlocks(p);
+    b.forEach(bl=>{ if(bl.sprint.type!=='hito'&&bl.end<pmToday) late++; });
+    b.forEach(bl=>{ if(bl.sprint.type==='hito'&&bl.end>=pmToday&&bl.end<=wEnd) week++; });
+  });
+  const cots = loadCots ? loadCots() : [];
+  const mo = pmToday.getMonth(), yr = pmToday.getFullYear();
+  cots.forEach(c=>{ if(['cobrado_total','completada'].includes(c.estado||'')){ const d=pmParseDate(c.fecha); if(d&&d.getMonth()===mo&&d.getFullYear()===yr) done++; } });
+  document.getElementById('pm-kpi-active').textContent = active.length;
+  document.getElementById('pm-kpi-late').textContent   = late;
+  document.getElementById('pm-kpi-week').textContent   = week;
+  document.getElementById('pm-kpi-done').textContent   = done;
+}
+
+function pmRenderRuler(){
+  const totalW = PM_WINDOW * pmPxPerDay;
+
+  // Ruler track width
+  const rt = document.getElementById('pm-ruler-track');
+  if(!rt) return;
+  rt.style.minWidth = totalW+'px';
+
+  // Today line
+  const tl = document.getElementById('pm-today-ruler');
+  if(tl) tl.style.left = (pmDayOff(pmToday)*pmPxPerDay)+'px';
+
+  // Range label
+  const rl = document.getElementById('pm-range-label');
+  if(rl) rl.textContent = pmFmtS(pmWinStart)+' – '+pmFmtS(pmAddDays(pmWinStart,PM_WINDOW));
+
+  // Months
+  const mDiv = document.getElementById('pm-ruler-months');
+  if(!mDiv) return;
+  mDiv.innerHTML='';
+  for(let m=0;m<6;m++){
+    const base=pmAddDays(pmWinStart,m*30);
+    const yr=base.getFullYear(),mo=base.getMonth();
+    const mStart=new Date(yr,mo,1); mStart.setHours(12,0,0,0);
+    const mEnd=new Date(yr,mo+1,0); mEnd.setHours(12,0,0,0);
+    const l=Math.max(0,pmDayOff(mStart)), r=Math.min(PM_WINDOW,pmDayOff(mEnd)+1);
+    if(r<=l) continue;
+    const el=document.createElement('div'); el.className='pm-ruler-month-el';
+    el.style.left=(l*pmPxPerDay)+'px'; el.style.width=((r-l)*pmPxPerDay)+'px';
+    el.textContent=PM_MONTHS_ES[mo].toUpperCase()+' '+yr;
+    mDiv.appendChild(el);
+  }
+
+  // Weeks/days ticks
+  const wDiv = document.getElementById('pm-ruler-weeks');
+  if(!wDiv) return;
+  wDiv.innerHTML='';
+  if(pmZoom==='day'){
+    for(let d=0;d<PM_WINDOW;d++){
+      const dt=pmAddDays(pmWinStart,d);
+      const el=document.createElement('div'); el.className='pm-ruler-week-el';
+      el.style.left=(d*pmPxPerDay)+'px'; el.style.width=pmPxPerDay+'px';
+      const wd=['D','L','M','X','J','V','S'][dt.getDay()];
+      el.textContent=wd+dt.getDate();
+      wDiv.appendChild(el);
+    }
+  } else if(pmZoom==='week'){
+    for(let d=0;d<PM_WINDOW;d+=7){
+      const dt=pmAddDays(pmWinStart,d);
+      const el=document.createElement('div'); el.className='pm-ruler-week-el';
+      el.style.left=(d*pmPxPerDay)+'px'; el.style.width=(7*pmPxPerDay)+'px';
+      el.textContent=dt.getDate()+'/'+(dt.getMonth()+1);
+      wDiv.appendChild(el);
+    }
+  } else {
+    for(let m=0;m<5;m++){
+      const base=pmAddDays(pmWinStart,m*28);
+      const yr=base.getFullYear(),mo=base.getMonth();
+      const mStart=new Date(yr,mo,1); mStart.setHours(12,0,0,0);
+      const off=pmDayOff(mStart);
+      const mDays=new Date(yr,mo+1,0).getDate();
+      const el=document.createElement('div'); el.className='pm-ruler-week-el';
+      el.style.left=(off*pmPxPerDay)+'px'; el.style.width=(mDays*pmPxPerDay)+'px';
+      el.textContent=PM_MONTHS_FULL[mo];
+      wDiv.appendChild(el);
+    }
+  }
+}
+
+function pmBuildTrack(trackEl, blocks, proj, rowH){
+  trackEl.innerHTML='';
+  const totalW = PM_WINDOW*pmPxPerDay;
+  trackEl.style.position='relative';
+  trackEl.style.minWidth=totalW+'px';
+  trackEl.style.height=rowH+'px';
+
+  // Today line
+  const tl=document.createElement('div');
+  tl.style.cssText=`position:absolute;left:${pmDayOff(pmToday)*pmPxPerDay}px;top:0;bottom:0;width:2px;background:${PM_ACCENT};opacity:.25;pointer-events:none;z-index:3`;
+  trackEl.appendChild(tl);
+
+  // Hito vertical lines (faint)
+  blocks.filter(b=>b.sprint.type==='hito').forEach(b=>{
+    const hl=document.createElement('div');
+    hl.style.cssText=`position:absolute;left:${pmDayOff(b.start)*pmPxPerDay}px;top:0;bottom:0;width:1px;background:rgba(212,168,67,0.25);pointer-events:none;z-index:1`;
+    trackEl.appendChild(hl);
+  });
+
+  blocks.forEach(b=>{
+    const offPx = pmDayOff(b.start)*pmPxPerDay;
+    if(b.sprint.type==='hito'){
+      const hb=document.createElement('div'); hb.className='pm-hito';
+      hb.style.left=(offPx-11)+'px';
+      hb.textContent='◆'; hb.title=b.sprint.title;
+      hb.addEventListener('mouseenter',e=>pmShowTip(e,b));
+      hb.addEventListener('mouseleave',pmHideTip);
+      trackEl.appendChild(hb);
+      return;
+    }
+    const wPx=Math.max(b.days*pmPxPerDay-2,10);
+    const isPast = b.end < pmToday;
+    const bl=document.createElement('div');
+    bl.className='pm-sp '+b.sprint.type+(isPast?' done':'');
+    const top=rowH===52?15:7;
+    bl.style.cssText=`left:${offPx}px;width:${wPx}px;top:${top}px`;
+    if(wPx>36) bl.textContent=b.sprint.title;
+    bl.addEventListener('mouseenter',e=>pmShowTip(e,b));
+    bl.addEventListener('mouseleave',pmHideTip);
+    bl.addEventListener('mousedown',e=>pmStartDrag(e,b,proj,'move'));
+    const rz=document.createElement('div'); rz.className='pm-sp-rz';
+    const rzH=document.createElement('div'); rzH.className='pm-sp-rz-handle';
+    rz.appendChild(rzH);
+    rz.addEventListener('mousedown',e=>{e.stopPropagation();pmStartDrag(e,b,proj,'resize');});
+    bl.appendChild(rz);
+    trackEl.appendChild(bl);
+  });
+}
+
+function pmRenderBody(){
+  const body=document.getElementById('pm-body');
+  if(!body) return;
+  body.innerHTML='';
+  const active=pmGetActive();
+  if(!active.length){
+    body.innerHTML='<p style="padding:28px;font-size:12px;color:var(--text-3);text-align:center">No hay proyectos activos. Registrá una cotización en estado \'Aprobado\' para verla aquí.</p>';
+    return;
+  }
+  active.forEach(proj=>{
+    if(!proj.sprints||!proj.sprints.length){
+      // Legacy projects without sprints: show placeholder row
+      const row=document.createElement('div'); row.className='pm-proj-row';
+      const h=document.createElement('div'); h.className='pm-proj-header';
+      const m=document.createElement('div'); m.className='pm-proj-meta';
+      m.innerHTML=`<div style="font-size:12px;font-weight:500;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${proj.proyecto||'—'}</div><div style="font-size:10.5px;color:var(--text-3);margin-top:2px">${proj.cliente||''}</div><div style="font-size:10px;color:var(--text-3);margin-top:3px;font-style:italic">Sin sprints guardados</div>`;
+      const t=document.createElement('div'); t.className='pm-proj-track';
+      t.style.minWidth=(PM_WINDOW*pmPxPerDay)+'px';
+      t.innerHTML='<div style="position:absolute;inset:0;display:flex;align-items:center;padding-left:14px;font-size:10px;color:var(--text-3);pointer-events:none">Cotizá y registrá con el Cotizador para ver sprints aquí.</div>';
+      h.appendChild(m); h.appendChild(t); row.appendChild(h); body.appendChild(row);
+      return;
+    }
+    const blocks=pmCalcBlocks(proj);
+    const expanded=pmExpanded.has(proj.id);
+
+    const row=document.createElement('div'); row.className='pm-proj-row';
+    const hdr=document.createElement('div'); hdr.className='pm-proj-header';
+    hdr.addEventListener('click',()=>{
+      if(pmExpanded.has(proj.id)) pmExpanded.delete(proj.id);
+      else pmExpanded.add(proj.id);
+      pmRenderBody();
+    });
+
+    // Meta
+    const meta=document.createElement('div'); meta.className='pm-proj-meta';
+    const pips=[];
+    if((proj.f1||0)>0) pips.push('<span class="pm-pip pm-pip-f1">F1</span>');
+    if((proj.sprints||[]).some(s=>s.type==='pe')) pips.push('<span class="pm-pip pm-pip-pe">PE</span>');
+    if((proj.f2||0)>0) pips.push('<span class="pm-pip pm-pip-f2">F2</span>');
+    meta.innerHTML=`
+      <div style="display:flex;align-items:center;gap:5px;overflow:hidden">
+        <span style="font-size:11px;color:var(--text-3);flex-shrink:0">${expanded?'▼':'▶'}</span>
+        <span style="font-size:12px;font-weight:500;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${proj.proyecto||'—'}</span>
+      </div>
+      <div style="font-size:10.5px;color:var(--text-3);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${proj.cliente||''}</div>
+      <div style="display:flex;gap:4px;margin-top:4px">${pips.join('')}</div>`;
+
+    // Collapsed track
+    const track=document.createElement('div'); track.className='pm-proj-track';
+    pmBuildTrack(track, blocks, proj, 52);
+
+    hdr.appendChild(meta); hdr.appendChild(track); row.appendChild(hdr);
+
+    // Expanded sprint rows
+    if(expanded){
+      const exp=document.createElement('div'); exp.className='pm-expand';
+      (proj.sprints||[]).forEach(s=>{
+        const srow=document.createElement('div'); srow.className='pm-sp-row';
+        const lbl=document.createElement('div'); lbl.className='pm-sp-lbl';
+        const dotC=s.type==='f1'?'#378ADD':s.type==='pe'?'#E07B2E':s.type==='f2'?'#4CAF72':'#D4A843';
+        lbl.innerHTML=`<div style="width:6px;height:6px;border-radius:50%;background:${dotC};flex-shrink:0"></div><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.title||'Sprint'}</span>`;
+        const st=document.createElement('div'); st.className='pm-sp-track';
+        const sb=blocks.filter(b=>b.sprint.id===s.id);
+        pmBuildTrack(st, sb, proj, 36);
+        srow.appendChild(lbl); srow.appendChild(st);
+        exp.appendChild(srow);
+      });
+      row.appendChild(exp);
+    }
+    body.appendChild(row);
+  });
+  pmSyncWidths();
+}
+
+function pmSyncWidths(){
+  const totalW=PM_WINDOW*pmPxPerDay;
+  document.querySelectorAll('.pm-proj-track,.pm-sp-track,#pm-ruler-track').forEach(el=>{
+    el.style.minWidth=totalW+'px';
+  });
+}
+
+function pmShowTip(e,b){
+  const t=document.getElementById('pm-tooltip');
+  document.getElementById('pm-tt-title').textContent=b.sprint.title||'Sprint';
+  const wk=(b.days/7).toFixed(1).replace(/\.0$/,'');
+  document.getElementById('pm-tt-detail').textContent=
+    b.sprint.type==='hito'
+      ? '◆ Hito · '+pmFmtL(b.start)
+      : wk+(parseFloat(wk)===1?' semana':' semanas')+' · '+pmFmtS(b.start)+' → '+pmFmtS(b.end);
+  t.style.display='block';
+  t.style.left=(e.clientX+14)+'px'; t.style.top=(e.clientY-8)+'px';
+}
+function pmHideTip(){ const t=document.getElementById('pm-tooltip'); if(t) t.style.display='none'; }
+
+function pmStartDrag(e,b,proj,mode){
+  e.preventDefault(); pmHideTip();
+  pmDrag={b,proj,mode,startX:e.clientX,origDays:b.days,origStart:new Date(b.start),origEnd:new Date(b.end)};
+}
+
+function pmOnDragMove(e){
+  if(!pmDrag) return;
+  const dx=e.clientX-pmDrag.startX;
+  const snap = pmZoom==='month'?7:1; // snap to week in month view
+  const rawDelta=dx/pmPxPerDay;
+  const dayDelta=Math.round(rawDelta/snap)*snap;
+  const {b,mode}=pmDrag;
+  if(mode==='move'){
+    b.start=pmAddDays(pmDrag.origStart,dayDelta); b.start.setHours(12,0,0,0);
+    b.end=pmAddDays(pmDrag.origEnd,dayDelta);     b.end.setHours(12,0,0,0);
+  } else {
+    const newDays=Math.max(1,pmDrag.origDays+dayDelta);
+    b.days=newDays; b.end=pmAddDays(b.start,newDays-1); b.end.setHours(12,0,0,0);
+    b.sprint.weeks=parseFloat((newDays/7).toFixed(3));
+  }
+  pmRenderBody();
+}
+
+function pmEndDrag(){
+  if(!pmDrag) return;
+  pmSaveBlocks(pmDrag.proj, pmCalcBlocks(pmDrag.proj));
+  pmDrag=null;
+  pmRenderBody();
+}
+
+document.addEventListener('mousemove', pmOnDragMove);
+document.addEventListener('mouseup', pmEndDrag);
+
+function pmSetZoom(z){
+  pmZoom=z; pmPxPerDay=z==='day'?60:z==='week'?32:12;
+  ['day','week','month'].forEach(k=>{
+    const b=document.getElementById('pmz-'+k);
+    if(!b) return;
+    if(k===z){
+      b.style.borderColor='var(--accent)'; b.style.background='rgba(212,168,67,0.08)'; b.style.color='var(--accent)';
+    } else {
+      b.style.borderColor='var(--border-2)'; b.style.background='transparent'; b.style.color='var(--text-3)';
+    }
+  });
+  pmRenderRuler(); pmRenderBody();
+}
+
+window.pmSetZoom = pmSetZoom;
+
+window.pmRender = function(){
+  if(document.getElementById('pg-pm')?.classList.contains('active')||
+     document.getElementById('pg-pm')?.style.display!=='none'){
+    pmRenderRuler();
+    pmRenderBody();
+    pmKPIs(pmGetActive());
+  }
+};
+
+// Patch showPage to trigger render when PM opens
+document.addEventListener('DOMContentLoaded',()=>{
+  const _sp=window.showPage;
+  if(typeof _sp==='function'){
+    window.showPage=function(id){
+      _sp.apply(this,arguments);
+      if(id==='pm') requestAnimationFrame(()=>{ pmRenderRuler(); pmRenderBody(); pmKPIs(pmGetActive()); });
+    };
+  }
+});
+
+})();
+</script>
 </div>
+
 
 </body>
 </html>
