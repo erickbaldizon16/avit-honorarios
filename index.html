@@ -1425,6 +1425,28 @@ input.narrow{width:88px}input.mid{width:108px}
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .cli-proj-sub{font-size:10px;color:var(--text-3);margin-top:1px}
 .cli-empty{padding:32px;text-align:center;font-size:12px;color:var(--text-3)}
+
+/* ═══ ADMINISTRADOR ═══════════════════════════════════════════════ */
+.admin-tab{padding:7px 14px;font-size:11px;font-weight:500;border:none;border-bottom:2px solid transparent;
+  background:transparent;color:var(--text-3);cursor:pointer;font-family:var(--font-display);
+  letter-spacing:.08em;text-transform:uppercase;transition:color .15s,border-color .15s;margin-bottom:-1px}
+.admin-tab:hover{color:var(--text-2)}
+.admin-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.admin-tab-body{animation:fadeUp .2s var(--ease-out) both}
+.admin-tr{border-bottom:0.5px solid rgba(255,255,255,0.05);transition:background .1s}
+.admin-tr:hover{background:rgba(255,255,255,0.025)}
+.admin-tr td{padding:9px 10px;color:var(--text-2);vertical-align:middle}
+.admin-tr td:first-child{color:var(--text)}
+.admin-del{background:transparent;border:0;color:var(--text-3);cursor:pointer;font-size:16px;
+  padding:0 6px;transition:color .15s;line-height:1}
+.admin-del:hover{color:var(--red)}
+.admin-runway-bar{height:8px;border-radius:4px;background:rgba(255,255,255,0.06);overflow:hidden;margin-top:8px}
+.admin-runway-fill{height:100%;border-radius:4px;transition:width .4s var(--ease-out)}
+.admin-metrica{background:rgba(255,255,255,0.03);border-radius:var(--r-md);
+  padding:10px 14px;border:0.5px solid rgba(255,255,255,0.06)}
+.admin-metrica-val{font-size:20px;font-weight:500;color:var(--text)}
+.admin-metrica-lbl{font-size:10px;color:var(--text-3);margin-top:3px;
+  text-transform:uppercase;letter-spacing:.07em}
 </style>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 </head>
@@ -1461,8 +1483,7 @@ input.narrow{width:88px}input.mid{width:108px}
         <button onclick="showPage('clientes');toggleStudioMenu()" class="menu-config-item" data-page="clientes">
           👥 Clientes
         </button>
-        <button onclick="toggleStudioMenu()" class="menu-config-item" disabled
-          style="opacity:.38;cursor:not-allowed" title="Próximamente">
+        <button onclick="showPage('admin');toggleStudioMenu()" class="menu-config-item" data-page="admin">
           📈 Administrador
         </button>
         <button onclick="toggleStudioMenu()" class="menu-config-item" disabled
@@ -1699,6 +1720,34 @@ input.narrow{width:88px}input.mid{width:108px}
   <p class="nt">Guatemala: 12% · El Salvador: 13%</p>
 </div>
 
+
+<div class="sc" id="capSection">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem">
+    <div>
+      <span class="pl p5" style="display:inline-block">Capitalización Estudio Avit</span>
+      <p class="nt" style="margin:.3rem 0 0">% reservado de la utilidad pre-cap, antes de impuestos</p>
+    </div>
+    <label class="tog"><input type="checkbox" id="capOn" onchange="toggleCap()"><span class="tog-sl"></span></label>
+  </div>
+  <div id="capBody" style="opacity:.35;pointer-events:none">
+    <div class="fr" style="margin-bottom:.6rem">
+      <input type="range" id="capRate" min="0" max="50" step="1" value="12" oninput="calc()">
+      <span class="fv" id="capRateV">12%</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div class="metric">
+        <p class="ml">Utilidad pre-capitalización</p>
+        <p class="mv" id="capPreAmt" style="color:var(--text-2)">—</p>
+      </div>
+      <div class="metric">
+        <p class="ml">Monto a capitalizar</p>
+        <p class="mv" id="capAmt" style="color:var(--accent)">—</p>
+      </div>
+    </div>
+    <p class="nt" style="margin-top:.5rem">Se registra automáticamente en el Administrador al aprobar el proyecto.</p>
+  </div>
+</div>
+
 <div class="sc">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem">
     <span class="pl p6" style="display:inline-block">ISR</span>
@@ -1761,6 +1810,7 @@ input.narrow{width:88px}input.mid{width:108px}
   <div class="sum-row"><span>Saldo final</span><span class="sv-r" id="rSaldo">—</span></div>
   <div class="sep" style="margin:.6rem 0"></div>
   <div class="sum-row" id="rowIsr" style="display:none"><span id="isrLabel" style="color:var(--red)">ISR</span><span class="sv-r" id="sIsr">—</span></div>
+  <div class="sum-row" id="rowCap" style="display:none"><span id="capLabel" style="color:var(--accent)">Capitalización</span><span style="font-weight:500;color:var(--accent)" id="sCapResumen">—</span></div>
   <div class="sum-row" style="font-weight:500"><span>Utilidad neta</span><span class="sv-g" id="sUtil">—</span></div>
 </div>
 
@@ -1843,7 +1893,18 @@ input.narrow{width:88px}input.mid{width:108px}
     <button class="vtab active" id="tab-tl" onclick="switchView('tl')">Línea de tiempo</button>
     <button class="vtab" id="tab-cv" onclick="switchView('cv')">Vista cliente</button>
   </div>
-  <div id="view-tl"><div id="timelineContent"></div></div>
+  <div id="view-tl">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px">
+    <span style="font-size:11px;color:var(--text-3)">Línea de tiempo</span>
+    <div style="display:flex;gap:3px">
+      <button onclick="tlSetZoom('day')"     id="tlz-day"     style="padding:3px 8px;font-size:10px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text-3);cursor:pointer;font-family:var(--font-display);letter-spacing:.06em;text-transform:uppercase">Día</button>
+      <button onclick="tlSetZoom('week')"    id="tlz-week"    style="padding:3px 8px;font-size:10px;border:0.5px solid var(--accent);border-radius:var(--r-md);background:rgba(212,168,67,0.08);color:var(--accent);cursor:pointer;font-family:var(--font-display);letter-spacing:.06em;text-transform:uppercase">Sem</button>
+      <button onclick="tlSetZoom('month')"   id="tlz-month"   style="padding:3px 8px;font-size:10px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text-3);cursor:pointer;font-family:var(--font-display);letter-spacing:.06em;text-transform:uppercase">Mes</button>
+      <button onclick="tlSetZoom('quarter')" id="tlz-quarter" style="padding:3px 8px;font-size:10px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text-3);cursor:pointer;font-family:var(--font-display);letter-spacing:.06em;text-transform:uppercase">Trim</button>
+    </div>
+  </div>
+  <div id="timelineContent"></div>
+</div>
   <div id="view-cv" style="display:none"><div id="clienteContent"></div></div>
 </div>
 
@@ -2197,6 +2258,201 @@ input.narrow{width:88px}input.mid{width:108px}
 
 
 <!-- ══════════════════════════════════════════════ PÁGINA: CLIENTES -->
+
+<!-- ══════════════════════════════════════════════ PÁGINA: ADMINISTRADOR -->
+<div class="page" id="pg-admin">
+
+  <!-- Header + nav de período -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+    <span style="font-family:var(--font-display);font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)">📈 Administrador</span>
+    <div style="display:flex;align-items:center;gap:6px">
+      <button onclick="adminNavMes(-1)" style="padding:4px 9px;font-size:14px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text-3);cursor:pointer">←</button>
+      <span style="font-size:13px;font-weight:500;color:var(--text);min-width:120px;text-align:center" id="admin-mes-label">—</span>
+      <button onclick="adminNavMes(1)" style="padding:4px 9px;font-size:14px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text-3);cursor:pointer">→</button>
+      <div style="display:flex;gap:3px;margin-left:6px">
+        <button onclick="adminSetVista('mes')" id="admin-v-mes" style="padding:3px 9px;font-size:11px;border:0.5px solid var(--accent);border-radius:var(--r-md);background:rgba(212,168,67,0.08);color:var(--accent);cursor:pointer;font-family:var(--font-display);letter-spacing:.06em;text-transform:uppercase">Mes</button>
+        <button onclick="adminSetVista('trim')" id="admin-v-trim" style="padding:3px 9px;font-size:11px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text-3);cursor:pointer;font-family:var(--font-display);letter-spacing:.06em;text-transform:uppercase">Trim</button>
+        <button onclick="adminSetVista('sem')" id="admin-v-sem" style="padding:3px 9px;font-size:11px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text-3);cursor:pointer;font-family:var(--font-display);letter-spacing:.06em;text-transform:uppercase">Sem</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px" id="admin-kpis"></div>
+
+  <!-- Tabs internos -->
+  <div style="display:flex;gap:2px;margin-bottom:14px;border-bottom:1px solid var(--border);padding-bottom:0">
+    <button onclick="adminShowTab('ingresos')" class="admin-tab active" id="atab-ingresos">📥 Ingresos</button>
+    <button onclick="adminShowTab('colab')" class="admin-tab" id="atab-colab">👥 Colaboradores</button>
+    <button onclick="adminShowTab('marketing')" class="admin-tab" id="atab-marketing">📲 Marketing</button>
+    <button onclick="adminShowTab('varios')" class="admin-tab" id="atab-varios">📦 Costos varios</button>
+    <button onclick="adminShowTab('analisis')" class="admin-tab" id="atab-analisis">📊 Análisis</button>
+  </div>
+
+  <!-- Tab: Ingresos -->
+  <div id="atab-body-ingresos" class="admin-tab-body">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <span style="font-size:11px;color:var(--text-3)">Pagos cobrados en el período · Origen automático desde Proyectos</span>
+      <span style="font-size:13px;font-weight:500;color:var(--green)" id="admin-ing-total">GTQ 0</span>
+    </div>
+    <div style="overflow-x:auto">
+      <table style="width:100%;border-collapse:collapse;font-size:11px" id="admin-ing-table">
+        <thead>
+          <tr style="border-bottom:1px solid var(--border)">
+            <th style="text-align:left;padding:6px 10px;color:var(--text-3);font-weight:500;text-transform:uppercase;letter-spacing:.06em;font-size:10px">Proyecto</th>
+            <th style="text-align:left;padding:6px 10px;color:var(--text-3);font-weight:500;text-transform:uppercase;letter-spacing:.06em;font-size:10px">Cliente</th>
+            <th style="text-align:left;padding:6px 10px;color:var(--text-3);font-weight:500;text-transform:uppercase;letter-spacing:.06em;font-size:10px">Concepto</th>
+            <th style="text-align:right;padding:6px 10px;color:var(--text-3);font-weight:500;text-transform:uppercase;letter-spacing:.06em;font-size:10px">Cobrado</th>
+            <th style="text-align:right;padding:6px 10px;color:var(--text-3);font-weight:500;text-transform:uppercase;letter-spacing:.06em;font-size:10px">% Cap</th>
+            <th style="text-align:right;padding:6px 10px;color:var(--text-3);font-weight:500;text-transform:uppercase;letter-spacing:.06em;font-size:10px">Capital neto</th>
+          </tr>
+        </thead>
+        <tbody id="admin-ing-body">
+          <tr><td colspan="6" style="padding:24px;text-align:center;color:var(--text-3)">No hay cobros registrados en este período.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Tab: Colaboradores -->
+  <div id="atab-body-colab" class="admin-tab-body" style="display:none">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <span style="font-size:11px;color:var(--text-3)">Costos de colaboradores · Derivados del Cotizador</span>
+      <span style="font-size:13px;font-weight:500;color:var(--red)" id="admin-col-total">GTQ 0</span>
+    </div>
+    <div style="overflow-x:auto">
+      <table style="width:100%;border-collapse:collapse;font-size:11px" id="admin-col-table">
+        <thead>
+          <tr style="border-bottom:1px solid var(--border)">
+            <th style="text-align:left;padding:6px 10px;color:var(--text-3);font-weight:500;text-transform:uppercase;letter-spacing:.06em;font-size:10px">Colaborador</th>
+            <th style="text-align:left;padding:6px 10px;color:var(--text-3);font-weight:500;text-transform:uppercase;letter-spacing:.06em;font-size:10px">Proyecto</th>
+            <th style="text-align:left;padding:6px 10px;color:var(--text-3);font-weight:500;text-transform:uppercase;letter-spacing:.06em;font-size:10px">Tarea</th>
+            <th style="text-align:right;padding:6px 10px;color:var(--text-3);font-weight:500;text-transform:uppercase;letter-spacing:.06em;font-size:10px">% Asig.</th>
+            <th style="text-align:right;padding:6px 10px;color:var(--text-3);font-weight:500;text-transform:uppercase;letter-spacing:.06em;font-size:10px">Monto</th>
+          </tr>
+        </thead>
+        <tbody id="admin-col-body">
+          <tr><td colspan="5" style="padding:24px;text-align:center;color:var(--text-3)">No hay colaboradores registrados en este período.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Tab: Marketing -->
+  <div id="atab-body-marketing" class="admin-tab-body" style="display:none">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <span style="font-size:13px;font-weight:500;color:var(--red)" id="admin-mkt-total">GTQ 0</span>
+      <button onclick="adminShowFormCosto('marketing')" style="padding:5px 12px;font-size:10px;border:1px solid var(--accent);border-radius:var(--r-md);background:var(--accent);color:var(--text-on-accent);cursor:pointer;font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase">+ Nuevo</button>
+    </div>
+    <div style="overflow-x:auto">
+      <table style="width:100%;border-collapse:collapse;font-size:11px">
+        <thead>
+          <tr style="border-bottom:1px solid var(--border)">
+            <th style="text-align:left;padding:6px 10px;color:var(--text-3);font-weight:500;text-transform:uppercase;letter-spacing:.06em;font-size:10px">Concepto</th>
+            <th style="text-align:left;padding:6px 10px;color:var(--text-3);font-weight:500;text-transform:uppercase;letter-spacing:.06em;font-size:10px">Objetivo</th>
+            <th style="text-align:left;padding:6px 10px;color:var(--text-3);font-weight:500;text-transform:uppercase;letter-spacing:.06em;font-size:10px">Duración</th>
+            <th style="text-align:left;padding:6px 10px;color:var(--text-3);font-weight:500;text-transform:uppercase;letter-spacing:.06em;font-size:10px">Categoría</th>
+            <th style="text-align:right;padding:6px 10px;color:var(--text-3);font-weight:500;text-transform:uppercase;letter-spacing:.06em;font-size:10px">Monto</th>
+            <th style="text-align:right;padding:6px 10px;color:var(--text-3);font-weight:500;text-transform:uppercase;letter-spacing:.06em;font-size:10px">Fecha</th>
+            <th style="padding:6px 4px"></th>
+          </tr>
+        </thead>
+        <tbody id="admin-mkt-body">
+          <tr><td colspan="7" style="padding:24px;text-align:center;color:var(--text-3)">Sin costos de marketing registrados.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Tab: Costos Varios -->
+  <div id="atab-body-varios" class="admin-tab-body" style="display:none">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <span style="font-size:13px;font-weight:500;color:var(--red)" id="admin-var-total">GTQ 0</span>
+      <button onclick="adminShowFormCosto('varios')" style="padding:5px 12px;font-size:10px;border:1px solid var(--accent);border-radius:var(--r-md);background:var(--accent);color:var(--text-on-accent);cursor:pointer;font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase">+ Nuevo</button>
+    </div>
+    <div style="overflow-x:auto">
+      <table style="width:100%;border-collapse:collapse;font-size:11px">
+        <thead>
+          <tr style="border-bottom:1px solid var(--border)">
+            <th style="text-align:left;padding:6px 10px;color:var(--text-3);font-weight:500;text-transform:uppercase;letter-spacing:.06em;font-size:10px">Concepto</th>
+            <th style="text-align:left;padding:6px 10px;color:var(--text-3);font-weight:500;text-transform:uppercase;letter-spacing:.06em;font-size:10px">Categoría</th>
+            <th style="text-align:right;padding:6px 10px;color:var(--text-3);font-weight:500;text-transform:uppercase;letter-spacing:.06em;font-size:10px">Monto</th>
+            <th style="text-align:right;padding:6px 10px;color:var(--text-3);font-weight:500;text-transform:uppercase;letter-spacing:.06em;font-size:10px">Fecha</th>
+            <th style="padding:6px 4px"></th>
+          </tr>
+        </thead>
+        <tbody id="admin-var-body">
+          <tr><td colspan="5" style="padding:24px;text-align:center;color:var(--text-3)">Sin costos varios registrados.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Tab: Análisis -->
+  <div id="atab-body-analisis" class="admin-tab-body" style="display:none">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px" id="admin-analisis-top"></div>
+    <div class="sc" id="admin-runway-box" style="margin-bottom:14px"></div>
+    <div class="sc" id="admin-metricas-box"></div>
+  </div>
+
+  <!-- Modal formulario costo -->
+  <div id="adminCostoModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:9990;align-items:center;justify-content:center;padding:20px">
+    <div style="background:var(--bg-surface-2,#1a1b1e);border:1px solid var(--border-accent);border-radius:var(--r-lg);padding:22px 26px;width:100%;max-width:440px" onclick="event.stopPropagation()">
+      <div style="font-family:var(--font-display);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:14px" id="adminCostoModalTitle">Nuevo costo</div>
+      <input type="hidden" id="acm-tipo">
+      <input type="hidden" id="acm-id">
+      <div style="margin-bottom:.65rem">
+        <label class="lbl">Concepto *</label>
+        <input type="text" id="acm-concepto" placeholder="Descripción del costo">
+      </div>
+      <div id="acm-mkt-extra" style="display:none">
+        <div style="margin-bottom:.65rem">
+          <label class="lbl">Objetivo de campaña</label>
+          <input type="text" id="acm-objetivo" placeholder="Captación de clientes, visibilidad...">
+        </div>
+        <div style="margin-bottom:.65rem">
+          <label class="lbl">Duración</label>
+          <div style="display:flex;gap:8px">
+            <input type="text" id="acm-duracion" placeholder="15 días, 1 mes..." style="flex:1">
+            <select id="acm-duracion-tipo" style="padding:7px 10px;background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r-md);color:var(--text);font-size:12px;font-family:var(--font-body)">
+              <option>Específica</option>
+              <option>Único</option>
+              <option>Permanente</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-bottom:.65rem">
+          <label class="lbl">Categoría</label>
+          <select id="acm-cat-mkt" style="width:100%;padding:7px 10px;background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r-md);color:var(--text);font-size:12px;font-family:var(--font-body)">
+            <option>Paid ads</option><option>Contenido</option><option>Digital</option><option>Eventos</option><option>Otro</option>
+          </select>
+        </div>
+      </div>
+      <div id="acm-var-extra" style="display:none;margin-bottom:.65rem">
+        <label class="lbl">Categoría</label>
+        <select id="acm-cat-var" style="width:100%;padding:7px 10px;background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r-md);color:var(--text);font-size:12px;font-family:var(--font-body)">
+          <option>Software</option><option>Operativo</option><option>Transporte</option><option>Profesional</option><option>Fijo</option><option>Equipamiento</option><option>Otro</option>
+        </select>
+      </div>
+      <div class="r2" style="margin-bottom:.65rem">
+        <div>
+          <label class="lbl">Monto (GTQ) *</label>
+          <input type="number" id="acm-monto" min="0" step="0.01" placeholder="0.00" style="font-family:var(--font-mono)">
+        </div>
+        <div>
+          <label class="lbl">Fecha</label>
+          <input type="text" id="acm-fecha" placeholder="DD/MM/AAAA" maxlength="10" style="font-family:var(--font-mono)">
+        </div>
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:14px">
+        <button onclick="adminHideFormCosto()" style="padding:6px 13px;font-size:11px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text-2);cursor:pointer;font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase">Cancelar</button>
+        <button onclick="adminGuardarCosto()" style="padding:6px 16px;font-size:11px;border:1px solid var(--accent);border-radius:var(--r-md);background:var(--accent);color:var(--text-on-accent);cursor:pointer;font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
 <div class="page" id="pg-clientes">
   <!-- Vista lista -->
   <div id="cli-list-view">
@@ -3161,6 +3417,418 @@ function toggleStudioMenu(){
   }
 }
 
+
+/* ══════════════════════════════════════════════════════════════
+   MÓDULO ADMINISTRADOR
+   localStorage['avit_admin'] = { costos:[], runwayMeta:3 }
+   Ingresos y colaboradores: derivados de avit_cots (solo cobrado)
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Storage ──────────────────────────────────────────────── */
+function adminLoad(){ try{ return JSON.parse(localStorage.getItem('avit_admin')||'{"costos":[],"runwayMeta":3}'); }catch(e){ return {costos:[],runwayMeta:3}; } }
+function adminSave(d){ localStorage.setItem('avit_admin',JSON.stringify(d)); }
+
+/* ── Estado del módulo ────────────────────────────────────── */
+let _adminMes   = new Date().getMonth();
+let _adminAnio  = new Date().getFullYear();
+let _adminVista = 'mes';  // 'mes' | 'trim' | 'sem'
+const MESES_ES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+/* ── Rango de meses según vista ───────────────────────────── */
+function adminGetRango(){
+  const meses = [];
+  if(_adminVista === 'mes'){
+    meses.push({ anio:_adminAnio, mes:_adminMes });
+  } else if(_adminVista === 'trim'){
+    for(let i=2;i>=0;i--){
+      let m=_adminMes-i, a=_adminAnio;
+      if(m<0){ m+=12; a--; }
+      meses.push({anio:a,mes:m});
+    }
+  } else { // sem
+    for(let i=5;i>=0;i--){
+      let m=_adminMes-i, a=_adminAnio;
+      if(m<0){ m+=12; a--; }
+      meses.push({anio:a,mes:m});
+    }
+  }
+  return meses;
+}
+
+function adminMesKey(anio,mes){ return anio+'-'+String(mes+1).padStart(2,'0'); }
+
+function adminMesLabel(){
+  const r=adminGetRango();
+  if(r.length===1) return MESES_ES[r[0].mes]+' '+r[0].anio;
+  return MESES_ES[r[0].mes].slice(0,3)+' '+r[0].anio+' – '+MESES_ES[r[r.length-1].mes].slice(0,3)+' '+r[r.length-1].anio;
+}
+
+function adminNavMes(d){
+  _adminMes+=d;
+  if(_adminMes>11){ _adminMes=0; _adminAnio++; }
+  if(_adminMes<0){ _adminMes=11; _adminAnio--; }
+  adminRender();
+}
+
+function adminSetVista(v){
+  _adminVista=v;
+  ['mes','trim','sem'].forEach(k=>{
+    const b=document.getElementById('admin-v-'+k);
+    if(!b) return;
+    const active=k===v;
+    b.style.borderColor=active?'var(--accent)':'var(--border-2)';
+    b.style.background=active?'rgba(212,168,67,0.08)':'transparent';
+    b.style.color=active?'var(--accent)':'var(--text-3)';
+  });
+  adminRender();
+}
+
+window.adminNavMes  = adminNavMes;
+window.adminSetVista= adminSetVista;
+
+/* ── Utilidad: fecha en rango ─────────────────────────────── */
+function adminFechaEnRango(fecha){
+  if(!fecha) return false;
+  const iso=parseFechaGT(fecha);
+  if(!iso) return false;
+  const d=new Date(iso+'T12:00:00');
+  const rango=adminGetRango();
+  return rango.some(r=>d.getFullYear()===r.anio && d.getMonth()===r.mes);
+}
+
+/* ── Construir filas de ingresos desde avit_cots ─────────── */
+function adminGetIngresos(){
+  const cots = loadCots ? loadCots() : [];
+  const rows = [];
+  cots.forEach(c=>{
+    // Solo cotizaciones con algún cobro
+    const cobrado = c.cobrado||0;
+    if(!cobrado) return;
+    // Usamos la fecha de la cotización como proxy (cobros no tienen fecha propia aún)
+    if(!adminFechaEnRango(c.fecha)) return;
+    const capRate = c.capRate||0;
+    const capMonto = c.capMonto||0;
+    rows.push({
+      proyecto: c.proyecto||'—',
+      cliente:  c.cliente||'—',
+      concepto: 'Honorarios',
+      cobrado:  cobrado,
+      capRate,
+      capNeto:  capMonto,
+    });
+  });
+  return rows;
+}
+
+/* ── Construir filas de colaboradores desde avit_cots ──────── */
+function adminGetColaboradores(){
+  const cots = loadCots ? loadCots() : [];
+  const rows = [];
+  cots.forEach(c=>{
+    if(!c.cobrado) return;
+    if(!adminFechaEnRango(c.fecha)) return;
+    const colores=[
+      {nombre:c.colNombre3D, pct:c.p3D||0, monto:c.c3D||0, tarea:'Modelado 3D', fase:'F1'},
+      {nombre:c.colNombreRend,pct:c.pRd||0, monto:c.cRd||0, tarea:'Renderización',fase:'F1'},
+      {nombre:c.colNombrePlanos,pct:c.pPl||0,monto:c.cPl||0,tarea:'Planos constructivos',fase:'F2'},
+    ];
+    colores.forEach(co=>{
+      if(!co.nombre||!co.monto) return;
+      rows.push({ colaborador:co.nombre, proyecto:c.proyecto||'—', tarea:co.tarea, pct:co.pct, monto:co.monto });
+    });
+  });
+  return rows;
+}
+
+/* ── Construir costos manuales del rango ──────────────────── */
+function adminGetCostosManual(tipo){
+  const d=adminLoad();
+  return (d.costos||[]).filter(c=>c.tipo===tipo && adminFechaEnRango(c.fecha));
+}
+
+/* ── KPIs ──────────────────────────────────────────────────── */
+function adminRenderKPIs(){
+  const el=document.getElementById('admin-kpis');
+  if(!el) return;
+  const ing   = adminGetIngresos().reduce((s,r)=>s+r.cobrado,0);
+  const col   = adminGetColaboradores().reduce((s,r)=>s+r.monto,0);
+  const mkt   = adminGetCostosManual('marketing').reduce((s,r)=>s+(r.monto||0),0);
+  const vari  = adminGetCostosManual('varios').reduce((s,r)=>s+(r.monto||0),0);
+  const egresos = col+mkt+vari;
+  const balance = ing-egresos;
+  const cap = adminGetIngresos().reduce((s,r)=>s+r.capNeto,0);
+  const fmt = n=>'GTQ '+Math.round(n).toLocaleString('es-GT');
+  const items=[
+    {l:'Ingresos cobrados',v:fmt(ing),c:'var(--green)',sub:'del período'},
+    {l:'Egresos totales',v:fmt(egresos),c:'var(--red)',sub:'col + mkt + varios'},
+    {l:'Balance neto',v:fmt(balance),c:balance>=0?'var(--green)':'var(--red)',sub:ing>0?Math.round(balance/ing*100)+'% margen':'—'},
+    {l:'Capital acumulado',v:fmt(adminCapAcumulado()),c:'var(--accent)',sub:'en reserva'},
+  ];
+  el.innerHTML=items.map(i=>`
+    <div class="sc" style="padding:10px 14px!important">
+      <div style="font-size:18px;font-weight:500;color:${i.c}">${i.v}</div>
+      <div style="font-size:10px;color:var(--text-3);margin-top:2px;text-transform:uppercase;letter-spacing:.07em">${i.l}</div>
+      <div style="font-size:10px;color:var(--text-3);margin-top:1px">${i.sub}</div>
+    </div>`).join('');
+}
+
+function adminCapAcumulado(){
+  // Capital = suma de capMonto de todas las cotizaciones cobradas (todo el historial)
+  const cots = loadCots ? loadCots() : [];
+  return cots.filter(c=>c.cobrado&&c.capMonto).reduce((s,c)=>s+(c.capMonto||0),0);
+}
+
+/* ── Render tabla Ingresos ─────────────────────────────────── */
+function adminRenderIngresos(){
+  const rows=adminGetIngresos();
+  const total=rows.reduce((s,r)=>s+r.cobrado,0);
+  const el=document.getElementById('admin-ing-total');
+  if(el) el.textContent='GTQ '+Math.round(total).toLocaleString('es-GT');
+  const body=document.getElementById('admin-ing-body');
+  if(!body) return;
+  const fmt=n=>'GTQ '+Math.round(n).toLocaleString('es-GT');
+  body.innerHTML=rows.length ? rows.map(r=>`
+    <tr class="admin-tr">
+      <td>${escapeHtmlK(r.proyecto)}</td>
+      <td style="color:var(--text-3)">${escapeHtmlK(r.cliente)}</td>
+      <td style="color:var(--text-3)">${r.concepto}</td>
+      <td style="text-align:right;font-family:var(--font-mono)">${fmt(r.cobrado)}</td>
+      <td style="text-align:right;font-family:var(--font-mono);color:var(--accent)">${r.capRate?r.capRate+'%':'—'}</td>
+      <td style="text-align:right;font-family:var(--font-mono);color:var(--accent);font-weight:500">${r.capNeto?fmt(r.capNeto):'—'}</td>
+    </tr>`).join('') :
+    '<tr><td colspan="6" style="padding:24px;text-align:center;color:var(--text-3)">No hay cobros en este período.</td></tr>';
+}
+
+/* ── Render tabla Colaboradores ─────────────────────────────── */
+function adminRenderColab(){
+  const rows=adminGetColaboradores();
+  const total=rows.reduce((s,r)=>s+r.monto,0);
+  const el=document.getElementById('admin-col-total');
+  if(el) el.textContent='GTQ '+Math.round(total).toLocaleString('es-GT');
+  const body=document.getElementById('admin-col-body');
+  if(!body) return;
+  const fmt=n=>'GTQ '+Math.round(n).toLocaleString('es-GT');
+  body.innerHTML=rows.length ? rows.map(r=>`
+    <tr class="admin-tr">
+      <td>${escapeHtmlK(r.colaborador)}</td>
+      <td style="color:var(--text-3)">${escapeHtmlK(r.proyecto)}</td>
+      <td style="color:var(--text-3)">${r.tarea}</td>
+      <td style="text-align:right;font-family:var(--font-mono);color:var(--accent)">${r.pct}%</td>
+      <td style="text-align:right;font-family:var(--font-mono)">${fmt(r.monto)}</td>
+    </tr>`).join('') :
+    '<tr><td colspan="5" style="padding:24px;text-align:center;color:var(--text-3)">Sin colaboradores en este período.</td></tr>';
+}
+
+/* ── Render tabla Marketing / Varios ─────────────────────────── */
+function adminRenderManual(tipo){
+  const rows=adminGetCostosManual(tipo);
+  const total=rows.reduce((s,r)=>s+(r.monto||0),0);
+  const fmt=n=>'GTQ '+Math.round(n).toLocaleString('es-GT');
+  const isMkt=tipo==='marketing';
+  const totalEl=document.getElementById(isMkt?'admin-mkt-total':'admin-var-total');
+  if(totalEl) totalEl.textContent=fmt(total);
+  const body=document.getElementById(isMkt?'admin-mkt-body':'admin-var-body');
+  if(!body) return;
+  body.innerHTML=rows.length ? rows.map(r=>`
+    <tr class="admin-tr">
+      <td>${escapeHtmlK(r.concepto||'—')}</td>
+      ${isMkt?`<td style="color:var(--text-3)">${escapeHtmlK(r.objetivo||'—')}</td><td style="color:var(--text-3)">${escapeHtmlK(r.duracion||'—')}</td>`:''}
+      <td><span style="font-size:10px;padding:2px 7px;border-radius:3px;background:rgba(255,255,255,0.06);color:var(--text-3)">${escapeHtmlK(r.categoria||'—')}</span></td>
+      <td style="text-align:right;font-family:var(--font-mono)">${fmt(r.monto||0)}</td>
+      <td style="text-align:right;color:var(--text-3)">${r.fecha||'—'}</td>
+      <td style="text-align:right"><button class="admin-del" onclick="adminEliminarCosto('${r.id}')">×</button></td>
+    </tr>`).join('') :
+    `<tr><td colspan="${isMkt?7:5}" style="padding:24px;text-align:center;color:var(--text-3)">Sin registros en este período.</td></tr>`;
+}
+
+/* ── Render Análisis ──────────────────────────────────────────── */
+function adminRenderAnalisis(){
+  const ing  =adminGetIngresos().reduce((s,r)=>s+r.cobrado,0);
+  const col  =adminGetColaboradores().reduce((s,r)=>s+r.monto,0);
+  const mkt  =adminGetCostosManual('marketing').reduce((s,r)=>s+(r.monto||0),0);
+  const vari =adminGetCostosManual('varios').reduce((s,r)=>s+(r.monto||0),0);
+  const egresos=col+mkt+vari;
+  const balance=ing-egresos;
+  const cap=adminCapAcumulado();
+  const fmt=n=>'GTQ '+Math.round(n).toLocaleString('es-GT');
+
+  // Desglose de egresos
+  const topEl=document.getElementById('admin-analisis-top');
+  if(topEl){
+    const pct=(t,eg)=>eg>0?Math.round(t/eg*100):0;
+    const bar=(p,c)=>`<div style="height:6px;border-radius:3px;background:rgba(255,255,255,0.05);margin-top:5px;overflow:hidden"><div style="height:100%;width:${Math.min(p,100)}%;background:${c};border-radius:3px;transition:width .4s"></div></div>`;
+    topEl.innerHTML=`
+      <div class="sc">
+        <div class="sc-title">Desglose de egresos</div>
+        ${[['Colaboradores',col,'#5AABF0'],[' Marketing',mkt,'#E07B2E'],['Costos varios',vari,'#5BC68A']].map(([l,v,c])=>`
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+            <span style="font-size:11px;color:var(--text-2)">${l}</span>
+            <span style="font-size:11px;font-weight:500;color:var(--text-2)">${pct(v,egresos)}% · ${fmt(v)}</span>
+          </div>${bar(pct(v,egresos),c)}`).join('')}
+      </div>
+      <div class="sc">
+        <div class="sc-title">Métricas clave</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px">
+          ${[
+            ['Margen operativo', ing>0?Math.round(balance/ing*100)+'%':'—', balance>=0?'var(--green)':'var(--red)'],
+            ['Punto de equilibrio', egresos<=ing?'✓ Cubierto':'✗ Déficit', egresos<=ing?'var(--green)':'var(--red)'],
+            ['Total ingresos', fmt(ing), 'var(--text)'],
+            ['Total egresos', fmt(egresos), 'var(--text)'],
+          ].map(([l,v,c])=>`<div class="admin-metrica"><div class="admin-metrica-val" style="color:${c}">${v}</div><div class="admin-metrica-lbl">${l}</div></div>`).join('')}
+        </div>
+      </div>`;
+  }
+
+  // Runway
+  const runwayEl=document.getElementById('admin-runway-box');
+  if(runwayEl){
+    const d=adminLoad();
+    const meta=d.runwayMeta||3;
+    const avgEgreso=egresos||1;
+    const runway=Math.round(cap/avgEgreso*10)/10;
+    const pctRunway=Math.min(runway/meta*100,100);
+    const runwayColor=runway>=meta?'var(--green)':runway>=meta*0.5?'var(--accent)':'var(--red)';
+    runwayEl.innerHTML=`
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+        <span class="sc-title" style="margin-bottom:0">Runway de capital</span>
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="font-size:11px;color:var(--text-3)">Meta:</span>
+          <input type="number" value="${meta}" min="1" max="24" onchange="adminSetRunwayMeta(+this.value)"
+            style="width:44px;padding:3px 6px;background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r-sm);color:var(--text);font-size:12px;text-align:center;font-family:var(--font-mono)">
+          <span style="font-size:11px;color:var(--text-3)">meses</span>
+        </div>
+      </div>
+      <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:4px">
+        <span style="font-size:24px;font-weight:500;color:${runwayColor}">${runway}</span>
+        <span style="font-size:12px;color:var(--text-3)">meses de reserva</span>
+        <span style="font-size:11px;color:var(--text-3);margin-left:auto">${fmt(cap)} capital acumulado</span>
+      </div>
+      <div class="admin-runway-bar"><div class="admin-runway-fill" style="width:${pctRunway}%;background:${runwayColor}"></div></div>
+      <p class="nt" style="margin-top:6px">Basado en el egreso del período seleccionado como referencia mensual.</p>`;
+  }
+}
+
+function adminSetRunwayMeta(v){
+  const d=adminLoad(); d.runwayMeta=Math.max(1,v); adminSave(d);
+  adminRenderAnalisis();
+}
+window.adminSetRunwayMeta=adminSetRunwayMeta;
+
+/* ── Tab navigation ───────────────────────────────────────── */
+function adminShowTab(tab){
+  ['ingresos','colab','marketing','varios','analisis'].forEach(t=>{
+    const body=document.getElementById('atab-body-'+t);
+    const btn =document.getElementById('atab-'+t);
+    if(body) body.style.display=t===tab?'block':'none';
+    if(btn){ btn.classList.toggle('active',t===tab); }
+  });
+  if(tab==='ingresos')  adminRenderIngresos();
+  if(tab==='colab')     adminRenderColab();
+  if(tab==='marketing') adminRenderManual('marketing');
+  if(tab==='varios')    adminRenderManual('varios');
+  if(tab==='analisis')  adminRenderAnalisis();
+}
+window.adminShowTab=adminShowTab;
+
+/* ── Formulario costos manuales ───────────────────────────── */
+function adminShowFormCosto(tipo, id){
+  const modal=document.getElementById('adminCostoModal');
+  if(!modal) return;
+  modal.style.display='flex';
+  document.getElementById('acm-tipo').value=tipo;
+  document.getElementById('acm-id').value=id||'';
+  document.getElementById('adminCostoModalTitle').textContent=(id?'Editar':'Nuevo')+' costo de '+(tipo==='marketing'?'marketing':'costos varios');
+  document.getElementById('acm-mkt-extra').style.display=tipo==='marketing'?'block':'none';
+  document.getElementById('acm-var-extra').style.display=tipo==='varios'?'block':'none';
+  // Default fecha = hoy
+  const hoy=new Date().toISOString().split('T')[0];
+  if(id){
+    const d=adminLoad(); const item=d.costos.find(c=>c.id===id)||{};
+    document.getElementById('acm-concepto').value=item.concepto||'';
+    document.getElementById('acm-monto').value=item.monto||'';
+    document.getElementById('acm-fecha').value=item.fecha||fmtFechaGT(hoy);
+    if(tipo==='marketing'){
+      document.getElementById('acm-objetivo').value=item.objetivo||'';
+      document.getElementById('acm-duracion').value=item.duracion||'';
+      document.getElementById('acm-duracion-tipo').value=item.duracionTipo||'Específica';
+      document.getElementById('acm-cat-mkt').value=item.categoria||'Paid ads';
+    } else {
+      document.getElementById('acm-cat-var').value=item.categoria||'Software';
+    }
+  } else {
+    ['acm-concepto','acm-objetivo','acm-duracion','acm-monto'].forEach(i=>{document.getElementById(i).value='';});
+    document.getElementById('acm-fecha').value=fmtFechaGT(hoy);
+    if(tipo==='marketing') document.getElementById('acm-duracion-tipo').value='Específica';
+  }
+  setTimeout(()=>document.getElementById('acm-concepto').focus(),60);
+}
+
+function adminHideFormCosto(){
+  const m=document.getElementById('adminCostoModal');
+  if(m) m.style.display='none';
+}
+
+function adminGuardarCosto(){
+  const tipo=document.getElementById('acm-tipo').value;
+  const id=document.getElementById('acm-id').value;
+  const concepto=document.getElementById('acm-concepto').value.trim();
+  const monto=parseFloat(document.getElementById('acm-monto').value)||0;
+  const fecha=document.getElementById('acm-fecha').value.trim();
+  if(!concepto||!monto){ alert('Completá concepto y monto.'); return; }
+  const isoFecha=parseFechaGT(fecha);
+  const d=adminLoad();
+  const item={
+    id:id||('csto_'+Date.now()), tipo, concepto, monto, fecha,
+    mes: isoFecha ? isoFecha.slice(0,7) : adminMesKey(_adminAnio,_adminMes)
+  };
+  if(tipo==='marketing'){
+    item.objetivo    =document.getElementById('acm-objetivo').value.trim();
+    item.duracion    =document.getElementById('acm-duracion').value.trim();
+    item.duracionTipo=document.getElementById('acm-duracion-tipo').value;
+    item.categoria   =document.getElementById('acm-cat-mkt').value;
+  } else {
+    item.categoria=document.getElementById('acm-cat-var').value;
+  }
+  if(id){ const i=d.costos.findIndex(c=>c.id===id); if(i>=0) d.costos[i]=item; else d.costos.push(item); }
+  else d.costos.push(item);
+  adminSave(d);
+  adminHideFormCosto();
+  adminRender();
+}
+
+function adminEliminarCosto(id){
+  if(!confirm('¿Eliminar este costo?')) return;
+  const d=adminLoad();
+  d.costos=d.costos.filter(c=>c.id!==id);
+  adminSave(d);
+  adminRender();
+}
+
+window.adminShowFormCosto=adminShowFormCosto;
+window.adminHideFormCosto=adminHideFormCosto;
+window.adminGuardarCosto=adminGuardarCosto;
+window.adminEliminarCosto=adminEliminarCosto;
+
+/* ── Render principal ─────────────────────────────────────── */
+function adminRender(){
+  const lbl=document.getElementById('admin-mes-label');
+  if(lbl) lbl.textContent=adminMesLabel();
+  adminRenderKPIs();
+  // Render del tab activo
+  const active=document.querySelector('.admin-tab.active');
+  const tab=active?active.id.replace('atab-',''):'ingresos';
+  adminShowTab(tab);
+}
+
+/* ── Hook en showPage ─────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded',()=>{
+  const _spAdmin=window.showPage;
+  window.showPage=function(id){
+    _spAdmin.apply(this,arguments);
+    if(id==='admin'){ adminRender(); }
+  };
+},false);
+
 function toggleMenuConfig(){
   const m = document.getElementById('menuConfig');
   if(!m) return;
@@ -3265,6 +3933,14 @@ function fmt(n){return cur+' '+Math.round(n).toLocaleString()}
 function gv(id){return parseFloat(document.getElementById(id).value)||0}
 function svEl(id){return document.getElementById(id).value.trim()}
 function setVis(id,on){const el=document.getElementById(id);if(!el)return;el.style.opacity=on?'1':'0.35';el.style.pointerEvents=on?'':'none'}
+
+function toggleCap(){
+  const on=document.getElementById('capOn').checked;
+  const body=document.getElementById('capBody');
+  body.style.opacity=on?'1':'.35';
+  body.style.pointerEvents=on?'':'none';
+  calc();
+}
 
 function toggleIsr(){
   const on=document.getElementById('isrOn').checked;
@@ -3400,23 +4076,40 @@ function calc(){
   document.getElementById('sIva').textContent=fmt(ia);
   document.getElementById('sTotal').textContent=fmt(tot);
   // ── ISR ──
+  // ── ISR (base = sub, honorarios sin IVA) ──
   const isrOn=document.getElementById('isrOn').checked;
   const isrModeEl=document.querySelector('input[name="isrMode"]:checked');
   const isrMode=isrModeEl?isrModeEl.value:'7';
   let isrAmt=0;
   if(isrOn){
     if(isrMode==='7'){
-      isrAmt=Math.round(sub*0.07);                            // 7% flat sobre ingresos brutos
+      isrAmt=Math.round(sub*0.07);                             // 7% s/ingresos (sin IVA)
     } else {
       const utilBruta=sub-cTot-oh;
-      isrAmt=Math.round(Math.max(0,utilBruta)*0.25);          // 25% sobre utilidad operativa
+      isrAmt=Math.round(Math.max(0,utilBruta)*0.25);           // 25% s/utilidad operativa
     }
     document.getElementById('isrAmtDisplay').textContent='−'+fmt(isrAmt);
     document.getElementById('sIsr').textContent='−'+fmt(isrAmt);
     document.getElementById('isrLabel').textContent=isrMode==='7'?'ISR (7% s/ingresos)':'ISR (25% s/utilidad)';
   }
   document.getElementById('rowIsr').style.display=isrOn?'flex':'none';
-  const utilNeta=tot-cTot-oh-isrAmt;
+
+  // ── Capitalización Opción B: % sobre (sub − colab − oh − ISR) ──
+  const capOn=document.getElementById('capOn').checked;
+  const capRate=parseInt(document.getElementById('capRate')?.value||'12');
+  document.getElementById('capRateV').textContent=capRate+'%';
+  const utilPreCap=Math.max(0, sub-cTot-oh-isrAmt);       // base real sin IVA
+  const capAmt=capOn?Math.round(utilPreCap*(capRate/100)):0;
+  if(document.getElementById('capPreAmt')) document.getElementById('capPreAmt').textContent=fmt(utilPreCap);
+  if(document.getElementById('capAmt'))    document.getElementById('capAmt').textContent=fmt(capAmt);
+  document.getElementById('rowCap').style.display=capOn?'flex':'none';
+  if(capOn){
+    document.getElementById('sCapResumen').textContent='−'+fmt(capAmt);
+    document.getElementById('capLabel').textContent='Capitalización ('+capRate+'%)';
+  }
+
+  // ── Utilidad neta = sub − colab − oh − ISR − Cap (IVA excluido) ──
+  const utilNeta=utilPreCap-capAmt;
   document.getElementById('sUtil').textContent=fmt(utilNeta);
   document.getElementById('rAntic').textContent=fmt(aA);
   document.getElementById('rF1pay').textContent=fmt(mA);
@@ -3442,7 +4135,8 @@ function calc(){
     });
   }
   window._st={m2,cur,f1,f2,fee1,fee2,sub,cTot,oh,iOn,ir,ia,tot,pa,pf,ps,aA,mA,sA,
-    isrOn,isrMode,isrAmt,utilNeta,
+    isrOn,isrMode,isrAmt,capOn,capRate,capAmt,utilPreCap,utilNeta,
+    p3D,pRd,pPl,c3D,cRd,cPl,
     colNombre3D:(document.getElementById('colNombre3D')||{}).value||'',
     colNombreRend:(document.getElementById('colNombreRend')||{}).value||'',
     colNombrePlanos:(document.getElementById('colNombrePlanos')||{}).value||'',
@@ -3452,7 +4146,7 @@ function calc(){
 
 // ═══════ CALENDARIO ═══════
 function addSprint(type){
-  const d={f1:{title:'Nuevo sprint — Anteproyecto',entregables:[],clientNote:'',needsFeedback:false,weeks:2},pe:{title:'Nuevo sprint — Pre entrega',entregables:[],clientNote:'',needsFeedback:false,weeks:1},f2:{title:'Nuevo sprint — Planimetrías',entregables:[],clientNote:'',needsFeedback:false,weeks:2},hito:{title:'Nuevo hito',entregables:[],clientNote:'',needsFeedback:false,weeks:0}};
+  const d={f1:{title:'Nuevo sprint — Anteproyecto',entregables:[],clientNote:'',needsFeedback:false,weeks:2,overlapDays:0},pe:{title:'Nuevo sprint — Pre entrega',entregables:[],clientNote:'',needsFeedback:false,weeks:1,overlapDays:0},f2:{title:'Nuevo sprint — Planimetrías',entregables:[],clientNote:'',needsFeedback:false,weeks:2,overlapDays:0},hito:{title:'Nuevo hito',entregables:[],clientNote:'',needsFeedback:false,weeks:0,overlapDays:0}};
   sprints.push({id:nextId++,type,...d[type]});
   if(typeof _projEndManual!=='undefined'&&!_projEndManual&&typeof recalcProjEnd==='function') recalcProjEnd(); else renderAll();
   setTimeout(()=>{const ins=document.querySelectorAll('.sprint-title-inp');if(ins.length)ins[ins.length-1].focus()},50);
@@ -3626,54 +4320,92 @@ function fmtFechaGT(iso){
 function fmtDate(v){if(!v)return null;const[y,m,d]=v.split('-');const mo=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];return`${parseInt(d)} de ${mo[parseInt(m)-1]} de ${y}`}
 
 function getSprintDates(){
-  /* Returns {[sprintId]: {start, end, wk}}.
+  /* Cadena estrictamente secuencial por fases:
+     F1 sprints → Hito F1 → PE sprints → F2 sprints → Hito F2
      
-     Non-hito sprints: calculated in original array order.
-     Each one advances the cursor normally — they can overlap across phases
-     when there are multiple collaborators working simultaneously.
+     Dentro de cada fase los sprints son secuenciales.
+     s.overlapDays (default 0): el sprint empieza N días
+     ANTES de que termine el anterior (traslape manual).
+     cursor advance = duracion_dias − overlapDays.
      
-     Hitos: purely visual markers, placed at the END of the last
-     non-hito sprint that belongs to the same phase. They do NOT
-     advance the cursor and do NOT block the next phase from starting. */
-  const sv=parseFechaGT(document.getElementById('projStart').value);
+     Cada hito se coloca al día siguiente del último sprint
+     de su fase y actúa como barrera: la siguiente fase
+     empieza el día después del hito (o del último sprint
+     de la fase anterior si no hay hito). */
+
+  const sv = parseFechaGT(document.getElementById('projStart').value);
   if(!sv) return {};
+  const result = {};
 
-  const result={};
+  const PHASE_ORDER = ['f1','pe','f2'];
 
-  // ── Pass 1: date all non-hito sprints in original order ────
-  let cur=new Date(sv+'T12:00:00');
+  // Separar sprints por fase y hitos
+  const byPhase = {f1:[],pe:[],f2:[]};
+  const hitos   = [];
   sprints.forEach(s=>{
-    if(s.type==='hito') return;
-    const wk=parseFloat(s.weeks)||2;
-    const start=new Date(cur);
-    const end=addDays(start,Math.round(wk*7)-1);
-    result[s.id]={start,end,wk};
-    cur=addDays(start,Math.round(wk*7));
+    if(s.type==='hito') hitos.push(s);
+    else if(byPhase[s.type]) byPhase[s.type].push(s);
   });
 
-  // ── Pass 2: place each hito at end of its phase's non-hito sprints ──
-  // A hito "belongs to" the phase of the nearest preceding non-hito sprint.
-  // Its date = day after the LAST non-hito sprint end-date of that phase.
-  sprints.forEach((s,i)=>{
-    if(s.type!=='hito') return;
-
-    // Find the phase this hito follows
-    let phase=null;
-    for(let j=i-1;j>=0;j--){
-      if(sprints[j].type!=='hito'){ phase=sprints[j].type; break; }
-    }
-
-    // Latest end-date among all non-hito sprints of that phase
-    let latestEnd=new Date(sv+'T12:00:00');
-    sprints.forEach(x=>{
-      if(x.type===phase && result[x.id]){
-        if(result[x.id].end>latestEnd) latestEnd=new Date(result[x.id].end);
-      }
+  // Función: procesar una fase, devuelve la fecha del día
+  // siguiente al último sprint (o start si fase vacía)
+  function processPhase(phase, phaseStart){
+    const list = byPhase[phase] || [];
+    let cur = new Date(phaseStart);
+    let lastEnd = new Date(addDays(cur,-1)); // un día antes del inicio
+    list.forEach(s=>{
+      const wk  = parseFloat(s.weeks)||2;
+      const days = Math.max(1, Math.round(wk*7));
+      const ov   = Math.max(0, Math.min(parseInt(s.overlapDays)||0, days-1));
+      const start= new Date(cur);
+      const end  = addDays(start, days-1);
+      result[s.id] = {start, end, wk};
+      lastEnd = end;
+      cur = addDays(start, days - ov); // avanza menos si hay traslape
     });
+    return list.length ? addDays(lastEnd,1) : new Date(phaseStart);
+  }
 
-    const hitoStart=addDays(latestEnd,1);
-    result[s.id]={start:hitoStart,end:hitoStart,wk:0};
-  });
+  // Función: encontrar el hito cuyo tipo coincide con la fase dada
+  // (el primer hito que sigue a un sprint de esa fase en el array)
+  function hitoDePhase(phase){
+    for(let i=0;i<sprints.length;i++){
+      if(sprints[i].type==='hito'){
+        // Buscar el sprint no-hito más cercano antes de este hito
+        for(let j=i-1;j>=0;j--){
+          if(sprints[j].type!=='hito'){
+            if(sprints[j].type===phase) return sprints[i];
+            break;
+          }
+        }
+      }
+    }
+    return null;
+  }
+
+  let cursor = new Date(sv+'T12:00:00');
+
+  // ── Fase F1 ────────────────────────────────────────────────
+  const afterF1 = processPhase('f1', cursor);
+  const hitoF1  = hitoDePhase('f1');
+  if(hitoF1){
+    result[hitoF1.id] = {start:new Date(afterF1), end:new Date(afterF1), wk:0};
+    cursor = addDays(afterF1, 1); // PE empieza DESPUÉS del hito F1
+  } else {
+    cursor = new Date(afterF1);   // sin hito: PE empieza justo después de F1
+  }
+
+  // ── Fase PE ────────────────────────────────────────────────
+  const afterPE = processPhase('pe', cursor);
+  // No hay hito propio de PE; F2 empieza al día siguiente del último PE
+  cursor = new Date(afterPE);
+
+  // ── Fase F2 ────────────────────────────────────────────────
+  const afterF2 = processPhase('f2', cursor);
+  const hitoF2  = hitoDePhase('f2');
+  if(hitoF2){
+    result[hitoF2.id] = {start:new Date(afterF2), end:new Date(afterF2), wk:0};
+  }
 
   return result;
 }
@@ -3730,47 +4462,217 @@ function renderEditor(){
       ${entSection}
       <textarea class="client-note" rows="2" oninput="updNote(${s.id},this.value)" placeholder="Nota para el cliente...">${s.clientNote}</textarea>
       <div class="sprint-meta">
-        ${s.type!=='hito'?`<div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-3)">Duración:<select style="width:auto;padding:2px 6px;font-size:11px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:var(--surface);color:var(--text)" onchange="sprints.find(x=>x.id===${s.id}).weeks=parseFloat(this.value);if(!_projEndManual){recalcProjEnd();}else{renderAll();}">${wkOpts}</select></div>`:''}
+        ${s.type!=='hito'?`<div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text-3);flex-wrap:wrap">
+          <div style="display:flex;align-items:center;gap:4px">
+            Duración:
+            <select style="width:auto;padding:2px 6px;font-size:11px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:var(--surface);color:var(--text)"
+              onchange="sprints.find(x=>x.id===${s.id}).weeks=parseFloat(this.value);if(!_projEndManual){recalcProjEnd();}else{renderAll();}">
+              ${wkOpts}
+            </select>
+          </div>
+          <div style="display:flex;align-items:center;gap:4px" title="Días de traslape con el sprint anterior (0 = sin traslape)">
+            Traslape:
+            <input type="number" min="0" max="27" step="1"
+              value="${parseInt(s.overlapDays)||0}"
+              onchange="sprints.find(x=>x.id===${s.id}).overlapDays=Math.max(0,parseInt(this.value)||0);if(!_projEndManual){recalcProjEnd();}else{renderAll();}"
+              style="width:44px;padding:2px 5px;font-size:11px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:var(--surface);color:var(--text);font-family:var(--font-mono);text-align:center">
+            <span style="font-size:10px;color:var(--text-3)">días</span>
+          </div>
+        </div>`:''}
         <button class="feedback-btn ${s.needsFeedback?'on':''}" onclick="toggleFb(${s.id})">${s.needsFeedback?'✓ Requiere aprobación':'+ Marcar aprobación cliente'}</button>
       </div>
     </div>`;
   }).join('');
 }
 
+/* ── Timeline zoom state ── */
+let _tlZoom = 'week';   // 'day' | 'week' | 'month' | 'quarter'
+
+function tlSetZoom(z){
+  _tlZoom = z;
+  const styles = {
+    day:     {active:'tlz-day',     pxPerDay:40},
+    week:    {active:'tlz-week',    pxPerDay:20},
+    month:   {active:'tlz-month',   pxPerDay:6},
+    quarter: {active:'tlz-quarter', pxPerDay:3},
+  };
+  ['day','week','month','quarter'].forEach(k=>{
+    const b = document.getElementById('tlz-'+k);
+    if(!b) return;
+    const active = k===z;
+    b.style.borderColor = active ? 'var(--accent)' : 'var(--border-2)';
+    b.style.background  = active ? 'rgba(212,168,67,0.08)' : 'transparent';
+    b.style.color       = active ? 'var(--accent)' : 'var(--text-3)';
+  });
+  renderTimeline();
+}
+
 function renderTimeline(){
-  const dates=getSprintDates();
-  const sv=parseFechaGT(document.getElementById('projStart').value);
-  const f1on=document.getElementById('fase1On').checked,f2on=document.getElementById('fase2On').checked;
-  if(!sv){document.getElementById('timelineContent').innerHTML='<p class="empty">Selecciona una fecha de inicio para ver la línea de tiempo.</p>';return}
-  let tw=0;sprints.forEach(s=>{if(s.type!=='hito')tw+=(parseFloat(s.weeks)||2)});tw=Math.max(tw,1);
-  const ps=new Date(sv+'T12:00:00'),pe=addDays(ps,tw*7);
-  const twInt=Math.ceil(tw);
-  const WL=Array.from({length:twInt},(_,w)=>fmtS(addDays(ps,w*7)));
-  const IW=28,BW=72;
-  const rows=sprints.map((s)=>{
-    if(s.type==='f1'&&!f1on)return'';
-    if(s.type==='f2'&&!f2on)return'';
-    if(s.type==='pe'&&!f1on)return'';
-    const d=dates[s.id];if(!d)return'';
-    const off=Math.max(0,(d.start-ps)/(7*24*3600*1000));
-    const dw=s.type==='hito'?.4:(d.end-d.start)/(7*24*3600*1000)+1;
-    const l=(off/tw*100).toFixed(1),w=(dw/tw*100).toFixed(1);
-    const bc=s.type==='hito'?'tl-hito':s.type==='f1'?'tl-f1':s.type==='pe'?'tl-pe':'tl-f2';
-    const ds=s.type==='hito'?fmtS(d.start):`${fmtS(d.start)}–${fmtS(d.end)}`;
-    const tags=[s.needsFeedback?'<span class="tl-tag tl-feedback">Aprobación</span>':'',s.type==='hito'?'<span class="tl-tag tl-hito-tag">Hito</span>':''].join('');
-    return`<div style="display:grid;grid-template-columns:${IW}% ${BW}%;padding:5px 0;border-bottom:0.5px solid var(--border);align-items:center">
-      <div style="padding-right:8px">
-        <div class="tl-name">${s.title.length>26?s.title.slice(0,24)+'…':s.title}</div>
+  const dates = getSprintDates();
+  const sv    = parseFechaGT(document.getElementById('projStart').value);
+  const f1on  = document.getElementById('fase1On').checked;
+  const f2on  = document.getElementById('fase2On').checked;
+  const cont  = document.getElementById('timelineContent');
+  if(!sv){ cont.innerHTML='<p class="empty">Selecciona una fecha de inicio para ver la línea de tiempo.</p>'; return; }
+
+  const MS_DAY = 86400000;
+  const ps = new Date(sv+'T12:00:00');
+
+  // ── Span total en días desde getSprintDates() ──────────────────
+  const keys = Object.keys(dates);
+  let totalDays = 0;
+  if(keys.length){
+    let earliest = ps, latest = ps;
+    keys.forEach(k=>{
+      const d = dates[k];
+      if(d.start < earliest) earliest = d.start;
+      if(d.end   > latest)   latest   = d.end;
+    });
+    totalDays = Math.max(1, Math.round((latest - earliest) / MS_DAY) + 1);
+  } else {
+    sprints.forEach(s=>{ if(s.type!=='hito') totalDays += Math.round((parseFloat(s.weeks)||2)*7); });
+    totalDays = Math.max(1, totalDays);
+  }
+
+  // ── Pixels por día según zoom ──────────────────────────────────
+  const PX = {day:40, week:20, month:6, quarter:3}[_tlZoom] || 20;
+  const totalPx = totalDays * PX;
+  const minPx   = 500;
+  const IW = 200; // px fijo para columna de nombres
+
+  // ── Función helper: offset px desde project start ──────────────
+  function dayPx(date){ return Math.max(0, Math.round((date - ps) / MS_DAY)) * PX; }
+
+  // ── Ruler (cabecera de tiempo) ─────────────────────────────────
+  let rulerHtml = '';
+  if(_tlZoom === 'day'){
+    // Cada columna = 1 día, etiqueta cada 7 días
+    for(let d=0; d<totalDays; d++){
+      const dt = addDays(ps, d);
+      const wd = ['D','L','M','X','J','V','S'][dt.getDay()];
+      const label = d%7===0 ? fmtS(dt) : (d%1===0 ? wd : '');
+      const border = d%7===0 ? 'border-left:1px solid rgba(255,255,255,0.10)' : 'border-left:0.5px solid rgba(255,255,255,0.04)';
+      rulerHtml += `<div style="position:absolute;left:${d*PX}px;top:0;height:100%;width:${PX}px;${border};display:flex;align-items:center;overflow:hidden">
+        <span style="font-size:8px;color:var(--text-3);padding-left:2px;white-space:nowrap">${label}</span></div>`;
+    }
+  } else if(_tlZoom === 'week'){
+    // Cada columna = 1 semana (7 días)
+    const weeks = Math.ceil(totalDays/7);
+    for(let w=0; w<weeks; w++){
+      const dt = addDays(ps, w*7);
+      rulerHtml += `<div style="position:absolute;left:${w*7*PX}px;top:0;height:100%;width:${7*PX}px;border-left:0.5px solid rgba(255,255,255,0.08);display:flex;align-items:center;overflow:hidden">
+        <span style="font-size:9px;color:var(--text-3);padding-left:3px;white-space:nowrap">${fmtS(dt)}</span></div>`;
+    }
+  } else if(_tlZoom === 'month'){
+    // Columnas por mes
+    let d = 0;
+    while(d < totalDays){
+      const dt = addDays(ps, d);
+      const yr = dt.getFullYear(), mo = dt.getMonth();
+      const mEnd = new Date(yr, mo+1, 0); mEnd.setHours(12,0,0,0);
+      const mDays = Math.min(totalDays - d, Math.round((mEnd - dt)/MS_DAY) + 1);
+      const MONTHS=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+      rulerHtml += `<div style="position:absolute;left:${d*PX}px;top:0;height:100%;width:${mDays*PX}px;border-left:1px solid rgba(255,255,255,0.10);display:flex;align-items:center;overflow:hidden">
+        <span style="font-size:9px;color:var(--text-3);padding-left:4px;white-space:nowrap;text-transform:uppercase;letter-spacing:.06em">${MONTHS[mo]} ${yr}</span></div>`;
+      d += mDays;
+    }
+  } else { // quarter
+    // Columnas por mes, agrupadas visualmente en trimestres
+    let d = 0;
+    while(d < totalDays){
+      const dt = addDays(ps, d);
+      const yr = dt.getFullYear(), mo = dt.getMonth();
+      const mEnd = new Date(yr, mo+1, 0); mEnd.setHours(12,0,0,0);
+      const mDays = Math.min(totalDays - d, Math.round((mEnd - dt)/MS_DAY) + 1);
+      const qBorder = mo%3===0 ? 'border-left:1px solid rgba(255,255,255,0.12)' : 'border-left:0.5px solid rgba(255,255,255,0.05)';
+      const MONTHS=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+      rulerHtml += `<div style="position:absolute;left:${d*PX}px;top:0;height:100%;width:${mDays*PX}px;${qBorder};display:flex;align-items:center;overflow:hidden">
+        <span style="font-size:8px;color:var(--text-3);padding-left:2px;white-space:nowrap">${mo%3===0?MONTHS[mo]+' '+yr:MONTHS[mo]}</span></div>`;
+      d += mDays;
+    }
+  }
+
+  // ── Grid lines en cada fila de sprint ──────────────────────────
+  function gridLines(){
+    let html = '';
+    if(_tlZoom==='day'){
+      for(let d=0;d<totalDays;d++){
+        const dt=addDays(ps,d);
+        const isWeekBoundary=dt.getDay()===1; // lunes
+        html+=`<div style="position:absolute;left:${d*PX}px;top:0;bottom:0;width:${PX}px;border-left:${isWeekBoundary?'0.5px solid rgba(255,255,255,0.10)':'0.5px solid rgba(255,255,255,0.03)'}"></div>`;
+      }
+    } else if(_tlZoom==='week'){
+      for(let w=0;w<Math.ceil(totalDays/7);w++)
+        html+=`<div style="position:absolute;left:${w*7*PX}px;top:0;bottom:0;width:${7*PX}px;border-left:0.5px solid rgba(255,255,255,0.06)"></div>`;
+    } else {
+      // month / quarter: mark each month
+      let d=0;
+      while(d<totalDays){
+        const dt=addDays(ps,d);
+        const yr=dt.getFullYear(),mo=dt.getMonth();
+        const mEnd=new Date(yr,mo+1,0); mEnd.setHours(12,0,0,0);
+        const mDays=Math.min(totalDays-d,Math.round((mEnd-dt)/MS_DAY)+1);
+        const isQ=mo%3===0;
+        html+=`<div style="position:absolute;left:${d*PX}px;top:0;bottom:0;width:${mDays*PX}px;border-left:${isQ?'0.5px solid rgba(255,255,255,0.10)':'0.5px solid rgba(255,255,255,0.04)'}"></div>`;
+        d+=mDays;
+      }
+    }
+    return html;
+  }
+
+  // ── Filas de sprints ────────────────────────────────────────────
+  const rows = sprints.map(s=>{
+    if(s.type==='f1'&&!f1on) return '';
+    if(s.type==='f2'&&!f2on) return '';
+    if(s.type==='pe'&&!f1on) return '';
+    const d = dates[s.id]; if(!d) return '';
+
+    const offPx  = dayPx(d.start);
+    const durDays = s.type==='hito' ? 1 : Math.max(1, Math.round((d.end-d.start)/MS_DAY)+1);
+    const barPx  = s.type==='hito' ? Math.max(PX, 10) : Math.max(durDays*PX, 4);
+
+    const bc  = s.type==='hito'?'tl-hito':s.type==='f1'?'tl-f1':s.type==='pe'?'tl-pe':'tl-f2';
+    const ds  = s.type==='hito' ? fmtS(d.start) : `${fmtS(d.start)}–${fmtS(d.end)}`;
+    const tags= [
+      s.needsFeedback ? '<span class="tl-tag tl-feedback">Aprobación</span>' : '',
+      s.type==='hito' ? '<span class="tl-tag tl-hito-tag">Hito</span>' : ''
+    ].join('');
+    const label = (s.type!=='hito' && barPx>50) ? s.title.slice(0,Math.floor(barPx/7)) : '';
+
+    return `<div style="display:grid;grid-template-columns:${IW}px 1fr;padding:5px 0;border-bottom:0.5px solid var(--border);align-items:center">
+      <div style="padding-right:8px;overflow:hidden">
+        <div class="tl-name" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.title}</div>
         <div class="tl-dates">${ds}</div>
-        <div>${tags}</div>
+        <div style="margin-top:1px">${tags}</div>
       </div>
-      <div style="position:relative;height:28px">
-        ${Array.from({length:twInt},(_,w)=>`<div style="position:absolute;left:${(w/twInt*100).toFixed(1)}%;top:0;bottom:0;width:${(100/twInt).toFixed(1)}%;border-left:0.5px solid var(--border)"></div>`).join('')}
-        <div class="tl-bar ${bc}" style="left:${l}%;width:${w}%">${s.type!=='hito'&&dw>1?s.title.slice(0,18):''}</div>
+      <div style="position:relative;height:26px;overflow:hidden">
+        ${gridLines()}
+        <div class="tl-bar ${bc}" style="position:absolute;left:${offPx}px;width:${barPx}px;top:3px;height:20px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">
+          ${label}
+        </div>
       </div>
     </div>`;
   }).join('');
-  const hdr=`<div style="display:grid;grid-template-columns:${IW}% ${BW}%;margin-bottom:4px"><div></div><div style="position:relative;height:18px">${WL.map((l,w)=>`<span style="position:absolute;left:${(w/twInt*100).toFixed(1)}%;font-size:9px;color:var(--text-3);white-space:nowrap">${l}</span>`).join('')}</div></div>`;
+
+  // ── Header ruler ────────────────────────────────────────────────
+  const hdr = `<div style="display:grid;grid-template-columns:${IW}px 1fr;margin-bottom:4px">
+    <div></div>
+    <div style="position:relative;height:20px;overflow:hidden">${rulerHtml}</div>
+  </div>`;
+
+  // ── Fecha de entrega marker ────────────────────────────────────
+  const projEndEl  = document.getElementById('projEnd');
+  const projEndIso = parseFechaGT(projEndEl?projEndEl.value:'');
+  let endMarker = '';
+  if(projEndIso){
+    const projEndDate = new Date(projEndIso+'T12:00:00');
+    const endPx = Math.max(0, Math.round((projEndDate-ps)/MS_DAY)*PX);
+    endMarker = `<div style="position:absolute;left:${endPx}px;top:0;bottom:0;width:2px;border-left:2px dashed var(--accent);z-index:2;pointer-events:none">
+      <span style="position:absolute;top:-16px;left:3px;font-size:9px;color:var(--accent);white-space:nowrap;font-family:var(--font-mono);font-weight:600">Entrega: ${fmtS(projEndDate)}</span>
+    </div>`;
+  }
+
+  // ── Leyenda ────────────────────────────────────────────────────
   const leg=`<div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap">
     <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text-2)"><div style="width:10px;height:10px;border-radius:2px;background:var(--blue)"></div>Anteproyecto</div>
     <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text-2)"><div style="width:10px;height:10px;border-radius:2px;background:#E07B2E"></div>Pre entrega</div>
@@ -3778,16 +4680,19 @@ function renderTimeline(){
     <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text-2)"><div style="width:8px;height:8px;border-radius:50%;background:var(--amber)"></div>Hito</div>
     <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text-2)"><span class="tl-tag tl-feedback" style="margin:0">Aprobación</span>Requiere OK</div>
   </div>`;
-  // Fecha de entrega (override o calculada)
-  const projEndEl=document.getElementById('projEnd');
-  const projEndIso=parseFechaGT(projEndEl?projEndEl.value:'')||pe.toISOString().split('T')[0];
-  const projEndDate=new Date(projEndIso+'T12:00:00');
-  const endOff=Math.min(1,Math.max(0,(projEndDate-ps)/(tw*7*24*3600*1000)));
-  const endMarker=`<div style="position:absolute;left:${(endOff*100).toFixed(1)}%;top:-4px;bottom:0;border-left:2px dashed var(--accent);z-index:2">
-    <span style="position:absolute;top:-16px;left:3px;font-size:9px;color:var(--accent);white-space:nowrap;font-family:var(--font-mono);font-weight:600">Entrega: ${fmtS(projEndDate)}</span>
+
+  const bodyMinW = Math.max(minPx - IW, totalPx);
+  const gantt = `<div style="position:relative">
+    ${endMarker}
+    <div style="min-width:${bodyMinW}px">${hdr}${rows||'<p class="empty">Activa una fase para ver el timeline.</p>'}</div>
   </div>`;
-  const bwWithMarker=`<div style="position:relative">${endMarker}<div style="min-width:500px">${hdr}${rows||'<p class="empty">Activa una fase para ver el timeline.</p>'}</div></div>`;
-  document.getElementById('timelineContent').innerHTML=`<div style="overflow-x:auto;padding-top:18px">${bwWithMarker}</div>${leg}<p class="nt" style="margin-top:6px">${tw} semanas · Inicio: <strong>${fmtL(ps)}</strong> · Entrega: <strong>${fmtL(projEndDate)}</strong></p>`;
+
+  cont.innerHTML = `<div style="overflow-x:auto;padding-top:18px">
+    <div style="display:grid;grid-template-columns:${IW}px 1fr;min-width:${IW+bodyMinW}px">
+      ${gantt}
+    </div>
+  </div>${leg}
+  <p class="nt" style="margin-top:6px">${totalDays} días · Inicio: <strong>${fmtL(ps)}</strong>${projEndIso?' · Entrega: <strong>'+fmtL(new Date(projEndIso+'T12:00:00'))+'</strong>':''}</p>`;
 }
 
 function renderClienteView(){
@@ -3836,14 +4741,15 @@ function switchView(v){
 let _projEndManual = false;
 
 function calcProjEndDate(){
-  // Sum all sprint weeks, return ISO date or ''
+  // Use getSprintDates() to find the real end date (respects overlap)
   const sv=parseFechaGT(document.getElementById('projStart').value);
   if(!sv) return '';
-  let tw=0;
-  sprints.forEach(s=>{ if(s.type!=='hito') tw+=(parseFloat(s.weeks)||2); });
-  if(!tw) return sv;
-  const end=addDays(new Date(sv+'T12:00:00'), Math.round(tw*7));
-  return end.toISOString().split('T')[0];
+  const dates=getSprintDates();
+  const keys=Object.keys(dates);
+  if(!keys.length) return sv;
+  let latest=new Date(sv+'T12:00:00');
+  keys.forEach(k=>{ const d=dates[k]; if(d.end>latest) latest=d.end; });
+  return latest.toISOString().split('T')[0];
 }
 
 function recalcProjEnd(){
