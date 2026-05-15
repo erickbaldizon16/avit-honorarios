@@ -4083,24 +4083,43 @@ window.schedShowForm = schedShowForm;
 
 // ── Load sprints for selected project ──────────────────────
 function schedLoadSprints(preselect){
-  const cotId = parseInt(document.getElementById('sm-proy')?.value);
-  const sel   = document.getElementById('sm-sprint');
+  const rawVal = document.getElementById('sm-proy')?.value;
+  const sel    = document.getElementById('sm-sprint');
   if(!sel) return;
-  if(!cotId){ sel.innerHTML='<option value="">— Elegir proyecto primero —</option>'; return; }
+  if(!rawVal){ sel.innerHTML='<option value="">— Elegir proyecto primero —</option>'; return; }
 
-  const cots    = loadCots ? loadCots() : [];
-  const cot     = cots.find(c=>c.id===cotId);
-  const spList  = (cot && cot.sprints) ? cot.sprints : [];
+  // cotId puede ser number o string dependiendo de cómo fue guardado
+  const cots = loadCots ? loadCots() : [];
+  const cot  = cots.find(c=> String(c.id) === String(rawVal));
 
-  if(!spList.length){
-    sel.innerHTML='<option value="">Sin sprints guardados</option>';
+  // Usar sprints propios de la cotización si los tiene,
+  // sino intentar usar el array global sprints[] como fallback
+  let spList = (cot && Array.isArray(cot.sprints) && cot.sprints.length)
+    ? cot.sprints
+    : (typeof sprints !== 'undefined' ? sprints : []);
+
+  // Filtrar solo sprints de trabajo (sin hitos)
+  const workSprints = spList.filter(s => s.type && s.type !== 'hito');
+
+  if(!workSprints.length){
+    sel.innerHTML='<option value="">Sin sprints — registrá la cotización con el Cotizador activo</option>';
     return;
   }
-  sel.innerHTML = spList
-    .filter(s=>s.type!=='hito')
-    .map(s=>`<option value="${s.id}" data-type="${s.type}" ${preselect&&String(preselect)===String(s.id)?'selected':''}>
-      ${escapeHtmlK(s.title||'Sprint')}
-    </option>`).join('');
+
+  // Agrupar por fase para mejor legibilidad
+  const phaseLabel = {f1:'Anteproyecto', pe:'Pre entrega', f2:'Planimetrías'};
+  let lastPhase = null;
+  sel.innerHTML = workSprints.map(s=>{
+    const phLabel = phaseLabel[s.type] || s.type;
+    let prefix = '';
+    if(phLabel !== lastPhase){
+      lastPhase = phLabel;
+      // optgroup simulado con label en texto
+      prefix = `<option disabled style="color:var(--text-3);font-size:10px">── ${phLabel} ──</option>`;
+    }
+    const sel_ = preselect && String(preselect) === String(s.id) ? 'selected' : '';
+    return prefix + `<option value="${s.id}" data-type="${s.type||'f1'}" ${sel_}>${escapeHtmlK(s.title||'Sprint')}</option>`;
+  }).join('');
 }
 window.schedLoadSprints = schedLoadSprints;
 
@@ -4108,11 +4127,13 @@ window.schedLoadSprints = schedLoadSprints;
 function schedGuardar(){
   const fechaGT = (document.getElementById('sm-fecha')?.value||'').trim();
   const fechaIso = parseFechaGT(fechaGT);
-  const cotId   = parseInt(document.getElementById('sm-proy')?.value);
+  const _smProyVal = document.getElementById('sm-proy')?.value||'';
+  const cotId   = _smProyVal; // keep as string to match cots[].id correctly
   const spEl    = document.getElementById('sm-sprint');
   const sprintId= spEl ? spEl.value : '';
   const sprintTitle = spEl ? (spEl.options[spEl.selectedIndex]?.text||'').trim() : '';
-  const sprintType  = spEl ? (spEl.options[spEl.selectedIndex]?.dataset?.type||'f1') : 'f1';
+  const _selOpt = spEl ? spEl.options[spEl.selectedIndex] : null;
+  const sprintType  = _selOpt ? (_selOpt.getAttribute('data-type')||'f1') : 'f1';
   const editId  = document.getElementById('sm-edit-id')?.value||'';
 
   if(!fechaIso||!cotId||!sprintId){
@@ -4120,14 +4141,14 @@ function schedGuardar(){
   }
 
   const cots  = loadCots ? loadCots() : [];
-  const cot   = cots.find(c=>c.id===cotId) || {};
+  const cot   = cots.find(c=>String(c.id)===String(cotId)) || {};
   const proyectoName    = cot.proyecto || '—';
   const clienteInitials = schedInitials(cot.cliente||'');
 
   const all = schedLoad();
   const entry = {
     id: editId || ('sch_'+Date.now()),
-    cotId, sprintId, sprintTitle, sprintType,
+    cotId: String(cotId), sprintId: String(sprintId), sprintTitle, sprintType,
     proyectoName, clienteInitials,
     fecha: fechaIso
   };
@@ -6855,7 +6876,12 @@ function renderEstatus(){
     </div>`;
   }).join('') + '</div>';
 
-  document.getElementById('est-kanban').innerHTML = boardHTML;
+  // Preservar scroll horizontal del kanban antes de re-renderizar
+  const _kb = document.getElementById('est-kanban');
+  const _kbScroll = _kb ? _kb.scrollLeft : 0;
+  _kb.innerHTML = boardHTML;
+  // Restaurar scroll después del repaint
+  if(_kbScroll > 0) requestAnimationFrame(()=>{ const el=document.getElementById('est-kanban'); if(el) el.scrollLeft=_kbScroll; });
 
   // ═══ Colaboradores con trabajo activo (se preserva) ═══
   const conColab = cots.filter(c=>{
