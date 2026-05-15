@@ -2262,12 +2262,20 @@ input.narrow{width:88px}input.mid{width:108px}
 <div style="padding:0 0 24px">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px">
     <span style="font-family:var(--font-display);font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)">Project Manager</span>
-    <div style="display:flex;align-items:center;gap:8px">
-      <span style="font-size:11px;color:var(--text-3)" id="pm-range-label"></span>
+    <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+      <!-- Navegación temporal -->
+      <div style="display:flex;align-items:center;gap:3px">
+        <button onclick="pmNavWindow(-1)" style="padding:3px 9px;font-size:14px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text-3);cursor:pointer;line-height:1;transition:all .15s">←</button>
+        <span style="font-size:11px;color:var(--text-2);padding:2px 8px;font-family:var(--font-mono);white-space:nowrap;min-width:160px;text-align:center" id="pm-range-label">—</span>
+        <button onclick="pmNavWindow(1)"  style="padding:3px 9px;font-size:14px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text-3);cursor:pointer;line-height:1;transition:all .15s">→</button>
+        <button onclick="pmGoToday()" style="padding:3px 9px;font-size:11px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text-3);cursor:pointer;font-family:var(--font-display);letter-spacing:.06em;text-transform:uppercase;transition:all .15s;margin-left:2px">Hoy</button>
+      </div>
+      <!-- Zoom -->
       <div style="display:flex;gap:3px">
-        <button onclick="pmSetZoom('day')"   id="pmz-day"   style="padding:3px 9px;font-size:11px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text-3);cursor:pointer;font-family:var(--font-display);letter-spacing:.06em;text-transform:uppercase">Día</button>
-        <button onclick="pmSetZoom('week')"  id="pmz-week"  style="padding:3px 9px;font-size:11px;border:0.5px solid var(--accent);border-radius:var(--r-md);background:rgba(212,168,67,0.08);color:var(--accent);cursor:pointer;font-family:var(--font-display);letter-spacing:.06em;text-transform:uppercase">Sem</button>
-        <button onclick="pmSetZoom('month')" id="pmz-month" style="padding:3px 9px;font-size:11px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text-3);cursor:pointer;font-family:var(--font-display);letter-spacing:.06em;text-transform:uppercase">Mes</button>
+        <button onclick="pmSetZoom('day')"     id="pmz-day"     style="padding:3px 9px;font-size:11px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text-3);cursor:pointer;font-family:var(--font-display);letter-spacing:.06em;text-transform:uppercase;transition:all .15s">Día</button>
+        <button onclick="pmSetZoom('week')"    id="pmz-week"    style="padding:3px 9px;font-size:11px;border:0.5px solid var(--accent);border-radius:var(--r-md);background:rgba(212,168,67,0.08);color:var(--accent);cursor:pointer;font-family:var(--font-display);letter-spacing:.06em;text-transform:uppercase;transition:all .15s">Sem</button>
+        <button onclick="pmSetZoom('month')"   id="pmz-month"   style="padding:3px 9px;font-size:11px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text-3);cursor:pointer;font-family:var(--font-display);letter-spacing:.06em;text-transform:uppercase;transition:all .15s">Mes</button>
+        <button onclick="pmSetZoom('quarter')" id="pmz-quarter" style="padding:3px 9px;font-size:11px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text-3);cursor:pointer;font-family:var(--font-display);letter-spacing:.06em;text-transform:uppercase;transition:all .15s">Trim</button>
       </div>
     </div>
   </div>
@@ -9585,7 +9593,7 @@ if(typeof window !== 'undefined'){
    ═══════════════════════════════════════════════════════════════ */
 (function(){
 
-const PM_WINDOW = 91;                 // días visibles
+let PM_WINDOW = 91;                  // días visibles (actualizado por zoom)
 const PM_MONTHS_ES = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
 const PM_MONTHS_FULL = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 const PM_ACCENT = '#D4A843';
@@ -9597,7 +9605,24 @@ let pmDrag = null;
 let pmAutoSaveTimer = null;
 
 const pmToday = new Date(); pmToday.setHours(12,0,0,0);
-const pmWinStart = new Date(pmToday); pmWinStart.setDate(pmWinStart.getDate()-30); pmWinStart.setHours(12,0,0,0);
+let pmWinStart = new Date(pmToday); pmWinStart.setDate(pmWinStart.getDate()-30); pmWinStart.setHours(12,0,0,0);
+
+// ── PM window size: days visible per zoom level ──
+const PM_WIN_DAYS = { day:21, week:91, month:182, quarter:365 };
+
+function pmNavWindow(delta){
+  // advance/rewind by PM_WINDOW days
+  pmWinStart = pmAddDays(pmWinStart, delta * PM_WINDOW);
+  pmRenderAll();
+}
+function pmGoToday(){
+  // re-center: today minus half a window
+  pmWinStart = pmAddDays(pmToday, -Math.floor(PM_WINDOW/2));
+  pmWinStart.setHours(12,0,0,0);
+  pmRenderAll();
+}
+window.pmNavWindow = pmNavWindow;
+window.pmGoToday   = pmGoToday;
 
 function pmAddDays(d,n){ const r=new Date(d); r.setDate(r.getDate()+n); return r; }
 function pmDayOff(d){ return Math.round((d-pmWinStart)/86400000); }
@@ -9704,21 +9729,46 @@ function pmRenderRuler(){
   const rl = document.getElementById('pm-range-label');
   if(rl) rl.textContent = pmFmtS(pmWinStart)+' – '+pmFmtS(pmAddDays(pmWinStart,PM_WINDOW));
 
-  // Months
+  // Top row: months for day/week/month; quarters for quarter zoom
   const mDiv = document.getElementById('pm-ruler-months');
   if(!mDiv) return;
   mDiv.innerHTML='';
-  for(let m=0;m<6;m++){
-    const base=pmAddDays(pmWinStart,m*30);
-    const yr=base.getFullYear(),mo=base.getMonth();
-    const mStart=new Date(yr,mo,1); mStart.setHours(12,0,0,0);
-    const mEnd=new Date(yr,mo+1,0); mEnd.setHours(12,0,0,0);
-    const l=Math.max(0,pmDayOff(mStart)), r=Math.min(PM_WINDOW,pmDayOff(mEnd)+1);
-    if(r<=l) continue;
-    const el=document.createElement('div'); el.className='pm-ruler-month-el';
-    el.style.left=(l*pmPxPerDay)+'px'; el.style.width=((r-l)*pmPxPerDay)+'px';
-    el.textContent=PM_MONTHS_ES[mo].toUpperCase()+' '+yr;
-    mDiv.appendChild(el);
+  if(pmZoom==='quarter'){
+    // Show quarters (Q1 ene-mar, Q2 abr-jun, Q3 jul-sep, Q4 oct-dic)
+    const Q_LABELS=['Q1 · ene–mar','Q2 · abr–jun','Q3 · jul–sep','Q4 · oct–dic'];
+    let d=0;
+    while(d<PM_WINDOW){
+      const dt=pmAddDays(pmWinStart,d);
+      const yr=dt.getFullYear(), mo=dt.getMonth();
+      const qStart=Math.floor(mo/3)*3; // first month of this quarter
+      const qEnd=qStart+2;             // last month of this quarter
+      const qEndDate=new Date(yr,qEnd+1,0); qEndDate.setHours(12,0,0,0);
+      const daysToQEnd=Math.round((qEndDate-dt)/86400000)+1;
+      const colDays=Math.min(daysToQEnd,PM_WINDOW-d);
+      const el=document.createElement('div'); el.className='pm-ruler-month-el';
+      el.style.left=(d*pmPxPerDay)+'px'; el.style.width=(colDays*pmPxPerDay)+'px';
+      el.style.borderLeftColor='rgba(212,168,67,0.4)';
+      el.textContent=Q_LABELS[Math.floor(mo/3)]+' '+yr;
+      mDiv.appendChild(el);
+      d+=colDays;
+    }
+  } else {
+    // Months for day/week/month views
+    let d=0;
+    while(d<PM_WINDOW){
+      const dt=pmAddDays(pmWinStart,d);
+      const yr=dt.getFullYear(),mo=dt.getMonth();
+      const mEnd=new Date(yr,mo+1,0); mEnd.setHours(12,0,0,0);
+      const daysLeft=Math.round((mEnd-dt)/86400000)+1;
+      const colDays=Math.min(daysLeft,PM_WINDOW-d);
+      const l=d, r=d+colDays;
+      if(r<=l){ d++; continue; }
+      const el=document.createElement('div'); el.className='pm-ruler-month-el';
+      el.style.left=(l*pmPxPerDay)+'px'; el.style.width=((r-l)*pmPxPerDay)+'px';
+      el.textContent=PM_MONTHS_ES[mo].toUpperCase()+' '+yr;
+      mDiv.appendChild(el);
+      d+=colDays;
+    }
   }
 
   // Weeks/days ticks
@@ -9742,17 +9792,39 @@ function pmRenderRuler(){
       el.textContent=dt.getDate()+'/'+(dt.getMonth()+1);
       wDiv.appendChild(el);
     }
-  } else {
-    for(let m=0;m<5;m++){
-      const base=pmAddDays(pmWinStart,m*28);
-      const yr=base.getFullYear(),mo=base.getMonth();
-      const mStart=new Date(yr,mo,1); mStart.setHours(12,0,0,0);
-      const off=pmDayOff(mStart);
-      const mDays=new Date(yr,mo+1,0).getDate();
+  } else if(pmZoom==='month'){
+    // Month zoom: tick per month with full name
+    let d=0;
+    while(d<PM_WINDOW){
+      const dt=pmAddDays(pmWinStart,d);
+      const yr=dt.getFullYear(),mo=dt.getMonth();
+      const mEnd=new Date(yr,mo+1,0); mEnd.setHours(12,0,0,0);
+      const daysLeft=Math.round((mEnd-dt)/86400000)+1;
+      const colDays=Math.min(daysLeft, PM_WINDOW-d);
       const el=document.createElement('div'); el.className='pm-ruler-week-el';
-      el.style.left=(off*pmPxPerDay)+'px'; el.style.width=(mDays*pmPxPerDay)+'px';
+      el.style.left=(d*pmPxPerDay)+'px'; el.style.width=(colDays*pmPxPerDay)+'px';
       el.textContent=PM_MONTHS_FULL[mo];
       wDiv.appendChild(el);
+      d+=colDays;
+    }
+  } else {
+    // Quarter zoom: month ticks, quarter boundaries emphasized
+    const MONTHS_S=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+    let d=0;
+    while(d<PM_WINDOW){
+      const dt=pmAddDays(pmWinStart,d);
+      const yr=dt.getFullYear(),mo=dt.getMonth();
+      const mEnd=new Date(yr,mo+1,0); mEnd.setHours(12,0,0,0);
+      const daysLeft=Math.round((mEnd-dt)/86400000)+1;
+      const colDays=Math.min(daysLeft, PM_WINDOW-d);
+      const colPx=colDays*pmPxPerDay;
+      const isQ=mo%3===0;
+      const el=document.createElement('div'); el.className='pm-ruler-week-el';
+      el.style.left=(d*pmPxPerDay)+'px'; el.style.width=colPx+'px';
+      if(isQ) { el.style.borderLeftColor='rgba(212,168,67,0.35)'; el.style.color='var(--accent)'; }
+      el.textContent=colPx>18?(isQ?MONTHS_S[mo]+' '+yr:MONTHS_S[mo]):'';
+      wDiv.appendChild(el);
+      d+=colDays;
     }
   }
 }
@@ -9934,8 +10006,13 @@ document.addEventListener('mousemove', pmOnDragMove);
 document.addEventListener('mouseup', pmEndDrag);
 
 function pmSetZoom(z){
-  pmZoom=z; pmPxPerDay=z==='day'?60:z==='week'?32:12;
-  ['day','week','month'].forEach(k=>{
+  pmZoom = z;
+  // px per day and window size per zoom level
+  const cfg = { day:{px:40,days:21}, week:{px:14,days:91}, month:{px:5,days:182}, quarter:{px:2.5,days:365} };
+  const c = cfg[z] || cfg.week;
+  pmPxPerDay = c.px;
+  PM_WINDOW  = c.days;
+  ['day','week','month','quarter'].forEach(k=>{
     const b=document.getElementById('pmz-'+k);
     if(!b) return;
     if(k===z){
@@ -9944,17 +10021,20 @@ function pmSetZoom(z){
       b.style.borderColor='var(--border-2)'; b.style.background='transparent'; b.style.color='var(--text-3)';
     }
   });
-  pmRenderRuler(); pmRenderBody();
+  pmRenderAll();
 }
+
+function pmRenderAll(){
+  pmRenderRuler(); pmRenderBody(); pmKPIs(pmGetActive());
+}
+window.pmRenderAll = pmRenderAll;
 
 window.pmSetZoom = pmSetZoom;
 
 window.pmRender = function(){
   if(document.getElementById('pg-pm')?.classList.contains('active')||
      document.getElementById('pg-pm')?.style.display!=='none'){
-    pmRenderRuler();
-    pmRenderBody();
-    pmKPIs(pmGetActive());
+    pmRenderAll();
   }
 };
 
@@ -9964,7 +10044,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   if(typeof _sp==='function'){
     window.showPage=function(id){
       _sp.apply(this,arguments);
-      if(id==='pm') requestAnimationFrame(()=>{ pmRenderRuler(); pmRenderBody(); pmKPIs(pmGetActive()); });
+      if(id==='pm') requestAnimationFrame(()=>{ pmRenderAll(); });
     };
   }
 });
