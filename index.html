@@ -2323,6 +2323,14 @@ input.narrow{width:88px}input.mid{width:108px}
         <button onclick="adminSetVista('trim')" id="admin-v-trim" style="padding:3px 9px;font-size:11px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text-3);cursor:pointer;font-family:var(--font-display);letter-spacing:.06em;text-transform:uppercase">Trim</button>
         <button onclick="adminSetVista('sem')" id="admin-v-sem" style="padding:3px 9px;font-size:11px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text-3);cursor:pointer;font-family:var(--font-display);letter-spacing:.06em;text-transform:uppercase">Sem</button>
       </div>
+      <button onclick="adminGenReporte()" title="Generar reporte del período"
+        style="padding:3px 12px;font-size:11px;border:1px solid var(--accent);border-radius:var(--r-md);
+        background:transparent;color:var(--accent);cursor:pointer;font-family:var(--font-display);
+        letter-spacing:.08em;text-transform:uppercase;transition:all .15s;margin-left:4px"
+        onmouseover="this.style.background='rgba(212,168,67,0.1)'"
+        onmouseout="this.style.background='transparent'">
+        📄 Reporte
+      </button>
     </div>
   </div>
 
@@ -3879,6 +3887,269 @@ window.adminGuardarCosto=adminGuardarCosto;
 window.adminEliminarCosto=adminEliminarCosto;
 
 /* ── Render principal ─────────────────────────────────────── */
+
+/* ══════════════════════════════════════════════════════════════
+   REPORTE MENSUAL — genera una ventana HTML imprimible/PDF
+   con todas las secciones del Administrador del período activo
+   ══════════════════════════════════════════════════════════════ */
+function adminGenReporte(){
+  const periodo = document.getElementById('admin-mes-label')?.textContent || '—';
+  const ing   = adminGetIngresos();
+  const col   = adminGetColaboradores();
+  const mkt   = adminGetCostosManual('marketing');
+  const vari  = adminGetCostosManual('varios');
+
+  const totalIng  = ing.reduce((s,r)=>s+r.cobrado,0);
+  const totalCol  = col.reduce((s,r)=>s+r.monto,0);
+  const totalMkt  = mkt.reduce((s,r)=>s+(r.monto||0),0);
+  const totalVar  = vari.reduce((s,r)=>s+(r.monto||0),0);
+  const totalEgr  = totalCol+totalMkt+totalVar;
+  const balance   = totalIng-totalEgr;
+  const margen    = totalIng>0?Math.round(balance/totalIng*100):0;
+  const capTotal  = adminCapAcumulado();
+
+  const fmt = n => 'GTQ '+Math.round(n).toLocaleString('es-GT');
+  const pct = (v,t) => t>0?Math.round(v/t*100)+'%':'—';
+
+  // ── CSS del reporte ──────────────────────────────────────────
+  const CSS = `
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#1a1a18;font-size:11px;line-height:1.6;background:#fff}
+    .page{max-width:800px;margin:0 auto;padding:32px 40px 48px}
+    /* Header */
+    .rpt-header{display:flex;justify-content:space-between;align-items:flex-start;
+      padding-bottom:18px;border-bottom:2px solid #1a1a18;margin-bottom:24px}
+    .rpt-title{font-size:20px;font-weight:300;letter-spacing:-.3px;color:#1a1a18}
+    .rpt-period{font-size:11px;color:#888;margin-top:3px;text-transform:uppercase;letter-spacing:.08em}
+    .rpt-brand{text-align:right}
+    .rpt-brand-name{font-size:13px;font-weight:500;color:#1a1a18}
+    .rpt-brand-sub{font-size:10px;color:#aaa;margin-top:2px}
+    /* KPIs */
+    .kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:28px}
+    .kpi-box{padding:12px 14px;border:1px solid #e8e8e8;border-radius:6px}
+    .kpi-val{font-size:18px;font-weight:500}
+    .kpi-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:#888;margin-top:3px}
+    .kpi-green{color:#2d7a3a}.kpi-red{color:#8b1a1a}.kpi-amber{color:#7a5200}.kpi-blue{color:#0c447c}
+    /* Secciones */
+    .sec{margin-bottom:28px;page-break-inside:avoid}
+    .sec-title{font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:#888;
+      padding-bottom:6px;border-bottom:1px solid #e8e8e8;margin-bottom:10px;font-weight:500}
+    /* Tablas */
+    table{width:100%;border-collapse:collapse;font-size:11px}
+    th{text-align:left;padding:5px 8px;font-size:9px;text-transform:uppercase;letter-spacing:.08em;
+      color:#888;font-weight:500;border-bottom:1px solid #ddd}
+    td{padding:7px 8px;border-bottom:0.5px solid #f0f0f0;color:#333;vertical-align:middle}
+    tr:last-child td{border-bottom:none}
+    .tr-total td{border-top:1px solid #1a1a18;font-weight:500;color:#1a1a18;padding-top:9px}
+    .num{text-align:right;font-family:'Courier New',monospace;font-size:11px}
+    .badge{display:inline-block;padding:1px 6px;border-radius:3px;font-size:9px;font-weight:500}
+    .badge-f1{background:#deedf9;color:#0c447c}
+    .badge-f2{background:#dff0e4;color:#1a5c3c}
+    .badge-pe{background:#fde8d4;color:#7a3200}
+    /* Distribución de egresos */
+    .dist-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+    .dist-lbl{font-size:11px;color:#333;flex:1}
+    .dist-bar-wrap{flex:2;height:6px;background:#f0f0f0;border-radius:3px;overflow:hidden}
+    .dist-bar-fill{height:100%;border-radius:3px}
+    .dist-val{font-size:11px;color:#888;min-width:80px;text-align:right}
+    /* Firma */
+    .footer{margin-top:40px;padding-top:18px;border-top:1px solid #e8e8e8;
+      display:flex;justify-content:space-between;align-items:flex-end}
+    .footer-legal{font-size:9px;color:#bbb;line-height:1.7}
+    .footer-sign{text-align:right;font-size:10px;color:#888}
+    .footer-sign strong{display:block;font-size:12px;color:#1a1a18;font-weight:400;margin-bottom:2px}
+    @media print{body{background:#fff}@page{margin:0;size:A4}.page{padding:24px 32px 40px}}
+  `;
+
+  // ── Tabla de Ingresos ────────────────────────────────────────
+  const tblIng = `
+    <table>
+      <thead><tr>
+        <th>Proyecto</th><th>Cliente</th><th>Concepto</th>
+        <th class="num">Cobrado</th><th class="num">% Cap</th><th class="num">Capital neto</th>
+      </tr></thead>
+      <tbody>
+        ${ing.length ? ing.map(r=>`<tr>
+          <td>${escapeHtmlK(r.proyecto)}</td>
+          <td style="color:#888">${escapeHtmlK(r.cliente)}</td>
+          <td>${r.concepto}</td>
+          <td class="num">${fmt(r.cobrado)}</td>
+          <td class="num" style="color:#7a5200">${r.capRate?r.capRate+'%':'—'}</td>
+          <td class="num" style="color:#7a5200;font-weight:500">${r.capNeto?fmt(r.capNeto):'—'}</td>
+        </tr>`).join('') : '<tr><td colspan="6" style="text-align:center;color:#bbb;padding:16px">Sin cobros en el período</td></tr>'}
+        <tr class="tr-total">
+          <td colspan="3">Total ingresos cobrados</td>
+          <td class="num">${fmt(totalIng)}</td>
+          <td class="num"></td>
+          <td class="num">${fmt(ing.reduce((s,r)=>s+r.capNeto,0))}</td>
+        </tr>
+      </tbody>
+    </table>`;
+
+  // ── Tabla de Colaboradores ───────────────────────────────────
+  const tblCol = `
+    <table>
+      <thead><tr>
+        <th>Colaborador</th><th>Proyecto</th><th>Tarea</th>
+        <th class="num">% Asig.</th><th class="num">Monto</th>
+      </tr></thead>
+      <tbody>
+        ${col.length ? col.map(r=>`<tr>
+          <td>${escapeHtmlK(r.colaborador)}</td>
+          <td style="color:#888">${escapeHtmlK(r.proyecto)}</td>
+          <td>${r.tarea}</td>
+          <td class="num" style="color:#7a5200">${r.pct}%</td>
+          <td class="num">${fmt(r.monto)}</td>
+        </tr>`).join('') : '<tr><td colspan="5" style="text-align:center;color:#bbb;padding:16px">Sin colaboradores en el período</td></tr>'}
+        <tr class="tr-total"><td colspan="4">Total colaboradores</td><td class="num">${fmt(totalCol)}</td></tr>
+      </tbody>
+    </table>`;
+
+  // ── Tabla de Marketing ───────────────────────────────────────
+  const tblMkt = `
+    <table>
+      <thead><tr>
+        <th>Concepto</th><th>Objetivo</th><th>Duración</th>
+        <th>Categoría</th><th class="num">Monto</th><th>Fecha</th>
+      </tr></thead>
+      <tbody>
+        ${mkt.length ? mkt.map(r=>`<tr>
+          <td>${escapeHtmlK(r.concepto||'—')}</td>
+          <td style="color:#888">${escapeHtmlK(r.objetivo||'—')}</td>
+          <td style="color:#888">${escapeHtmlK(r.duracion||'—')}</td>
+          <td><span class="badge">${escapeHtmlK(r.categoria||'—')}</span></td>
+          <td class="num">${fmt(r.monto||0)}</td>
+          <td style="color:#888">${r.fecha||'—'}</td>
+        </tr>`).join('') : '<tr><td colspan="6" style="text-align:center;color:#bbb;padding:16px">Sin costos de marketing</td></tr>'}
+        <tr class="tr-total"><td colspan="4">Total marketing</td><td class="num">${fmt(totalMkt)}</td><td></td></tr>
+      </tbody>
+    </table>`;
+
+  // ── Tabla de Costos Varios ───────────────────────────────────
+  const tblVar = `
+    <table>
+      <thead><tr>
+        <th>Concepto</th><th>Categoría</th>
+        <th class="num">Monto</th><th>Fecha</th>
+      </tr></thead>
+      <tbody>
+        ${vari.length ? vari.map(r=>`<tr>
+          <td>${escapeHtmlK(r.concepto||'—')}</td>
+          <td><span class="badge">${escapeHtmlK(r.categoria||'—')}</span></td>
+          <td class="num">${fmt(r.monto||0)}</td>
+          <td style="color:#888">${r.fecha||'—'}</td>
+        </tr>`).join('') : '<tr><td colspan="4" style="text-align:center;color:#bbb;padding:16px">Sin costos varios</td></tr>'}
+        <tr class="tr-total"><td colspan="2">Total costos varios</td><td class="num">${fmt(totalVar)}</td><td></td></tr>
+      </tbody>
+    </table>`;
+
+  // ── Análisis: distribución y métricas ───────────────────────
+  const distBar = (val, total, color) => {
+    const w = total>0?Math.round(val/total*100):0;
+    return `<div class="dist-bar-wrap"><div class="dist-bar-fill" style="width:${w}%;background:${color}"></div></div>`;
+  };
+  const analisis = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+      <div>
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#888;margin-bottom:10px">Distribución de egresos</div>
+        ${totalEgr>0 ? [
+          ['Colaboradores', totalCol, '#378ADD'],
+          ['Marketing',     totalMkt, '#E07B2E'],
+          ['Costos varios', totalVar, '#4CAF72'],
+        ].map(([l,v,c])=>`
+          <div class="dist-row">
+            <div class="dist-lbl">${l}</div>
+            ${distBar(v,totalEgr,c)}
+            <div class="dist-val">${pct(v,totalEgr)} · ${fmt(v)}</div>
+          </div>`).join('')
+        : '<p style="color:#bbb;font-size:11px">Sin egresos en el período</p>'}
+      </div>
+      <div>
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#888;margin-bottom:10px">Métricas clave</div>
+        <table style="font-size:11px">
+          <tr><td style="color:#888;padding:4px 0">Margen operativo</td><td style="text-align:right;font-weight:500;color:${balance>=0?'#2d7a3a':'#8b1a1a'}">${margen}%</td></tr>
+          <tr><td style="color:#888;padding:4px 0">Punto de equilibrio</td><td style="text-align:right;font-weight:500;color:${totalEgr<=totalIng?'#2d7a3a':'#8b1a1a'}">${totalEgr<=totalIng?'✓ Cubierto':'✗ Déficit'}</td></tr>
+          <tr><td style="color:#888;padding:4px 0">Total ingresos</td><td style="text-align:right;font-weight:500">${fmt(totalIng)}</td></tr>
+          <tr><td style="color:#888;padding:4px 0">Total egresos</td><td style="text-align:right;font-weight:500">${fmt(totalEgr)}</td></tr>
+          <tr style="border-top:1px solid #e8e8e8"><td style="color:#888;padding:6px 0 4px">Balance neto</td><td style="text-align:right;font-weight:500;color:${balance>=0?'#2d7a3a':'#8b1a1a'}">${fmt(balance)}</td></tr>
+          <tr><td style="color:#888;padding:4px 0">Capital acumulado</td><td style="text-align:right;font-weight:500;color:#7a5200">${fmt(capTotal)}</td></tr>
+        </table>
+      </div>
+    </div>`;
+
+  // ── Ensamblar HTML completo ──────────────────────────────────
+  const generadoEl = new Date().toLocaleDateString('es-GT',{day:'2-digit',month:'long',year:'numeric'});
+  const html = `<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8">
+<title>Reporte Administrativo — ${periodo}</title>
+<style>${CSS}</style>
+</head><body><div class="page">
+
+<div class="rpt-header">
+  <div>
+    <div class="rpt-title">Reporte Administrativo</div>
+    <div class="rpt-period">${periodo}</div>
+  </div>
+  <div class="rpt-brand">
+    <div class="rpt-brand-name">Estudio AVIT</div>
+    <div class="rpt-brand-sub">Arquitectura &amp; Interiorismo</div>
+    <div class="rpt-brand-sub" style="margin-top:4px">Generado el ${generadoEl}</div>
+  </div>
+</div>
+
+<div class="kpi-row">
+  <div class="kpi-box"><div class="kpi-val kpi-green">${fmt(totalIng)}</div><div class="kpi-lbl">Ingresos cobrados</div></div>
+  <div class="kpi-box"><div class="kpi-val kpi-red">${fmt(totalEgr)}</div><div class="kpi-lbl">Egresos totales</div></div>
+  <div class="kpi-box"><div class="kpi-val ${balance>=0?'kpi-green':'kpi-red'}">${fmt(balance)}</div><div class="kpi-lbl">Balance neto (${margen}%)</div></div>
+  <div class="kpi-box"><div class="kpi-val kpi-amber">${fmt(capTotal)}</div><div class="kpi-lbl">Capital acumulado</div></div>
+</div>
+
+<div class="sec">
+  <div class="sec-title">📥 Ingresos</div>
+  ${tblIng}
+</div>
+
+<div class="sec">
+  <div class="sec-title">👥 Colaboradores</div>
+  ${tblCol}
+</div>
+
+<div class="sec">
+  <div class="sec-title">📲 Marketing</div>
+  ${tblMkt}
+</div>
+
+<div class="sec">
+  <div class="sec-title">📦 Costos varios</div>
+  ${tblVar}
+</div>
+
+<div class="sec">
+  <div class="sec-title">📊 Análisis</div>
+  ${analisis}
+</div>
+
+<div class="footer">
+  <div class="footer-legal">
+    Reporte generado automáticamente por el Dashboard de Estudio AVIT.<br>
+    Los datos provienen de cotizaciones registradas y costos ingresados manualmente.<br>
+    Período: ${periodo}
+  </div>
+  <div class="footer-sign">
+    <strong>Estudio AVIT</strong>
+    www.estudioavit.com
+  </div>
+</div>
+
+</div></body></html>`;
+
+  const w = window.open('','_blank');
+  w.document.write(html);
+  w.document.close();
+  setTimeout(()=>w.print(), 600);
+}
+window.adminGenReporte = adminGenReporte;
+
 function adminRender(){
   const lbl=document.getElementById('admin-mes-label');
   if(lbl) lbl.textContent=adminMesLabel();
@@ -8018,6 +8289,13 @@ function mostrarAtajos(){
     <div style="margin-bottom:.75rem">
       <label class="lbl">Tu clave personal (no la olvides)</label>
       <input type="password" id="nubeKey" placeholder="Ej: mi-avit-2024" style="margin-bottom:.5rem">
+      <label class="lbl" style="display:flex;align-items:center;gap:6px;margin-top:.4rem">
+        ID del bin
+        <span style="font-size:9px;color:var(--text-3);font-weight:400">— aparece al subir, necesario en otro dispositivo</span>
+      </label>
+      <input type="text" id="nubeManualBinId" placeholder="Ej: 6450abc123def456..."
+        style="font-family:var(--font-mono);font-size:11px;margin-bottom:.5rem"
+        oninput="this.value=this.value.trim()">
       <p style="font-size:10px;color:var(--text-3);margin:0">Esta clave identifica tus datos en la nube. Usa la misma en todos tus dispositivos.</p>
     </div>
 
@@ -8048,7 +8326,7 @@ function mostrarAtajos(){
     <div style="background:rgba(255,255,255,0.03);border-radius:var(--r-md);padding:.85rem 1rem;margin-top:.75rem">
       <p style="font-size:11px;font-weight:500;margin-bottom:.35rem">¿Cómo funciona?</p>
       <p style="font-size:10px;color:var(--text-3);line-height:1.6;margin:0">
-        Al subir, tus datos se guardan en la nube asociados a tu clave. Al bajar, se cargan en este navegador. Con sincronización automática, los cambios se suben solos. Con cifrado activado, los datos viajan ilegibles para cualquiera sin tu password (incluyendo a Anthropic, JSONBin y cualquier intermediario).
+        Al subir, tus datos se guardan en la nube y se te muestra el <strong>ID del bin</strong>. Al usar en otro dispositivo, ingresá la misma clave y el ID del bin. Con sincronización automática los cambios se suben solos. Con cifrado activado, los datos viajan ilegibles sin tu password.
       </p>
     </div>
   </div>
@@ -8410,23 +8688,13 @@ function binName(key){ return ('avit-'+key).substring(0,32); }
 // Busca el bin ID buscando en la lista de bins por nombre
 async function getBinId(key){
   const nombre = binName(key);
-  // Guardamos el binId en localStorage como caché
-  const cached = localStorage.getItem('avit_bin_'+nombre);
-  if(cached) return cached;
-  // Si no está en caché, buscamos en JSONBin
-  const resp = await fetch(`${JSONBIN_BASE}/b?meta=true`,{
-    headers:{'X-Master-Key':JSONBIN_API_KEY}
-  });
-  if(!resp.ok) return null;
-  const list = await resp.json();
-  if(Array.isArray(list)){
-    const found = list.find(b => b.metadata && b.metadata.name === nombre);
-    if(found){
-      localStorage.setItem('avit_bin_'+nombre, found.metadata.id);
-      return found.metadata.id;
-    }
-  }
-  return null;
+  return localStorage.getItem('avit_bin_'+nombre) || null;
+}
+
+function getBinIdCacheKey(key){ return 'avit_bin_'+binName(key); }
+
+function setBinIdCache(key, binId){
+  localStorage.setItem(getBinIdCacheKey(key), binId);
 }
 
 async function subirNube(){
@@ -8441,7 +8709,12 @@ async function subirNube(){
       avit_sprint_tracker:localStorage.getItem('avit_sprint_tracker')||'{}',
       avit_calc:localStorage.getItem('avit_calc')||'{}',
       avit_artifacts:localStorage.getItem('avit_artifacts')||'[]',
-      avit_recibos:localStorage.getItem('avit_recibos')||'{}'
+      avit_recibos:localStorage.getItem('avit_recibos')||'{}',
+      avit_clients:localStorage.getItem('avit_clients')||'[]',
+      avit_admin:localStorage.getItem('avit_admin')||'{"costos":[],"runwayMeta":3}',
+      avit_sched:localStorage.getItem('avit_sched')||'[]',
+      _binName: binName(key),
+      _version: Date.now()
     };
 
     // Si cifrado activado, cifrar el payload
@@ -8484,9 +8757,16 @@ async function subirNube(){
       throw new Error(t||resp.statusText);
     }
     msg.style.color='var(--green)';
-    msg.textContent = isCryptoEnabled() ? '✓ Datos cifrados y subidos correctamente' : '✓ Datos subidos correctamente a la nube';
+    const binIdDisplay = binId || '—';
+    msg.innerHTML = (isCryptoEnabled() ? '✓ Datos cifrados y subidos. ' : '✓ Datos subidos a la nube. ')
+      + '<br><span style="font-family:var(--font-mono);font-size:10px;color:var(--text-3)">ID del bin: <strong style="color:var(--accent);user-select:all">'
+      + binIdDisplay + '</strong> — guárdalo para sincronizar en otro dispositivo.</span>';
     document.getElementById('syncStatus').textContent='☁ Subido '+new Date().toLocaleDateString('es-GT');
     localStorage.setItem('avit_nube_key', key);
+    if(binId) setBinIdCache(key, binId);
+    // Mostrar el binId en el campo de ID manual si existe
+    const binInput = document.getElementById('nubeManualBinId');
+    if(binInput) binInput.value = binId || '';
   }catch(err){
     msg.style.color='var(--red,#c0392b)';
     msg.textContent='✗ Error: '+err.message;
@@ -8552,7 +8832,12 @@ async function ejecutarAutoSync(key){
       avit_sprint_tracker:localStorage.getItem('avit_sprint_tracker')||'{}',
       avit_calc:localStorage.getItem('avit_calc')||'{}',
       avit_artifacts:localStorage.getItem('avit_artifacts')||'[]',
-      avit_recibos:localStorage.getItem('avit_recibos')||'{}'
+      avit_recibos:localStorage.getItem('avit_recibos')||'{}',
+      avit_clients:localStorage.getItem('avit_clients')||'[]',
+      avit_admin:localStorage.getItem('avit_admin')||'{"costos":[],"runwayMeta":3}',
+      avit_sched:localStorage.getItem('avit_sched')||'[]',
+      _binName: binName(key),
+      _version: Date.now()
     };
 
     // Si cifrado activado: requerimos password en memoria (sin pedirla, para no interrumpir).
@@ -8705,14 +8990,22 @@ async function bajarNube(){
   if(!key){alert('Escribe tu clave personal primero.');return;}
   const msg=document.getElementById('nubeMsg');
   msg.style.color='var(--text-2)';
-  msg.textContent='Bajando…';
+  msg.textContent='Buscando bin…';
   try{
-    const binId=await getBinId(key);
+    // Intentar obtener binId: primero localStorage, luego campo manual
+    let binId = await getBinId(key);
+    const manualBinInput = document.getElementById('nubeManualBinId');
+    const manualBinId = manualBinInput ? manualBinInput.value.trim() : '';
+    if(!binId && manualBinId) binId = manualBinId;
+
     if(!binId){
-      msg.style.color='var(--text-2)';
-      msg.textContent='⚠ No se encontraron datos en la nube con esa clave.';
+      msg.style.color='var(--amber,#D4A843)';
+      msg.innerHTML = '⚠ No se encontró el ID del bin en este dispositivo.<br>'
+        + '<span style="font-size:10px;color:var(--text-3)">Pegá el ID del bin en el campo "ID del bin" y volvé a intentar.</span>';
+      if(manualBinInput) manualBinInput.focus();
       return;
     }
+    msg.textContent='Descargando…';
     const resp=await fetch(`${JSONBIN_BASE}/b/${binId}/latest`,{
       headers:{'X-Master-Key':JSONBIN_API_KEY}
     });
@@ -8758,6 +9051,9 @@ async function bajarNube(){
       if(datos.avit_calc) localStorage.setItem('avit_calc',datos.avit_calc);
       if(datos.avit_artifacts) localStorage.setItem('avit_artifacts',datos.avit_artifacts);
       if(datos.avit_recibos) localStorage.setItem('avit_recibos',datos.avit_recibos);
+      if(datos.avit_clients) localStorage.setItem('avit_clients', typeof datos.avit_clients==='string'?datos.avit_clients:JSON.stringify(datos.avit_clients));
+      if(datos.avit_admin)   localStorage.setItem('avit_admin',   typeof datos.avit_admin==='string'?datos.avit_admin:JSON.stringify(datos.avit_admin));
+      if(datos.avit_sched)   localStorage.setItem('avit_sched',   typeof datos.avit_sched==='string'?datos.avit_sched:JSON.stringify(datos.avit_sched));
       msg.style.color='var(--green)';
       const total = resultado.length;
       msg.textContent=`✓ Merge aplicado: ${total} cotizaciones · ${stats.nuevas} nuevas · ${stats.actualizadas} actualizadas · ${stats.sinCambio} sin cambio`;
