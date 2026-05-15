@@ -1447,6 +1447,47 @@ input.narrow{width:88px}input.mid{width:108px}
 .admin-metrica-val{font-size:20px;font-weight:500;color:var(--text)}
 .admin-metrica-lbl{font-size:10px;color:var(--text-3);margin-top:3px;
   text-transform:uppercase;letter-spacing:.07em}
+
+/* ═══ CRONOGRAMA SEMANAL ══════════════════════════════════════ */
+.sched-wrap{overflow-x:auto;margin-bottom:4px}
+.sched-grid{display:grid;min-width:700px;border:0.5px solid var(--border);
+  border-radius:var(--r-md);overflow:hidden}
+.sched-header-row{display:contents}
+.sched-col-label{padding:0}
+.sched-day-hdr{padding:7px 6px 6px;text-align:center;background:var(--surface);
+  border-right:0.5px solid var(--border);border-bottom:0.5px solid var(--border)}
+.sched-day-hdr:last-child{border-right:none}
+.sched-day-name{font-size:10px;font-weight:600;text-transform:uppercase;
+  letter-spacing:.10em;color:var(--text-3);font-family:var(--font-display)}
+.sched-day-date{font-size:12px;font-weight:500;color:var(--text);margin-top:1px;font-family:var(--font-mono)}
+.sched-day-hdr.today .sched-day-name{color:var(--accent)}
+.sched-day-hdr.today .sched-day-date{color:var(--accent)}
+.sched-day-hdr.today{background:rgba(212,168,67,0.07)}
+.sched-cell{min-height:80px;padding:5px;border-right:0.5px solid var(--border);
+  border-bottom:0.5px solid rgba(255,255,255,0.04);vertical-align:top;
+  background:var(--bg);transition:background .1s;position:relative}
+.sched-cell:last-child{border-right:none}
+.sched-cell.today{background:rgba(212,168,67,0.035)}
+.sched-cell.past{opacity:.6}
+.sched-item{padding:5px 7px;border-radius:var(--r-sm);margin-bottom:4px;
+  font-size:10px;line-height:1.4;cursor:pointer;position:relative;
+  border-left:3px solid transparent;transition:filter .1s}
+.sched-item:hover{filter:brightness(1.12)}
+.sched-item.f1{background:rgba(58,130,217,0.15);border-left-color:#378ADD}
+.sched-item.f2{background:rgba(76,175,114,0.15);border-left-color:#4CAF72}
+.sched-item.pe{background:rgba(224,123,46,0.15);border-left-color:#E07B2E}
+.sched-item.hito{background:rgba(212,168,67,0.15);border-left-color:var(--accent)}
+.sched-item-proj{font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sched-item-client{font-size:9px;color:var(--text-3);margin-top:1px}
+.sched-item-sprint{font-size:9.5px;color:var(--text-2);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sched-item-del{position:absolute;top:2px;right:3px;background:transparent;border:0;
+  color:var(--text-3);cursor:pointer;font-size:12px;line-height:1;padding:1px 3px;opacity:0;transition:opacity .15s}
+.sched-item:hover .sched-item-del{opacity:1}
+.sched-item-del:hover{color:var(--red)}
+.sched-add-btn{width:100%;background:transparent;border:0.5px dashed rgba(255,255,255,0.08);
+  border-radius:var(--r-sm);color:var(--text-3);cursor:pointer;font-size:18px;
+  padding:4px;line-height:1;transition:border-color .15s,color .15s;margin-top:2px}
+.sched-add-btn:hover{border-color:rgba(212,168,67,0.4);color:var(--accent)}
 </style>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 </head>
@@ -2730,6 +2771,26 @@ input.narrow{width:88px}input.mid{width:108px}
 <!-- ═══════════════════════════════════════════════ PÁGINA: ESTATUS -->
 <div class="page" id="pg-est">
 
+
+<!-- Cronograma semanal -->
+<div class="sc" style="margin-bottom:14px">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="sc-title" style="margin:0">Cronograma semanal</div>
+      <div style="display:flex;gap:3px">
+        <button onclick="schedNavWeek(-1)" style="padding:2px 8px;font-size:13px;border:0.5px solid var(--border-2);border-radius:var(--r-sm);background:transparent;color:var(--text-3);cursor:pointer">←</button>
+        <span id="sched-week-label" style="font-size:11px;color:var(--text-3);padding:2px 8px;font-family:var(--font-mono);white-space:nowrap">—</span>
+        <button onclick="schedNavWeek(1)"  style="padding:2px 8px;font-size:13px;border:0.5px solid var(--border-2);border-radius:var(--r-sm);background:transparent;color:var(--text-3);cursor:pointer">→</button>
+        <button onclick="schedGoToday()" style="padding:2px 8px;font-size:10px;border:0.5px solid var(--border-2);border-radius:var(--r-sm);background:transparent;color:var(--text-3);cursor:pointer;font-family:var(--font-display);letter-spacing:.06em;text-transform:uppercase">Hoy</button>
+      </div>
+    </div>
+    <button onclick="schedShowForm(null)" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;font-size:10px;font-weight:600;border:1px solid var(--accent);border-radius:var(--r-md);background:var(--accent);color:var(--text-on-accent);cursor:pointer;font-family:var(--font-display);letter-spacing:.10em;text-transform:uppercase">
+      + Nuevo
+    </button>
+  </div>
+  <div class="sched-wrap"><div id="sched-grid" class="sched-grid"></div></div>
+</div>
+
 <div class="sc">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem">
     <div class="sc-title" style="margin:0">Pipeline de proyectos</div>
@@ -3829,6 +3890,274 @@ document.addEventListener('DOMContentLoaded',()=>{
   };
 },false);
 
+
+/* ══════════════════════════════════════════════════════════════
+   CRONOGRAMA SEMANAL
+   localStorage['avit_sched'] = [
+     { id, cotId, sprintId, sprintTitle, sprintType,
+       proyectoName, clienteInitials, fecha }  // YYYY-MM-DD
+   ]
+   ══════════════════════════════════════════════════════════════ */
+
+function schedLoad(){ try{ return JSON.parse(localStorage.getItem('avit_sched')||'[]'); }catch(e){ return []; } }
+function schedSave(arr){ localStorage.setItem('avit_sched', JSON.stringify(arr)); }
+
+const DAYS_ES  = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+const MONTHS_S = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+
+// Estado de navegación: lunes de la semana visible
+let _schedMonday = schedGetMonday(new Date());
+
+function schedGetMonday(d){
+  const r = new Date(d); r.setHours(12,0,0,0);
+  const day = r.getDay(); // 0=dom
+  r.setDate(r.getDate() - (day===0?6:day-1));
+  return r;
+}
+
+function schedNavWeek(delta){
+  _schedMonday = new Date(_schedMonday);
+  _schedMonday.setDate(_schedMonday.getDate() + delta*7);
+  schedRender();
+}
+function schedGoToday(){
+  _schedMonday = schedGetMonday(new Date());
+  schedRender();
+}
+window.schedNavWeek  = schedNavWeek;
+window.schedGoToday  = schedGoToday;
+
+// Helpers
+function schedIso(d){ return d.toISOString().split('T')[0]; }
+function schedAddDays(d,n){ const r=new Date(d); r.setDate(r.getDate()+n); return r; }
+function schedInitials(name){
+  if(!name) return '?';
+  const w = name.trim().split(/\s+/);
+  return w.length>=2 ? (w[0][0]+w[w.length-1][0]).toUpperCase() : name.slice(0,2).toUpperCase();
+}
+
+// ── Render ───────────────────────────────────────────────────
+function schedRender(){
+  const grid = document.getElementById('sched-grid');
+  if(!grid) return;
+
+  const today    = new Date(); today.setHours(12,0,0,0);
+  const todayIso = schedIso(today);
+  const items    = schedLoad();
+
+  // 7 days from Monday
+  const days = Array.from({length:7}, (_,i)=> schedAddDays(_schedMonday, i));
+  const firstDay = days[0], lastDay = days[6];
+
+  // Week label
+  const lbl = document.getElementById('sched-week-label');
+  if(lbl) lbl.textContent =
+    `${firstDay.getDate()} ${MONTHS_S[firstDay.getMonth()]} – ${lastDay.getDate()} ${MONTHS_S[lastDay.getMonth()]} ${lastDay.getFullYear()}`;
+
+  // Grid: 7 columns
+  const cols = '1fr '.repeat(7).trim();
+  grid.style.gridTemplateColumns = cols;
+
+  // Header row
+  let html = days.map(d=>{
+    const iso   = schedIso(d);
+    const isToday = iso === todayIso;
+    return `<div class="sched-day-hdr${isToday?' today':''}">
+      <div class="sched-day-name">${DAYS_ES[d.getDay()]}</div>
+      <div class="sched-day-date">${d.getDate()}</div>
+    </div>`;
+  }).join('');
+
+  // Cell rows
+  html += days.map(d=>{
+    const iso     = schedIso(d);
+    const isToday = iso === todayIso;
+    const isPast  = d < today && !isToday;
+    const dayItems = items.filter(it=>it.fecha===iso);
+
+    const cards = dayItems.map(it=>`
+      <div class="sched-item ${it.sprintType||'f1'}" onclick="schedShowForm('${it.fecha}','${it.id}')">
+        <button class="sched-item-del" onclick="event.stopPropagation();schedDelete('${it.id}')" title="Quitar">×</button>
+        <div class="sched-item-proj">${escapeHtmlK(it.proyectoName||'—')}</div>
+        <div class="sched-item-client">${escapeHtmlK(it.clienteInitials||'')}</div>
+        <div class="sched-item-sprint">${escapeHtmlK(it.sprintTitle||'Sprint')}</div>
+      </div>`).join('');
+
+    return `<div class="sched-cell${isToday?' today':''}${isPast?' past':''}">
+      ${cards}
+      <button class="sched-add-btn" onclick="schedShowForm('${iso}')" title="Agregar tarea">+</button>
+    </div>`;
+  }).join('');
+
+  grid.innerHTML = html;
+}
+
+// ── Delete ────────────────────────────────────────────────────
+function schedDelete(id){
+  schedSave(schedLoad().filter(it=>it.id!==id));
+  schedRender();
+}
+window.schedDelete = schedDelete;
+
+// ── Form modal ────────────────────────────────────────────────
+function schedShowForm(fecha, editId){
+  const existing = document.getElementById('schedModal');
+  if(existing) existing.remove();
+
+  const cots  = loadCots ? loadCots() : [];
+  const active = cots.filter(c=>!['cobrado_total','completada'].includes(c.estado||''));
+
+  const editItem = editId ? schedLoad().find(it=>it.id===editId) : null;
+  const selFecha = editItem ? editItem.fecha : (fecha || schedIso(new Date()));
+  const selCotId = editItem ? editItem.cotId : '';
+
+  // Build project options
+  const proyOpts = active.map(c=>`<option value="${c.id}" ${selCotId===String(c.id)?'selected':''}>${escapeHtmlK(c.proyecto||'—')} — ${escapeHtmlK(c.cliente||'')}</option>`).join('');
+
+  const modal = document.createElement('div');
+  modal.id = 'schedModal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:9990;display:flex;align-items:center;justify-content:center;padding:20px';
+  modal.onclick = e=>{ if(e.target===modal) modal.remove(); };
+
+  modal.innerHTML = `
+    <div style="background:var(--bg-surface-2,#1a1b1e);border:1px solid var(--border-accent);
+      border-radius:var(--r-lg);padding:22px 26px;width:100%;max-width:400px"
+      onclick="event.stopPropagation()">
+      <div style="font-family:var(--font-display);font-size:12px;letter-spacing:.14em;
+        text-transform:uppercase;color:var(--accent);margin-bottom:14px">
+        ${editId?'Editar entrada':'Nueva entrada'}
+      </div>
+      <input type="hidden" id="sm-edit-id" value="${editId||''}">
+
+      <div style="margin-bottom:.65rem">
+        <label class="lbl">Fecha</label>
+        <input type="text" id="sm-fecha" value="${fmtFechaGT(selFecha)||''}" placeholder="DD/MM/AAAA"
+          maxlength="10" style="font-family:var(--font-mono)">
+      </div>
+
+      <div style="margin-bottom:.65rem">
+        <label class="lbl">Proyecto</label>
+        <select id="sm-proy" onchange="schedLoadSprints()" style="width:100%;padding:7px 10px;
+          background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r-md);
+          color:var(--text);font-size:12px;font-family:var(--font-body)">
+          <option value="">— Seleccionar proyecto —</option>
+          ${proyOpts}
+        </select>
+      </div>
+
+      <div style="margin-bottom:1rem">
+        <label class="lbl">Sprint / Tarea</label>
+        <select id="sm-sprint" style="width:100%;padding:7px 10px;background:var(--surface);
+          border:0.5px solid var(--border);border-radius:var(--r-md);color:var(--text);
+          font-size:12px;font-family:var(--font-body)">
+          <option value="">— Elegir proyecto primero —</option>
+        </select>
+      </div>
+
+      <div style="display:flex;justify-content:flex-end;gap:8px">
+        <button onclick="document.getElementById('schedModal').remove()"
+          style="padding:6px 13px;font-size:11px;border:0.5px solid var(--border-2);
+            border-radius:var(--r-md);background:transparent;color:var(--text-2);cursor:pointer;
+            font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase">
+          Cancelar
+        </button>
+        <button onclick="schedGuardar()"
+          style="padding:6px 16px;font-size:11px;border:1px solid var(--accent);
+            border-radius:var(--r-md);background:var(--accent);color:var(--text-on-accent);
+            cursor:pointer;font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase">
+          Guardar
+        </button>
+      </div>
+    </div>`;
+
+  document.body.appendChild(modal);
+
+  // Pre-load sprints if editing
+  if(selCotId) setTimeout(()=>{
+    const el=document.getElementById('sm-proy');
+    if(el) el.value=String(selCotId);
+    schedLoadSprints(editItem ? editItem.sprintId : null);
+  }, 30);
+}
+window.schedShowForm = schedShowForm;
+
+// ── Load sprints for selected project ──────────────────────
+function schedLoadSprints(preselect){
+  const cotId = parseInt(document.getElementById('sm-proy')?.value);
+  const sel   = document.getElementById('sm-sprint');
+  if(!sel) return;
+  if(!cotId){ sel.innerHTML='<option value="">— Elegir proyecto primero —</option>'; return; }
+
+  const cots    = loadCots ? loadCots() : [];
+  const cot     = cots.find(c=>c.id===cotId);
+  const spList  = (cot && cot.sprints) ? cot.sprints : [];
+
+  if(!spList.length){
+    sel.innerHTML='<option value="">Sin sprints guardados</option>';
+    return;
+  }
+  sel.innerHTML = spList
+    .filter(s=>s.type!=='hito')
+    .map(s=>`<option value="${s.id}" data-type="${s.type}" ${preselect&&String(preselect)===String(s.id)?'selected':''}>
+      ${escapeHtmlK(s.title||'Sprint')}
+    </option>`).join('');
+}
+window.schedLoadSprints = schedLoadSprints;
+
+// ── Guardar entrada ────────────────────────────────────────
+function schedGuardar(){
+  const fechaGT = (document.getElementById('sm-fecha')?.value||'').trim();
+  const fechaIso = parseFechaGT(fechaGT);
+  const cotId   = parseInt(document.getElementById('sm-proy')?.value);
+  const spEl    = document.getElementById('sm-sprint');
+  const sprintId= spEl ? spEl.value : '';
+  const sprintTitle = spEl ? (spEl.options[spEl.selectedIndex]?.text||'').trim() : '';
+  const sprintType  = spEl ? (spEl.options[spEl.selectedIndex]?.dataset?.type||'f1') : 'f1';
+  const editId  = document.getElementById('sm-edit-id')?.value||'';
+
+  if(!fechaIso||!cotId||!sprintId){
+    alert('Completá fecha, proyecto y sprint.'); return;
+  }
+
+  const cots  = loadCots ? loadCots() : [];
+  const cot   = cots.find(c=>c.id===cotId) || {};
+  const proyectoName    = cot.proyecto || '—';
+  const clienteInitials = schedInitials(cot.cliente||'');
+
+  const all = schedLoad();
+  const entry = {
+    id: editId || ('sch_'+Date.now()),
+    cotId, sprintId, sprintTitle, sprintType,
+    proyectoName, clienteInitials,
+    fecha: fechaIso
+  };
+
+  if(editId){
+    const i = all.findIndex(it=>it.id===editId);
+    if(i>=0) all[i]=entry; else all.push(entry);
+  } else {
+    all.push(entry);
+  }
+
+  schedSave(all);
+  document.getElementById('schedModal')?.remove();
+  schedRender();
+}
+window.schedGuardar = schedGuardar;
+
+// ── Init ───────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded',()=>{
+  const _spSched = window.showPage;
+  window.showPage = function(id){
+    _spSched.apply(this,arguments);
+    if(id==='est') schedRender();
+  };
+  // Render on first load if Kanban is active
+  if(document.getElementById('pg-est')?.classList.contains('active')){
+    schedRender();
+  }
+},false);
+
 function toggleMenuConfig(){
   const m = document.getElementById('menuConfig');
   if(!m) return;
@@ -3891,14 +4220,15 @@ function toggleTiempos(){
   chev.style.transform=open?'rotate(180deg)':'rotate(0deg)';
   if(open){
     syncToCalendar();
-    // Asegurar projStart con valor por default si está vacío
     const _ps2 = document.getElementById('projStart');
     if(_ps2 && !_ps2.value.trim()){
       _ps2.value = (typeof fmtFechaGT === 'function')
         ? fmtFechaGT(new Date().toISOString().split('T')[0])
         : '';
     }
-    if(!_projEndManual) recalcProjEnd(); else renderAll();
+    // Siempre recalcular projEnd al abrir (incluso si ya existe, para actualizarlo)
+    if(typeof recalcProjEnd === 'function') recalcProjEnd();
+    else if(typeof renderAll === 'function') renderAll();
   }
 }
 
@@ -4639,38 +4969,102 @@ function renderTimeline(){
     ].join('');
     const label = (s.type!=='hito' && barPx>50) ? s.title.slice(0,Math.floor(barPx/7)) : '';
 
-    return `<div style="display:grid;grid-template-columns:${IW}px 1fr;padding:5px 0;border-bottom:0.5px solid var(--border);align-items:center">
-      <div style="padding-right:8px;overflow:hidden">
+    return `<div style="display:flex;padding:5px 0;border-bottom:0.5px solid rgba(255,255,255,0.05);align-items:center">
+      <div style="flex:0 0 ${IW}px;min-width:${IW}px;padding-right:8px;overflow:hidden">
         <div class="tl-name" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.title}</div>
         <div class="tl-dates">${ds}</div>
         <div style="margin-top:1px">${tags}</div>
       </div>
-      <div style="position:relative;height:26px;overflow:hidden">
+      <div style="flex:1;min-width:${totalPx}px;position:relative;height:26px">
         ${gridLines()}
-        <div class="tl-bar ${bc}" style="position:absolute;left:${offPx}px;width:${barPx}px;top:3px;height:20px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">
+        <div class="tl-bar ${bc}" style="position:absolute;left:${offPx}px;width:${Math.max(barPx,4)}px;top:3px;height:20px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">
           ${label}
         </div>
       </div>
     </div>`;
   }).join('');
 
-  // ── Header ruler ────────────────────────────────────────────────
-  const hdr = `<div style="display:grid;grid-template-columns:${IW}px 1fr;margin-bottom:4px">
-    <div></div>
-    <div style="position:relative;height:20px;overflow:hidden">${rulerHtml}</div>
-  </div>`;
+  // ── Fecha de entrega (fallback = último end de getSprintDates) ──
+  const projEndEl = document.getElementById('projEnd');
+  let projEndIso  = parseFechaGT(projEndEl ? projEndEl.value : '');
+  if(!projEndIso && keys.length){
+    // Auto-calcular desde el último sprint si projEnd no está seteado
+    let latest = ps;
+    keys.forEach(k=>{ const d=dates[k]; if(d.end>latest) latest=d.end; });
+    projEndIso = latest.toISOString().split('T')[0];
+    // Guardar para que el campo lo muestre
+    if(projEndEl && !_projEndManual) projEndEl.value = fmtFechaGT(projEndIso);
+  }
+  const projEndDate = projEndIso ? new Date(projEndIso+'T12:00:00') : null;
 
-  // ── Fecha de entrega marker ────────────────────────────────────
-  const projEndEl  = document.getElementById('projEnd');
-  const projEndIso = parseFechaGT(projEndEl?projEndEl.value:'');
+  // ── totalPx: ancho mínimo del track (asegurar que cabe el projEnd también) ──
+  const trackDays  = projEndDate
+    ? Math.max(totalDays, Math.round((projEndDate-ps)/MS_DAY)+2)
+    : totalDays;
+  const trackPx    = Math.max(minPx - IW, trackDays * PX);
+
+  // ── Marker de fecha de entrega ─────────────────────────────────
   let endMarker = '';
-  if(projEndIso){
-    const projEndDate = new Date(projEndIso+'T12:00:00');
-    const endPx = Math.max(0, Math.round((projEndDate-ps)/MS_DAY)*PX);
-    endMarker = `<div style="position:absolute;left:${endPx}px;top:0;bottom:0;width:2px;border-left:2px dashed var(--accent);z-index:2;pointer-events:none">
-      <span style="position:absolute;top:-16px;left:3px;font-size:9px;color:var(--accent);white-space:nowrap;font-family:var(--font-mono);font-weight:600">Entrega: ${fmtS(projEndDate)}</span>
+  if(projEndDate){
+    const endPx = Math.min(trackPx - 2, Math.max(0, Math.round((projEndDate-ps)/MS_DAY)*PX));
+    endMarker = `<div style="position:absolute;left:${IW+endPx}px;top:0;bottom:0;width:2px;
+      border-left:2px dashed var(--accent);z-index:4;pointer-events:none">
+      <span style="position:absolute;top:2px;left:3px;font-size:9px;color:var(--accent);
+        white-space:nowrap;font-family:var(--font-mono);font-weight:600">
+        Entrega: ${fmtS(projEndDate)}
+      </span>
     </div>`;
   }
+
+  // ── Header ruler ──────────────────────────────────────────────
+  // El ruler se extiende sobre trackDays (puede ser más que totalDays si projEnd está después)
+  // Recalcular rulerHtml con trackDays
+  let fullRuler = '';
+  if(_tlZoom === 'day'){
+    for(let d=0;d<trackDays;d++){
+      const dt=addDays(ps,d);
+      const wd=['D','L','M','X','J','V','S'][dt.getDay()];
+      const label=d%7===0?fmtS(dt):wd;
+      const border=d%7===0?'border-left:1px solid rgba(255,255,255,0.10)':'border-left:0.5px solid rgba(255,255,255,0.04)';
+      fullRuler+=`<div style="position:absolute;left:${d*PX}px;top:0;height:100%;width:${PX}px;${border};display:flex;align-items:center;overflow:hidden"><span style="font-size:8px;color:var(--text-3);padding-left:2px;white-space:nowrap">${label}</span></div>`;
+    }
+  } else if(_tlZoom==='week'){
+    const wks=Math.ceil(trackDays/7);
+    for(let w=0;w<wks;w++){
+      const dt=addDays(ps,w*7);
+      fullRuler+=`<div style="position:absolute;left:${w*7*PX}px;top:0;height:100%;width:${7*PX}px;border-left:0.5px solid rgba(255,255,255,0.08);display:flex;align-items:center;overflow:hidden"><span style="font-size:9px;color:var(--text-3);padding-left:3px;white-space:nowrap">${fmtS(dt)}</span></div>`;
+    }
+  } else {
+    // month y quarter: iterar por mes calendario real
+    const MONTHS=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+    let d=0;
+    while(d<trackDays){
+      const dt=addDays(ps,d);
+      const yr=dt.getFullYear(), mo=dt.getMonth();
+      // Días que quedan en este mes desde dt
+      const mEnd=new Date(yr,mo+1,0); mEnd.setHours(12,0,0,0);
+      const daysInRestOfMonth=Math.round((mEnd-dt)/86400000)+1;
+      const colDays=Math.min(daysInRestOfMonth, trackDays-d);
+      const colPx=colDays*PX;
+      const isQ=mo%3===0;
+      const border=(_tlZoom==='quarter'&&!isQ)?'border-left:0.5px solid rgba(255,255,255,0.05)':'border-left:1px solid rgba(255,255,255,0.12)';
+      const label=_tlZoom==='quarter'?(isQ?MONTHS[mo]+' '+yr:MONTHS[mo]):MONTHS[mo]+' '+yr;
+      fullRuler+=`<div style="position:absolute;left:${d*PX}px;top:0;height:100%;width:${colPx}px;${border};display:flex;align-items:center;overflow:hidden"><span style="font-size:9px;color:var(--text-3);padding-left:4px;white-space:nowrap;text-transform:uppercase;letter-spacing:.05em">${colPx>24?label:''}</span></div>`;
+      d+=colDays;
+    }
+  }
+
+  // ── Estructura: todo en UN solo div scrolleable ────────────────
+  //   col-nombres (IW px fijo) | track (trackPx, position:relative)
+  //   El scroll horizontal mueve el track completo
+  const hdrRow = `<div style="display:flex;border-bottom:1px solid var(--border);background:var(--surface);position:sticky;top:0;z-index:5">
+    <div style="flex:0 0 ${IW}px;min-width:${IW}px"></div>
+    <div style="flex:1;min-width:${trackPx}px;position:relative;height:22px;overflow:visible">
+      ${fullRuler}
+    </div>
+  </div>`;
+
+  const sprintRows = rows || '<p class="empty" style="padding:16px">Activa una fase para ver el timeline.</p>';
 
   // ── Leyenda ────────────────────────────────────────────────────
   const leg=`<div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap">
@@ -4681,18 +5075,14 @@ function renderTimeline(){
     <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text-2)"><span class="tl-tag tl-feedback" style="margin:0">Aprobación</span>Requiere OK</div>
   </div>`;
 
-  const bodyMinW = Math.max(minPx - IW, totalPx);
-  const gantt = `<div style="position:relative">
-    ${endMarker}
-    <div style="min-width:${bodyMinW}px">${hdr}${rows||'<p class="empty">Activa una fase para ver el timeline.</p>'}</div>
-  </div>`;
-
-  cont.innerHTML = `<div style="overflow-x:auto;padding-top:18px">
-    <div style="display:grid;grid-template-columns:${IW}px 1fr;min-width:${IW+bodyMinW}px">
-      ${gantt}
+  cont.innerHTML = `
+    <div style="overflow-x:auto;border:0.5px solid var(--border);border-radius:var(--r-md);margin-top:10px;position:relative">
+      ${endMarker}
+      ${hdrRow}
+      <div>${sprintRows}</div>
     </div>
-  </div>${leg}
-  <p class="nt" style="margin-top:6px">${totalDays} días · Inicio: <strong>${fmtL(ps)}</strong>${projEndIso?' · Entrega: <strong>'+fmtL(new Date(projEndIso+'T12:00:00'))+'</strong>':''}</p>`;
+    ${leg}
+    <p class="nt" style="margin-top:6px">${trackDays} días · Inicio: <strong>${fmtL(ps)}</strong>${projEndDate?' · Entrega: <strong>'+fmtL(projEndDate)+'</strong>':''}</p>`;
 }
 
 function renderClienteView(){
