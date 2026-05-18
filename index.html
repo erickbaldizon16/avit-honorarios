@@ -1488,6 +1488,50 @@ input.narrow{width:88px}input.mid{width:108px}
   border-radius:var(--r-sm);color:var(--text-3);cursor:pointer;font-size:18px;
   padding:4px;line-height:1;transition:border-color .15s,color .15s;margin-top:2px}
 .sched-add-btn:hover{border-color:rgba(212,168,67,0.4);color:var(--accent)}
+
+/* ═══ MARKETING SUB-TABS & ESTRATEGIAS ══════════════════════ */
+.mkt-subtab{padding:5px 12px;font-size:10px;border:none;border-bottom:2px solid transparent;
+  background:transparent;color:var(--text-3);cursor:pointer;font-family:var(--font-display);
+  letter-spacing:.08em;text-transform:uppercase;transition:color .15s,border-color .15s;margin-bottom:-1px}
+.mkt-subtab:hover{color:var(--text-2)}
+.mkt-subtab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.mkt-strat-card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r-lg);
+  padding:14px 16px;margin-bottom:10px;transition:border-color .15s}
+.mkt-strat-card:hover{border-color:rgba(224,123,46,0.35)}
+.mkt-strat-header{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px}
+.mkt-strat-title{font-size:13px;font-weight:500;color:var(--text)}
+.mkt-strat-obj{font-size:11px;color:var(--text-3);margin-top:2px}
+.mkt-badge{font-size:9px;padding:2px 7px;border-radius:3px;font-weight:600;letter-spacing:.05em;white-space:nowrap}
+.mkt-badge-active{background:rgba(76,175,114,0.15);color:#4CAF72;border:1px solid rgba(76,175,114,0.25)}
+.mkt-badge-plan{background:rgba(90,158,212,0.15);color:#5AABF0;border:1px solid rgba(90,158,212,0.25)}
+.mkt-badge-done{background:rgba(255,255,255,0.06);color:var(--text-3);border:1px solid rgba(255,255,255,0.08)}
+.mkt-badge-eval{background:rgba(212,168,67,0.15);color:var(--accent);border:1px solid rgba(212,168,67,0.25)}
+.mkt-campana-row{display:flex;align-items:center;gap:8px;padding:6px 0;
+  border-bottom:0.5px solid rgba(255,255,255,0.04);font-size:11px}
+.mkt-campana-row:last-child{border-bottom:none}
+.mkt-kpi-row{display:flex;gap:6px;margin-top:2px;flex-wrap:wrap}
+.mkt-kpi-chip{font-size:9.5px;padding:2px 7px;background:rgba(255,255,255,0.04);
+  border:0.5px solid rgba(255,255,255,0.08);border-radius:3px;color:var(--text-3)}
+.mkt-progress{height:4px;border-radius:2px;background:rgba(255,255,255,0.06);overflow:hidden;flex:1;min-width:60px}
+.mkt-progress-fill{height:100%;border-radius:2px;transition:width .4s}
+/* Analizador IA */
+.mkt-ia-box{background:rgba(212,168,67,0.04);border:1px solid rgba(212,168,67,0.15);
+  border-radius:var(--r-lg);padding:16px 18px;margin-bottom:12px}
+.mkt-ia-title{font-family:var(--font-display);font-size:11px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+.mkt-ia-resp{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r-md);
+  padding:14px;margin-top:12px;display:none;max-height:400px;overflow-y:auto}
+.mkt-ia-resp.visible{display:block;animation:fadeUp .2s var(--ease-out) both}
+.mkt-ia-typing{display:flex;align-items:center;gap:6px;color:var(--text-3);font-size:12px;padding:8px 0}
+.mkt-ia-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);
+  animation:mktDot 1.2s infinite ease-in-out}
+.mkt-ia-dot:nth-child(2){animation-delay:.2s}
+.mkt-ia-dot:nth-child(3){animation-delay:.4s}
+@keyframes mktDot{0%,80%,100%{transform:scale(.8);opacity:.4}40%{transform:scale(1);opacity:1}}
+/* Eval */
+.mkt-eval-kpi{background:var(--surface);border-radius:var(--r-md);padding:10px 12px;text-align:center}
+.mkt-eval-val{font-size:18px;font-weight:500}
+.mkt-eval-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.07em;color:var(--text-3);margin-top:2px}
 </style>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 </head>
@@ -2395,16 +2439,24 @@ input.narrow{width:88px}input.mid{width:108px}
     </div>
   </div>
 
-  <!-- Tab: Marketing -->
+  <!-- Tab: Marketing (3 sub-tabs) -->
   <div id="atab-body-marketing" class="admin-tab-body" style="display:none">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-      <span style="font-size:13px;font-weight:500;color:var(--red)" id="admin-mkt-total">GTQ 0</span>
-      <button onclick="adminShowFormCosto('marketing')" style="padding:5px 12px;font-size:10px;border:1px solid var(--accent);border-radius:var(--r-md);background:var(--accent);color:var(--text-on-accent);cursor:pointer;font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase">+ Nuevo</button>
+    <!-- Sub-tab nav -->
+    <div style="display:flex;border-bottom:1px solid var(--border);margin-bottom:12px">
+      <button class="mkt-subtab active" id="mst-costos"      onclick="mktShowSub('costos')">💸 Costos</button>
+      <button class="mkt-subtab"        id="mst-estrategias" onclick="mktShowSub('estrategias')">🎯 Estrategias</button>
+      <button class="mkt-subtab"        id="mst-ia"          onclick="mktShowSub('ia')">🤖 Analizador IA</button>
     </div>
-    <div style="overflow-x:auto">
-      <table style="width:100%;border-collapse:collapse;font-size:11px">
-        <thead>
-          <tr style="border-bottom:1px solid var(--border)">
+
+    <!-- Sub: Costos (tabla original) -->
+    <div id="mst-body-costos">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <span style="font-size:13px;font-weight:500;color:var(--red)" id="admin-mkt-total">GTQ 0</span>
+        <button onclick="adminShowFormCosto('marketing')" style="padding:5px 12px;font-size:10px;border:1px solid var(--accent);border-radius:var(--r-md);background:var(--accent);color:var(--text-on-accent);cursor:pointer;font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase">+ Nuevo costo</button>
+      </div>
+      <div style="overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse;font-size:11px">
+          <thead><tr style="border-bottom:1px solid var(--border)">
             <th style="text-align:left;padding:6px 10px;color:var(--text-3);font-weight:500;text-transform:uppercase;letter-spacing:.06em;font-size:10px">Concepto</th>
             <th style="text-align:left;padding:6px 10px;color:var(--text-3);font-weight:500;text-transform:uppercase;letter-spacing:.06em;font-size:10px">Objetivo</th>
             <th style="text-align:left;padding:6px 10px;color:var(--text-3);font-weight:500;text-transform:uppercase;letter-spacing:.06em;font-size:10px">Duración</th>
@@ -2412,12 +2464,75 @@ input.narrow{width:88px}input.mid{width:108px}
             <th style="text-align:right;padding:6px 10px;color:var(--text-3);font-weight:500;text-transform:uppercase;letter-spacing:.06em;font-size:10px">Monto</th>
             <th style="text-align:right;padding:6px 10px;color:var(--text-3);font-weight:500;text-transform:uppercase;letter-spacing:.06em;font-size:10px">Fecha</th>
             <th style="padding:6px 4px"></th>
-          </tr>
-        </thead>
-        <tbody id="admin-mkt-body">
-          <tr><td colspan="7" style="padding:24px;text-align:center;color:var(--text-3)">Sin costos de marketing registrados.</td></tr>
-        </tbody>
-      </table>
+          </tr></thead>
+          <tbody id="admin-mkt-body">
+            <tr><td colspan="7" style="padding:24px;text-align:center;color:var(--text-3)">Sin costos registrados.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Sub: Estrategias -->
+    <div id="mst-body-estrategias" style="display:none">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+        <span style="font-size:11px;color:var(--text-3)">Estrategias de marketing activas e históricas</span>
+        <div style="display:flex;gap:6px">
+          <button onclick="mktShowFormEstrategia()" style="padding:5px 12px;font-size:10px;border:1px solid var(--accent);border-radius:var(--r-md);background:var(--accent);color:var(--text-on-accent);cursor:pointer;font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase">+ Nueva</button>
+          <button onclick="mktShowImportarJSON()" style="padding:5px 12px;font-size:10px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text-2);cursor:pointer;font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase">📥 Importar JSON</button>
+        </div>
+      </div>
+      <div id="mkt-estrategias-body"></div>
+    </div>
+
+    <!-- Sub: Analizador IA -->
+    <div id="mst-body-ia" style="display:none">
+      <!-- Opción A: Generar nueva estrategia -->
+      <div class="mkt-ia-box">
+        <div class="mkt-ia-title">🤖 Generar estrategia con Claude</div>
+        <div style="margin-bottom:8px">
+          <label class="lbl">Describí tu objetivo de marketing</label>
+          <textarea id="mkt-ia-objetivo" rows="3" placeholder="Ej: Quiero aumentar consultas de diseño residencial en Guatemala. Mi audiencia son familias de nivel socioeconómico medio-alto en zonas 10, 14, 15..."
+            style="width:100%;padding:8px 11px;background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r-md);color:var(--text);font-size:12px;font-family:var(--font-body);resize:vertical"></textarea>
+        </div>
+        <div class="r2" style="margin-bottom:8px">
+          <div>
+            <label class="lbl">Presupuesto mensual (GTQ)</label>
+            <input type="number" id="mkt-ia-presupuesto" value="3000" min="0"
+              style="font-family:var(--font-mono)">
+          </div>
+          <div>
+            <label class="lbl">Período</label>
+            <select id="mkt-ia-periodo" style="width:100%;padding:7px 10px;background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r-md);color:var(--text);font-size:12px;font-family:var(--font-body)">
+              <option value="1">1 mes</option>
+              <option value="3" selected>3 meses</option>
+              <option value="6">6 meses</option>
+            </select>
+          </div>
+        </div>
+        <button onclick="mktGenerar()" id="mkt-ia-btn"
+          style="padding:7px 18px;font-size:11px;border:1px solid var(--accent);border-radius:var(--r-md);background:var(--accent);color:var(--text-on-accent);cursor:pointer;font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase">
+          🤖 Generar estrategia
+        </button>
+        <div id="mkt-ia-resp" class="mkt-ia-resp"></div>
+      </div>
+
+      <!-- Opción B: Importar desde proyecto Claude -->
+      <div class="mkt-ia-box" style="border-color:rgba(90,158,212,0.2);background:rgba(90,158,212,0.03)">
+        <div class="mkt-ia-title" style="color:#5AABF0">📥 Importar desde proyecto Claude</div>
+        <p class="nt" style="margin-bottom:8px">Pegá el JSON generado por tu proyecto de marketing en Claude.</p>
+        <textarea id="mkt-ia-json" rows="4" placeholder='{"nombre":"Estrategia Q2","objetivo":"...","presupuesto_mes":3000,"canales":[...],"kpis":[...],"campanas":[...]}'
+          style="width:100%;padding:8px 11px;background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r-md);color:var(--text);font-size:11px;font-family:var(--font-mono);resize:vertical"></textarea>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button onclick="mktImportarJSON()"
+            style="padding:6px 14px;font-size:10px;border:1px solid #5AABF0;border-radius:var(--r-md);background:transparent;color:#5AABF0;cursor:pointer;font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase">
+            📥 Importar y crear estrategia
+          </button>
+          <button onclick="mktCopiarPrompt()"
+            style="padding:6px 14px;font-size:10px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text-3);cursor:pointer;font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase">
+            📋 Copiar prompt para Claude
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -4457,6 +4572,468 @@ document.addEventListener('DOMContentLoaded',()=>{
     schedRender();
   }
 },false);
+
+
+/* ══════════════════════════════════════════════════════════════
+   MÓDULO MARKETING — Estrategias + Analizador IA
+   localStorage['avit_estrategias'] = [{
+     id, nombre, objetivo, presupuesto_mes, moneda, periodo_meses,
+     estado,           // 'planificando' | 'activa' | 'finalizada'
+     fechaInicio, fechaFin,
+     canales:[{canal, pct, objetivo}],
+     kpis:[{nombre, meta, real, evaluado}],
+     campanas:[{id, concepto, objetivo, duracion, duracionTipo,
+                monto, categoria, fecha, costoId}],
+     evaluacion:{resultado, notas, cumplido}  // al finalizar
+   }]
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Storage ──────────────────────────────────────────────── */
+function mktLoad(){ try{ return JSON.parse(localStorage.getItem('avit_estrategias')||'[]'); }catch(e){ return []; } }
+function mktSave(arr){ localStorage.setItem('avit_estrategias', JSON.stringify(arr)); }
+
+/* ── Sub-tab navigation ──────────────────────────────────── */
+let _mktSub = 'costos';
+function mktShowSub(sub){
+  _mktSub = sub;
+  ['costos','estrategias','ia'].forEach(s=>{
+    const b=document.getElementById('mst-'+s);
+    const body=document.getElementById('mst-body-'+s);
+    if(b){ b.classList.toggle('active', s===sub); }
+    if(body){ body.style.display=s===sub?'block':'none'; }
+  });
+  if(sub==='estrategias') mktRenderEstrategias();
+}
+window.mktShowSub=mktShowSub;
+
+/* ── Render lista de estrategias ────────────────────────── */
+function mktRenderEstrategias(){
+  const body=document.getElementById('mkt-estrategias-body');
+  if(!body) return;
+  const lista=mktLoad();
+  if(!lista.length){
+    body.innerHTML=`<div style="padding:32px;text-align:center;font-size:12px;color:var(--text-3)">Ninguna estrategia registrada.<br><br><button onclick="mktShowSub('ia')" style="padding:7px 16px;font-size:11px;border:1px solid var(--accent);border-radius:var(--r-md);background:transparent;color:var(--accent);cursor:pointer;font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase">Crear con IA →</button></div>`;
+    return;
+  }
+  const fmt=n=>'GTQ '+Math.round(n).toLocaleString('es-GT');
+  body.innerHTML=lista.map(est=>{
+    const gastado=adminGetCostosManual('marketing')
+      .filter(c=>c.estrategiaId===est.id)
+      .reduce((s,c)=>s+(c.monto||0),0);
+    const presupTotal=(est.presupuesto_mes||0)*(est.periodo_meses||1);
+    const pctGasto=presupTotal>0?Math.min(100,Math.round(gastado/presupTotal*100)):0;
+    const badgeCls={'planificando':'mkt-badge-plan','activa':'mkt-badge-active','finalizada':'mkt-badge-done','evaluar':'mkt-badge-eval'}[est.estado]||'mkt-badge-plan';
+    const badgeLbl={'planificando':'Planificando','activa':'En curso','finalizada':'Finalizada','evaluar':'⚡ Evaluar ahora'}[est.estado]||est.estado;
+    const needsEval=est.estado==='finalizada'&&!est.evaluacion;
+
+    const kpisHtml=est.kpis&&est.kpis.length?`<div class="mkt-kpi-row">${est.kpis.map(k=>`<span class="mkt-kpi-chip">🎯 ${escapeHtmlK(k.nombre)}: ${k.real!==undefined?k.real+'/':''}<strong>${k.meta}</strong>${k.evaluado?(k.real>=k.meta?' ✓':' ✗'):''}</span>`).join('')}</div>`:'';
+
+    const canalesHtml=est.canales&&est.canales.length?est.canales.map(c=>`<div class="mkt-campana-row">
+        <span style="flex:1;color:var(--text-2)">${escapeHtmlK(c.canal)}</span>
+        <div class="mkt-progress"><div class="mkt-progress-fill" style="width:${c.pct}%;background:#E07B2E"></div></div>
+        <span style="color:var(--text-3);min-width:36px;text-align:right;font-family:var(--font-mono)">${c.pct}%</span>
+        <span style="color:var(--text-3);min-width:80px;text-align:right">${fmt((est.presupuesto_mes||0)*(c.pct/100))}/mes</span>
+      </div>`).join(''):'';
+
+    return `<div class="mkt-strat-card">
+      <div class="mkt-strat-header">
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <span class="mkt-strat-title">🎯 ${escapeHtmlK(est.nombre)}</span>
+            <span class="mkt-badge ${badgeCls}">${badgeLbl}</span>
+          </div>
+          <div class="mkt-strat-obj">${escapeHtmlK(est.objetivo||'')}</div>
+        </div>
+        <div style="display:flex;gap:5px;flex-shrink:0">
+          ${needsEval?`<button onclick="mktShowEvaluacion('${est.id}')" style="padding:4px 10px;font-size:10px;border:1px solid var(--accent);border-radius:var(--r-md);background:rgba(212,168,67,0.1);color:var(--accent);cursor:pointer;font-family:var(--font-display);letter-spacing:.07em;text-transform:uppercase">Evaluar</button>`:''}
+          <button onclick="mktToggleEstado('${est.id}')" style="padding:4px 10px;font-size:10px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text-3);cursor:pointer;font-family:var(--font-display);letter-spacing:.07em;text-transform:uppercase">${est.estado==='planificando'?'▶ Activar':est.estado==='activa'?'■ Finalizar':'↺'}</button>
+          <button onclick="mktEliminar('${est.id}')" style="padding:4px 8px;font-size:10px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--red);cursor:pointer">✕</button>
+        </div>
+      </div>
+      <div style="display:flex;gap:14px;margin:8px 0;flex-wrap:wrap">
+        <span style="font-size:11px;color:var(--text-3)">Presupuesto: <strong style="color:var(--text-2)">${fmt(est.presupuesto_mes||0)}/mes</strong></span>
+        <span style="font-size:11px;color:var(--text-3)">Período: <strong style="color:var(--text-2)">${est.periodo_meses||1} mes${(est.periodo_meses||1)>1?'es':''}</strong></span>
+        <span style="font-size:11px;color:var(--text-3)">Gastado: <strong style="color:${pctGasto>100?'var(--red)':'var(--text-2)'}">GTQ ${Math.round(gastado).toLocaleString('es-GT')} (${pctGasto}%)</strong></span>
+      </div>
+      ${kpisHtml}
+      ${canalesHtml?`<div style="margin-top:8px;padding-top:8px;border-top:0.5px solid var(--border)">${canalesHtml}</div>`:''}
+      ${est.evaluacion?`<div style="margin-top:10px;padding:10px 12px;background:rgba(${est.evaluacion.cumplido?'76,175,114':'224,90,90'},0.08);border-radius:var(--r-md);border:0.5px solid rgba(${est.evaluacion.cumplido?'76,175,114':'224,90,90'},0.2)">
+        <div style="font-size:10px;font-weight:600;color:${est.evaluacion.cumplido?'var(--green)':'var(--red)'};text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px">${est.evaluacion.cumplido?'✓ Objetivos cumplidos':'✗ Objetivos no alcanzados'}</div>
+        <div style="font-size:11px;color:var(--text-2)">${escapeHtmlK(est.evaluacion.notas||'')}</div>
+      </div>`:''}
+    </div>`;
+  }).join('');
+}
+window.mktRenderEstrategias=mktRenderEstrategias;
+
+/* ── Toggle estado ───────────────────────────────────────── */
+function mktToggleEstado(id){
+  const all=mktLoad(); const e=all.find(x=>x.id===id); if(!e) return;
+  if(e.estado==='planificando') e.estado='activa';
+  else if(e.estado==='activa'){ e.estado='finalizada'; e.fechaFin=new Date().toISOString().split('T')[0]; }
+  mktSave(all); mktRenderEstrategias();
+}
+window.mktToggleEstado=mktToggleEstado;
+
+function mktEliminar(id){
+  if(!confirm('¿Eliminar esta estrategia?')) return;
+  mktSave(mktLoad().filter(x=>x.id!==id)); mktRenderEstrategias();
+}
+window.mktEliminar=mktEliminar;
+
+/* ── Formulario nueva estrategia (manual) ────────────────── */
+function mktShowFormEstrategia(){
+  const m=document.createElement('div');
+  m.id='mktEstModal';
+  m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:9990;display:flex;align-items:flex-start;justify-content:center;padding:30px 20px;overflow-y:auto';
+  m.onclick=e=>{ if(e.target===m) m.remove(); };
+  m.innerHTML=`<div style="background:var(--bg-surface-2,#1a1b1e);border:1px solid var(--border-accent);border-radius:var(--r-lg);padding:22px 26px;width:100%;max-width:480px" onclick="event.stopPropagation()">
+    <div style="font-family:var(--font-display);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:14px">Nueva estrategia</div>
+    <div style="margin-bottom:.65rem"><label class="lbl">Nombre de la estrategia *</label><input type="text" id="mef-nombre" placeholder="Ej: Captación residencial Q2 2026"></div>
+    <div style="margin-bottom:.65rem"><label class="lbl">Objetivo</label><textarea id="mef-objetivo" rows="2" style="width:100%;padding:7px 10px;background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r-md);color:var(--text);font-size:12px;font-family:var(--font-body);resize:vertical" placeholder="¿Qué querés lograr?"></textarea></div>
+    <div class="r2" style="margin-bottom:.65rem">
+      <div><label class="lbl">Presupuesto/mes (GTQ)</label><input type="number" id="mef-pres" value="3000" min="0" style="font-family:var(--font-mono)"></div>
+      <div><label class="lbl">Período (meses)</label><select id="mef-per" style="width:100%;padding:7px 10px;background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r-md);color:var(--text);font-size:12px;font-family:var(--font-body)"><option value="1">1 mes</option><option value="3" selected>3 meses</option><option value="6">6 meses</option><option value="12">12 meses</option></select></div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:14px">
+      <button onclick="document.getElementById('mktEstModal').remove()" style="padding:6px 13px;font-size:11px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text-2);cursor:pointer;font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase">Cancelar</button>
+      <button onclick="mktGuardarEstrategia()" style="padding:6px 16px;font-size:11px;border:1px solid var(--accent);border-radius:var(--r-md);background:var(--accent);color:var(--text-on-accent);cursor:pointer;font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase">Guardar</button>
+    </div>
+  </div>`;
+  document.body.appendChild(m);
+  setTimeout(()=>document.getElementById('mef-nombre')?.focus(),60);
+}
+window.mktShowFormEstrategia=mktShowFormEstrategia;
+
+function mktGuardarEstrategia(){
+  const nombre=(document.getElementById('mef-nombre')?.value||'').trim();
+  if(!nombre){ alert('El nombre es obligatorio.'); return; }
+  const est={
+    id:'est_'+Date.now(),
+    nombre,
+    objetivo:document.getElementById('mef-objetivo')?.value.trim()||'',
+    presupuesto_mes:parseFloat(document.getElementById('mef-pres')?.value)||0,
+    periodo_meses:parseInt(document.getElementById('mef-per')?.value)||3,
+    estado:'planificando', moneda:'GTQ',
+    canales:[], kpis:[], campanas:[], creado:Date.now()
+  };
+  const all=mktLoad(); all.unshift(est); mktSave(all);
+  document.getElementById('mktEstModal')?.remove();
+  mktRenderEstrategias();
+}
+window.mktGuardarEstrategia=mktGuardarEstrategia;
+
+/* ── Importar JSON desde proyecto Claude ─────────────────── */
+function mktImportarJSON(){
+  const raw=(document.getElementById('mkt-ia-json')?.value||'').trim();
+  if(!raw){ alert('Pegá el JSON primero.'); return; }
+  let data;
+  try { data=JSON.parse(raw); } catch(e){ alert('JSON inválido. Revisá el formato.'); return; }
+  const est={
+    id:'est_'+Date.now(),
+    nombre:data.nombre||'Estrategia importada',
+    objetivo:data.objetivo||'',
+    presupuesto_mes:parseFloat(data.presupuesto_mes)||0,
+    periodo_meses:parseInt(data.periodo_meses)||3,
+    moneda:data.moneda||'GTQ',
+    estado:'planificando',
+    canales:(data.canales||[]).map(c=>({canal:c.canal||'',pct:c.pct||0,objetivo:c.objetivo||''})),
+    kpis:(data.kpis||[]).map(k=>({nombre:k.nombre||'',meta:k.meta||0})),
+    campanas:(data.campanas||[]),
+    creado:Date.now()
+  };
+  // Crear costos de marketing automáticamente desde campanas
+  if(est.campanas.length){
+    const d=adminLoad();
+    est.campanas.forEach(c=>{
+      const costoId='csto_'+Date.now()+'_'+Math.random().toString(36).slice(2,6);
+      d.costos.push({
+        id:costoId, tipo:'marketing',
+        concepto:c.concepto||'Campaña', objetivo:c.objetivo||'',
+        duracion:c.duracion||'', duracionTipo:c.duracionTipo||'Específica',
+        monto:parseFloat(c.monto)||0, categoria:c.categoria||'Otro',
+        fecha:fmtFechaGT(new Date().toISOString().split('T')[0]),
+        mes:new Date().getFullYear()+'-'+String(new Date().getMonth()+1).padStart(2,'0'),
+        estrategiaId:est.id
+      });
+      c.costoId=costoId;
+    });
+    adminSave(d);
+  }
+  const all=mktLoad(); all.unshift(est); mktSave(all);
+  document.getElementById('mkt-ia-json').value='';
+  const ss=document.getElementById('syncStatus');
+  if(ss){ ss.textContent='✦ Estrategia importada'; setTimeout(()=>{ if(ss.textContent==='✦ Estrategia importada') ss.textContent=''; },2200); }
+  mktShowSub('estrategias');
+}
+window.mktImportarJSON=mktImportarJSON;
+
+/* ── Copiar prompt para proyecto Claude ──────────────────── */
+function mktCopiarPrompt(){
+  const prompt=`Eres un experto en marketing digital para estudios de arquitectura e interiorismo en Guatemala.
+Genera una estrategia de marketing estructurada en formato JSON con este esquema exacto (sin texto adicional, solo JSON válido):
+
+{
+  "nombre": "Nombre descriptivo de la estrategia",
+  "objetivo": "Descripción del objetivo principal",
+  "presupuesto_mes": 3000,
+  "moneda": "GTQ",
+  "periodo_meses": 3,
+  "canales": [
+    { "canal": "Nombre del canal", "pct": 40, "objetivo": "Objetivo específico del canal" }
+  ],
+  "kpis": [
+    { "nombre": "Nombre del KPI", "meta": 5 }
+  ],
+  "campanas": [
+    {
+      "concepto": "Nombre de la campaña",
+      "objetivo": "Objetivo de la campaña",
+      "duracion": "15 días",
+      "duracionTipo": "Específica",
+      "monto": 1200,
+      "categoria": "Paid ads"
+    }
+  ]
+}
+
+Categorías disponibles para campanas: Paid ads, Contenido, Digital, Eventos, Otro.`;
+  navigator.clipboard.writeText(prompt).then(()=>{
+    const btn=document.querySelector('[onclick="mktCopiarPrompt()"]');
+    if(btn){ const orig=btn.textContent; btn.textContent='✓ Copiado!'; setTimeout(()=>btn.textContent=orig,2000); }
+  }).catch(()=>{ alert('No se pudo copiar. Seleccioná el texto manualmente.'); });
+}
+window.mktCopiarPrompt=mktCopiarPrompt;
+
+/* ── Mostrar importar JSON (scroll al área) ──────────────── */
+function mktShowImportarJSON(){
+  mktShowSub('ia');
+  setTimeout(()=>document.getElementById('mkt-ia-json')?.focus(),100);
+}
+window.mktShowImportarJSON=mktShowImportarJSON;
+
+/* ── Generador IA (API de Claude) ────────────────────────── */
+async function mktGenerar(){
+  const btn=document.getElementById('mkt-ia-btn');
+  const resp=document.getElementById('mkt-ia-resp');
+  const obj=(document.getElementById('mkt-ia-objetivo')?.value||'').trim();
+  const pres=parseFloat(document.getElementById('mkt-ia-presupuesto')?.value)||3000;
+  const per=parseInt(document.getElementById('mkt-ia-periodo')?.value)||3;
+  if(!obj){ alert('Describí tu objetivo primero.'); return; }
+
+  // Loading state
+  btn.disabled=true; btn.textContent='Generando…';
+  resp.innerHTML=`<div class="mkt-ia-typing"><div class="mkt-ia-dot"></div><div class="mkt-ia-dot"></div><div class="mkt-ia-dot"></div><span>Claude está analizando tu objetivo...</span></div>`;
+  resp.classList.add('visible');
+
+  // Obtener costos actuales del mes para contexto
+  const mkt=adminGetCostosManual('marketing');
+  const totalMkt=mkt.reduce((s,r)=>s+(r.monto||0),0);
+  const distCats={};
+  mkt.forEach(r=>{ distCats[r.categoria||'Otro']=(distCats[r.categoria||'Otro']||0)+(r.monto||0); });
+  const ctxActual=totalMkt>0?'\nDistribución actual de gastos de marketing: '+Object.entries(distCats).map(([k,v])=>`${k}: GTQ ${Math.round(v)}`).join(', '):'';
+
+  const prompt=`Sos un experto en marketing digital para estudios de arquitectura e interiorismo en Guatemala. 
+Analizá el siguiente objetivo de marketing y generá una estrategia estructurada.
+
+OBJETIVO DEL CLIENTE:
+${obj}
+
+PRESUPUESTO: GTQ ${pres}/mes durante ${per} mes${per>1?'es':''}
+MERCADO: Guatemala (Ciudad de Guatemala, enfoque residencial y comercial)${ctxActual}
+
+Respondé ÚNICAMENTE con un JSON válido con este esquema (sin texto antes ni después):
+{
+  "nombre": "Nombre descriptivo",
+  "objetivo": "Objetivo reformulado claramente",
+  "presupuesto_mes": ${pres},
+  "moneda": "GTQ",
+  "periodo_meses": ${per},
+  "resumen": "Párrafo de 2-3 oraciones explicando la estrategia",
+  "canales": [
+    {"canal": "nombre", "pct": 40, "objetivo": "objetivo específico del canal"}
+  ],
+  "kpis": [
+    {"nombre": "nombre KPI", "meta": 5, "descripcion": "cómo medirlo"}
+  ],
+  "campanas": [
+    {"concepto": "nombre", "objetivo": "objetivo", "duracion": "X días/meses", "duracionTipo": "Específica", "monto": 1200, "categoria": "Paid ads"}
+  ],
+  "recomendaciones": ["recomendación 1", "recomendación 2", "recomendación 3"]
+}`;
+
+  try {
+    const apiResp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        messages:[{role:'user',content:prompt}]
+      })
+    });
+    const data=await apiResp.json();
+    const text=data.content?.[0]?.text||'';
+    // Strip markdown fences if present
+    const clean=text.replace(/```json?\n?/g,'').replace(/```/g,'').trim();
+    let est;
+    try { est=JSON.parse(clean); } catch(e){ throw new Error('Claude no devolvió JSON válido. Intentá de nuevo.'); }
+
+    // Render preview
+    const fmt=n=>'GTQ '+Math.round(n).toLocaleString('es-GT');
+    resp.innerHTML=`
+      <div style="font-family:var(--font-display);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:8px">🤖 Estrategia generada</div>
+      <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px">${escapeHtmlK(est.nombre||'')}</div>
+      <p style="font-size:11px;color:var(--text-2);margin-bottom:12px;line-height:1.7">${escapeHtmlK(est.resumen||est.objetivo||'')}</p>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px">
+        <div class="admin-metrica"><div class="admin-metrica-val" style="font-size:14px">${fmt(est.presupuesto_mes||0)}</div><div class="admin-metrica-lbl">por mes</div></div>
+        <div class="admin-metrica"><div class="admin-metrica-val" style="font-size:14px">${est.periodo_meses||3} meses</div><div class="admin-metrica-lbl">período</div></div>
+        <div class="admin-metrica"><div class="admin-metrica-val" style="font-size:14px">${fmt((est.presupuesto_mes||0)*(est.periodo_meses||3))}</div><div class="admin-metrica-lbl">total</div></div>
+      </div>
+      ${est.canales?.length?`
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-3);margin-bottom:6px">Canales recomendados</div>
+      ${est.canales.map(c=>`<div class="mkt-campana-row">
+        <span style="flex:1;font-size:11px;color:var(--text-2)">${escapeHtmlK(c.canal)}</span>
+        <div class="mkt-progress"><div class="mkt-progress-fill" style="width:${c.pct}%;background:#E07B2E"></div></div>
+        <span style="font-size:11px;color:var(--accent);min-width:36px;text-align:right;font-family:var(--font-mono)">${c.pct}%</span>
+        <span style="font-size:11px;color:var(--text-3);min-width:90px;text-align:right">${fmt((est.presupuesto_mes||0)*(c.pct/100))}/mes</span>
+      </div>`).join('')}`:''}
+      ${est.kpis?.length?`
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-3);margin:10px 0 6px">KPIs a medir</div>
+      <div class="mkt-kpi-row">${est.kpis.map(k=>`<span class="mkt-kpi-chip">🎯 ${escapeHtmlK(k.nombre)}: meta ${k.meta} · ${escapeHtmlK(k.descripcion||'')}</span>`).join('')}</div>`:''}
+      ${est.recomendaciones?.length?`
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-3);margin:10px 0 6px">Recomendaciones</div>
+      <ul style="margin:0;padding-left:16px">${est.recomendaciones.map(r=>`<li style="font-size:11px;color:var(--text-2);margin-bottom:3px;line-height:1.6">${escapeHtmlK(r)}</li>`).join('')}</ul>`:''}
+      <div style="display:flex;gap:8px;margin-top:14px;padding-top:12px;border-top:0.5px solid var(--border)">
+        <button onclick="mktAprobarEstrategia(${JSON.stringify(est).replace(/"/g,'&quot;')})" style="padding:7px 16px;font-size:11px;border:1px solid var(--green);border-radius:var(--r-md);background:rgba(76,175,114,0.1);color:var(--green);cursor:pointer;font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase">✓ Aprobar y crear</button>
+        <button onclick="document.getElementById('mkt-ia-resp').classList.remove('visible')" style="padding:7px 13px;font-size:11px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text-3);cursor:pointer;font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase">✕ Descartar</button>
+      </div>`;
+    resp.dataset.estJson=JSON.stringify(est);
+  } catch(e){
+    resp.innerHTML=`<div style="color:var(--red);font-size:12px;padding:8px">✗ Error: ${escapeHtmlK(e.message)}</div>`;
+  } finally {
+    btn.disabled=false; btn.textContent='🤖 Generar estrategia';
+  }
+}
+window.mktGenerar=mktGenerar;
+
+/* ── Aprobar estrategia generada por IA ──────────────────── */
+function mktAprobarEstrategia(data){
+  if(typeof data==='string') try{ data=JSON.parse(data); }catch(e){ return; }
+  const est={
+    id:'est_'+Date.now(),
+    nombre:data.nombre||'Estrategia IA',
+    objetivo:data.objetivo||'',
+    resumen:data.resumen||'',
+    presupuesto_mes:parseFloat(data.presupuesto_mes)||0,
+    periodo_meses:parseInt(data.periodo_meses)||3,
+    moneda:data.moneda||'GTQ',
+    estado:'planificando',
+    canales:(data.canales||[]),
+    kpis:(data.kpis||[]).map(k=>({nombre:k.nombre,meta:k.meta,descripcion:k.descripcion||''})),
+    campanas:(data.campanas||[]),
+    recomendaciones:data.recomendaciones||[],
+    creado:Date.now(),
+    origenIA:true
+  };
+  // Crear costos de marketing desde campanas
+  if(est.campanas.length){
+    const d=adminLoad();
+    est.campanas.forEach(c=>{
+      const costoId='csto_'+Date.now()+'_'+Math.random().toString(36).slice(2,6);
+      d.costos.push({
+        id:costoId,tipo:'marketing',
+        concepto:c.concepto||'Campaña',objetivo:c.objetivo||'',
+        duracion:c.duracion||'',duracionTipo:c.duracionTipo||'Específica',
+        monto:parseFloat(c.monto)||0,categoria:c.categoria||'Otro',
+        fecha:fmtFechaGT(new Date().toISOString().split('T')[0]),
+        mes:new Date().getFullYear()+'-'+String(new Date().getMonth()+1).padStart(2,'0'),
+        estrategiaId:est.id
+      });
+      c.costoId=costoId;
+    });
+    adminSave(d);
+  }
+  const all=mktLoad(); all.unshift(est); mktSave(all);
+  document.getElementById('mkt-ia-resp').classList.remove('visible');
+  document.getElementById('mkt-ia-objetivo').value='';
+  const ss=document.getElementById('syncStatus');
+  if(ss){ ss.textContent='✦ Estrategia creada'; setTimeout(()=>{ if(ss.textContent==='✦ Estrategia creada') ss.textContent=''; },2200); }
+  mktShowSub('estrategias');
+}
+window.mktAprobarEstrategia=mktAprobarEstrategia;
+
+/* ── Modal de evaluación ─────────────────────────────────── */
+function mktShowEvaluacion(id){
+  const est=mktLoad().find(e=>e.id===id);
+  if(!est) return;
+  const m=document.createElement('div');
+  m.id='mktEvalModal';
+  m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:9990;display:flex;align-items:flex-start;justify-content:center;padding:30px 20px;overflow-y:auto';
+  m.onclick=e=>{ if(e.target===m) m.remove(); };
+  const fmt=n=>'GTQ '+Math.round(n).toLocaleString('es-GT');
+  const kpisForm=est.kpis&&est.kpis.length?est.kpis.map((k,i)=>`
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+      <span style="flex:1;font-size:12px;color:var(--text-2)">${escapeHtmlK(k.nombre)} <span style="color:var(--text-3)">(meta: ${k.meta})</span></span>
+      <input type="number" id="eval-kpi-${i}" placeholder="Resultado real" min="0" value="${k.real||''}"
+        style="width:100px;padding:5px 8px;background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r-md);color:var(--text);font-size:12px;font-family:var(--font-mono);text-align:right">
+    </div>`).join(''):'<p style="font-size:11px;color:var(--text-3)">Esta estrategia no tiene KPIs definidos.</p>';
+
+  const gastado=adminGetCostosManual('marketing').filter(c=>c.estrategiaId===id).reduce((s,c)=>s+(c.monto||0),0);
+  m.innerHTML=`<div style="background:var(--bg-surface-2,#1a1b1e);border:1px solid var(--border-accent);border-radius:var(--r-lg);padding:22px 26px;width:100%;max-width:500px" onclick="event.stopPropagation()">
+    <div style="font-family:var(--font-display);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:6px">Evaluación de estrategia</div>
+    <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:12px">🎯 ${escapeHtmlK(est.nombre)}</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px">
+      <div class="mkt-eval-kpi"><div class="mkt-eval-val">${fmt(est.presupuesto_mes*(est.periodo_meses||1))}</div><div class="mkt-eval-lbl">Presupuesto total</div></div>
+      <div class="mkt-eval-kpi"><div class="mkt-eval-val" style="color:${gastado>est.presupuesto_mes*(est.periodo_meses||1)?'var(--red)':'var(--green)'}">${fmt(gastado)}</div><div class="mkt-eval-lbl">Gastado real</div></div>
+      <div class="mkt-eval-kpi"><div class="mkt-eval-val" style="color:var(--accent)">${Math.round(gastado/(est.presupuesto_mes*(est.periodo_meses||1))*100)||0}%</div><div class="mkt-eval-lbl">Ejecución</div></div>
+    </div>
+    <div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-3);margin-bottom:8px">Resultados de KPIs</div>
+    ${kpisForm}
+    <div style="margin-top:10px;margin-bottom:10px">
+      <label class="lbl">¿Se cumplieron los objetivos generales?</label>
+      <div style="display:flex;gap:8px;margin-top:5px">
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;color:var(--text-2)"><input type="radio" name="eval-cumplido" value="1" style="accent-color:var(--green)"> Sí, se cumplieron</label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;color:var(--text-2)"><input type="radio" name="eval-cumplido" value="0" style="accent-color:var(--red)"> No se alcanzaron</label>
+      </div>
+    </div>
+    <div>
+      <label class="lbl">Notas y aprendizajes</label>
+      <textarea id="eval-notas" rows="3" placeholder="¿Qué funcionó bien? ¿Qué mejorarías la próxima vez?"
+        style="width:100%;padding:7px 10px;background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r-md);color:var(--text);font-size:12px;font-family:var(--font-body);resize:vertical"></textarea>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:14px">
+      <button onclick="document.getElementById('mktEvalModal').remove()" style="padding:6px 13px;font-size:11px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text-2);cursor:pointer;font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase">Cancelar</button>
+      <button onclick="mktGuardarEval('${id}',${est.kpis?est.kpis.length:0})" style="padding:6px 16px;font-size:11px;border:1px solid var(--accent);border-radius:var(--r-md);background:var(--accent);color:var(--text-on-accent);cursor:pointer;font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase">Guardar evaluación</button>
+    </div>
+  </div>`;
+  document.body.appendChild(m);
+}
+window.mktShowEvaluacion=mktShowEvaluacion;
+
+function mktGuardarEval(id,numKpis){
+  const all=mktLoad(); const est=all.find(e=>e.id===id); if(!est) return;
+  const cumplido=document.querySelector('input[name="eval-cumplido"]:checked')?.value==='1';
+  const notas=document.getElementById('eval-notas')?.value.trim()||'';
+  // Guardar resultados reales de KPIs
+  if(est.kpis) est.kpis.forEach((k,i)=>{
+    const val=parseFloat(document.getElementById('eval-kpi-'+i)?.value);
+    if(!isNaN(val)){ k.real=val; k.evaluado=true; }
+  });
+  est.evaluacion={cumplido,notas,fecha:new Date().toISOString().split('T')[0]};
+  est.estado='finalizada';
+  mktSave(all);
+  document.getElementById('mktEvalModal')?.remove();
+  mktRenderEstrategias();
+}
+window.mktGuardarEval=mktGuardarEval;
+
+/* ── Hook en adminShowTab ─────────────────────────────────── */
+const _adminShowTabOrig=window.adminShowTab;
+window.adminShowTab=function(tab){
+  _adminShowTabOrig.apply(this,arguments);
+  if(tab==='marketing') mktShowSub(_mktSub||'costos');
+};
 
 function toggleMenuConfig(){
   const m = document.getElementById('menuConfig');
@@ -8289,13 +8866,7 @@ function mostrarAtajos(){
     <div style="margin-bottom:.75rem">
       <label class="lbl">Tu clave personal (no la olvides)</label>
       <input type="password" id="nubeKey" placeholder="Ej: mi-avit-2024" style="margin-bottom:.5rem">
-      <label class="lbl" style="display:flex;align-items:center;gap:6px;margin-top:.4rem">
-        ID del bin
-        <span style="font-size:9px;color:var(--text-3);font-weight:400">— aparece al subir, necesario en otro dispositivo</span>
-      </label>
-      <input type="text" id="nubeManualBinId" placeholder="Ej: 6450abc123def456..."
-        style="font-family:var(--font-mono);font-size:11px;margin-bottom:.5rem"
-        oninput="this.value=this.value.trim()">
+
       <p style="font-size:10px;color:var(--text-3);margin:0">Esta clave identifica tus datos en la nube. Usa la misma en todos tus dispositivos.</p>
     </div>
 
@@ -8326,7 +8897,7 @@ function mostrarAtajos(){
     <div style="background:rgba(255,255,255,0.03);border-radius:var(--r-md);padding:.85rem 1rem;margin-top:.75rem">
       <p style="font-size:11px;font-weight:500;margin-bottom:.35rem">¿Cómo funciona?</p>
       <p style="font-size:10px;color:var(--text-3);line-height:1.6;margin:0">
-        Al subir, tus datos se guardan en la nube y se te muestra el <strong>ID del bin</strong>. Al usar en otro dispositivo, ingresá la misma clave y el ID del bin. Con sincronización automática los cambios se suben solos. Con cifrado activado, los datos viajan ilegibles sin tu password.
+        Al subir, tus datos se guardan en la nube compartida del estudio. En cualquier dispositivo, con la misma clave personal, podés bajar y restaurar todo. Con sincronización automática los cambios se suben solos. Con cifrado activado, los datos viajan ilegibles sin tu password.
       </p>
     </div>
   </div>
@@ -8455,9 +9026,9 @@ function importarJSON(evt){
   reader.readAsText(file);
 }
 
-// ═══════ OPCIÓN 2: NUBE CON JSONBIN.IO ═══════
-const JSONBIN_API_KEY = '$2a$10$6NAO1NtNR26nw01ypOgYEu/7cL5HiLBoSsJw64u4qT60ZXKIw9kbS';
-const JSONBIN_BASE = 'https://api.jsonbin.io/v3';
+// ═══════ OPCIÓN 2: NUBE CON NPOINT.IO ═══════
+/* ── npoint.io sync (no API key, no allowlist) ── */
+const NPOINT_URL = 'https://api.npoint.io/206c417a61104c9e5257';
 
 // ═══════ CIFRADO AES-GCM 256-BIT (solo nube) ═══════
 // Password mantenida solo en memoria — se pierde al cerrar la pestaña
@@ -8664,7 +9235,7 @@ async function toggleCifrado(enabled){
       msg.textContent = '🔐 Cifrado activado. La próxima vez que subas, los datos viajarán cifrados.';
     }
   } else {
-    if(!confirm('¿Desactivar el cifrado? La próxima vez que subas, los datos NO viajarán cifrados (volverán a ser legibles directamente en JSONBin).')){
+    if(!confirm('¿Desactivar el cifrado? La próxima vez que subas, los datos NO viajarán cifrados (volverán a ser legibles directamente en npoint.io).')){
       const t = document.getElementById('cryptoToggle');
       if(t) t.checked = true;
       return;
@@ -8683,19 +9254,10 @@ async function toggleCifrado(enabled){
 function cerrarNube(){document.getElementById('panelNube').style.display='none';}
 
 // Convierte la clave del usuario en un nombre de bin seguro (máx 32 chars)
-function binName(key){ return ('avit-'+key).substring(0,32); }
+
 
 // Busca el bin ID buscando en la lista de bins por nombre
-async function getBinId(key){
-  const nombre = binName(key);
-  return localStorage.getItem('avit_bin_'+nombre) || null;
-}
-
-function getBinIdCacheKey(key){ return 'avit_bin_'+binName(key); }
-
-function setBinIdCache(key, binId){
-  localStorage.setItem(getBinIdCacheKey(key), binId);
-}
+function npointUrl(){ return NPOINT_URL; }
 
 async function subirNube(){
   const key=document.getElementById('nubeKey').value.trim();
@@ -8713,7 +9275,6 @@ async function subirNube(){
       avit_clients:localStorage.getItem('avit_clients')||'[]',
       avit_admin:localStorage.getItem('avit_admin')||'{"costos":[],"runwayMeta":3}',
       avit_sched:localStorage.getItem('avit_sched')||'[]',
-      _binName: binName(key),
       _version: Date.now()
     };
 
@@ -8731,42 +9292,20 @@ async function subirNube(){
       msg.textContent='Subiendo…';
     }
 
-    const nombre = binName(key);
-    let binId = await getBinId(key);
-    let resp;
-    if(binId){
-      resp=await fetch(`${JSONBIN_BASE}/b/${binId}`,{
-        method:'PUT',
-        headers:{ 'Content-Type':'application/json', 'X-Master-Key':JSONBIN_API_KEY },
-        body:JSON.stringify(payloadParaSubir)
-      });
-    } else {
-      resp=await fetch(`${JSONBIN_BASE}/b`,{
-        method:'POST',
-        headers:{ 'Content-Type':'application/json', 'X-Master-Key':JSONBIN_API_KEY, 'X-Bin-Name':nombre, 'X-Bin-Private':'true' },
-        body:JSON.stringify(payloadParaSubir)
-      });
-      if(resp.ok){
-        const result=await resp.json();
-        binId=result.metadata&&result.metadata.id;
-        if(binId) localStorage.setItem('avit_bin_'+nombre, binId);
-      }
-    }
+    // npoint.io: PUT a URL fija, sin autenticación ni allowlist
+    const resp = await fetch(npointUrl(), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payloadParaSubir)
+    });
     if(!resp.ok){
       const t=await resp.text();
       throw new Error(t||resp.statusText);
     }
     msg.style.color='var(--green)';
-    const binIdDisplay = binId || '—';
-    msg.innerHTML = (isCryptoEnabled() ? '✓ Datos cifrados y subidos. ' : '✓ Datos subidos a la nube. ')
-      + '<br><span style="font-family:var(--font-mono);font-size:10px;color:var(--text-3)">ID del bin: <strong style="color:var(--accent);user-select:all">'
-      + binIdDisplay + '</strong> — guárdalo para sincronizar en otro dispositivo.</span>';
+    msg.textContent = isCryptoEnabled() ? '✓ Datos cifrados y subidos a la nube.' : '✓ Datos subidos a la nube correctamente.';
     document.getElementById('syncStatus').textContent='☁ Subido '+new Date().toLocaleDateString('es-GT');
     localStorage.setItem('avit_nube_key', key);
-    if(binId) setBinIdCache(key, binId);
-    // Mostrar el binId en el campo de ID manual si existe
-    const binInput = document.getElementById('nubeManualBinId');
-    if(binInput) binInput.value = binId || '';
   }catch(err){
     msg.style.color='var(--red,#c0392b)';
     msg.textContent='✗ Error: '+err.message;
@@ -8836,7 +9375,6 @@ async function ejecutarAutoSync(key){
       avit_clients:localStorage.getItem('avit_clients')||'[]',
       avit_admin:localStorage.getItem('avit_admin')||'{"costos":[],"runwayMeta":3}',
       avit_sched:localStorage.getItem('avit_sched')||'[]',
-      _binName: binName(key),
       _version: Date.now()
     };
 
@@ -8851,27 +9389,11 @@ async function ejecutarAutoSync(key){
       payload = await cifrarPayload(datos, _cryptoPassword);
     }
 
-    const nombre = binName(key);
-    let binId = await getBinId(key);
-    let resp;
-    if(binId){
-      resp = await fetch(`${JSONBIN_BASE}/b/${binId}`,{
-        method:'PUT',
-        headers:{ 'Content-Type':'application/json', 'X-Master-Key':JSONBIN_API_KEY },
-        body:JSON.stringify(payload)
-      });
-    } else {
-      resp = await fetch(`${JSONBIN_BASE}/b`,{
-        method:'POST',
-        headers:{ 'Content-Type':'application/json', 'X-Master-Key':JSONBIN_API_KEY, 'X-Bin-Name':nombre, 'X-Bin-Private':'true' },
-        body:JSON.stringify(payload)
-      });
-      if(resp.ok){
-        const result = await resp.json();
-        const newBinId = result.metadata && result.metadata.id;
-        if(newBinId) localStorage.setItem('avit_bin_'+nombre, newBinId);
-      }
-    }
+    const resp = await fetch(npointUrl(), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
     if(!resp.ok) throw new Error('Status '+resp.status);
 
     const ahora = new Date();
@@ -8992,29 +9514,14 @@ async function bajarNube(){
   msg.style.color='var(--text-2)';
   msg.textContent='Buscando bin…';
   try{
-    // Intentar obtener binId: primero localStorage, luego campo manual
-    let binId = await getBinId(key);
-    const manualBinInput = document.getElementById('nubeManualBinId');
-    const manualBinId = manualBinInput ? manualBinInput.value.trim() : '';
-    if(!binId && manualBinId) binId = manualBinId;
-
-    if(!binId){
-      msg.style.color='var(--amber,#D4A843)';
-      msg.innerHTML = '⚠ No se encontró el ID del bin en este dispositivo.<br>'
-        + '<span style="font-size:10px;color:var(--text-3)">Pegá el ID del bin en el campo "ID del bin" y volvé a intentar.</span>';
-      if(manualBinInput) manualBinInput.focus();
-      return;
-    }
     msg.textContent='Descargando…';
-    const resp=await fetch(`${JSONBIN_BASE}/b/${binId}/latest`,{
-      headers:{'X-Master-Key':JSONBIN_API_KEY}
-    });
+    const resp = await fetch(npointUrl());
     if(!resp.ok){
       const t=await resp.text();
       throw new Error(t||resp.statusText);
     }
-    const result=await resp.json();
-    let datos=result.record||result;
+    let datos=await resp.json();
+    // npoint returns data directly (no .record wrapper)
 
     // Descifrar si aplica
     if(esPayloadCifrado(datos)){
