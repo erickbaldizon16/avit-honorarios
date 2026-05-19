@@ -1812,7 +1812,7 @@ input.narrow{width:88px}input.mid{width:108px}
       <span class="pl p5" style="display:inline-block">Capitalización Estudio Avit</span>
       <p class="nt" style="margin:.3rem 0 0">% reservado de la utilidad pre-cap, antes de impuestos</p>
     </div>
-    <label class="tog"><input type="checkbox" id="capOn" onchange="toggleCap()"><span class="tog-sl"></span></label>
+    <label class="tog"><input type="checkbox" id="capOn" onchange="toggleCap();if(typeof saveDraft==='function')saveDraft()"><span class="tog-sl"></span></label>
   </div>
   <div id="capBody" style="opacity:.35;pointer-events:none">
     <div class="fr" style="margin-bottom:.6rem">
@@ -1836,7 +1836,7 @@ input.narrow{width:88px}input.mid{width:108px}
 <div class="sc">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem">
     <span class="pl p6" style="display:inline-block">ISR</span>
-    <label class="tog"><input type="checkbox" id="isrOn" onchange="toggleIsr()"><span class="tog-sl"></span></label>
+    <label class="tog"><input type="checkbox" id="isrOn" onchange="toggleIsr();if(typeof saveDraft==='function')saveDraft()"><span class="tog-sl"></span></label>
   </div>
   <div id="isrBody" style="opacity:.35;pointer-events:none">
     <!-- Selector de régimen -->
@@ -1943,7 +1943,7 @@ input.narrow{width:88px}input.mid{width:108px}
     <div>
       <label class="lbl">Fecha de inicio del proyecto</label>
       <input type="text" id="projStart" placeholder="DD/MM/AAAA" maxlength="10"
-        oninput="onProjStartChange()"
+        oninput="onProjStartChange();if(typeof saveDraft==='function')saveDraft()"
         style="font-family:var(--font-mono)">
     </div>
     <div>
@@ -10166,8 +10166,8 @@ if(typeof window !== 'undefined'){
                         'col3D','colRend','colPlanos',
                         'cRevit','cD5','cCanva','cElec','cGas','cViat',
                         'ivaRate','pctAntic','pctF1pay',
-                        'timbreCosto'];
-  const CHECK_FIELDS = ['fase1On','fase2On','ivaOn','timbresOn','isrOn'];
+                        'timbreCosto','capRate'];
+  const CHECK_FIELDS = ['fase1On','fase2On','ivaOn','timbresOn','isrOn','capOn'];
 
   /* ── Helpers DOM ─────────────────────────────────────── */
   const $  = id => document.getElementById(id);
@@ -10213,6 +10213,9 @@ if(typeof window !== 'undefined'){
         /* isrMode: valor del radio activo */
         const isrModeEl = document.querySelector('input[name="isrMode"]:checked');
         draft.isrMode = isrModeEl ? isrModeEl.value : '7';
+        /* capRate label */
+        const capRateEl = document.getElementById('capRate');
+        draft.capRate = capRateEl ? capRateEl.value : '12';
         draft.projEnd = gv('projEnd');
         draft._projEndManual = _projEndManual;
 
@@ -10269,6 +10272,7 @@ if(typeof window !== 'undefined'){
       if(typeof toggleFase1    === 'function') toggleFase1();
       if(typeof toggleFase2    === 'function') toggleFase2();
       if(typeof toggleIsr      === 'function') toggleIsr();
+      if(typeof toggleCap      === 'function') toggleCap();
       if(typeof toggleTimbres  === 'function') toggleTimbres();
       if(typeof syncToCalendar === 'function') syncToCalendar();
 
@@ -10295,13 +10299,14 @@ if(typeof window !== 'undefined'){
   /* ── Parchear funciones clave (al vuelo, DOMContentLoaded) ── */
   document.addEventListener('DOMContentLoaded', function(){
 
-    /* 1. calc() → guardar borrador tras recalcular */
-    if(typeof calc === 'function'){
+    /* 1. calc() → guardar borrador tras recalcular (solo una vez) */
+    if(typeof calc === 'function' && !calc._draftPatched){
       const _calcOrig = calc;
       window.calc = function(){
         _calcOrig.apply(this, arguments);
         window.saveDraft();
       };
+      window.calc._draftPatched = true;
     }
 
     /* 2. guardarCotConfirmado() → limpiar borrador al registrar */
@@ -10313,24 +10318,25 @@ if(typeof window !== 'undefined'){
       };
     }
 
-    /* 3. showPage('calc') → cargar borrador al navegar al Cotizador */
-    if(typeof showPage === 'function'){
-      const _spOrig = showPage;
-      window.showPage = function(id){
-        _spOrig.apply(this, arguments);
-        if(id === 'calc'){
-          const restored = window.loadDraft();
-          if(restored && typeof calc === 'function') calc();
-          // Asegurar que projStart tenga valor en DD/MM/AAAA
-          const _ps = document.getElementById('projStart');
-          if(_ps && !_ps.value.trim()){
-            _ps.value = (typeof fmtFechaGT === 'function')
-              ? fmtFechaGT(new Date().toISOString().split('T')[0])
-              : '';
+    /* 3. Detectar navegación al Cotizador via MutationObserver
+          (más robusto que parchar showPage en cadena con otros módulos) */
+    const _pgCalc = document.getElementById('pg-calc');
+    if(_pgCalc && typeof MutationObserver !== 'undefined'){
+      const _draftObs = new MutationObserver(function(muts){
+        muts.forEach(function(m){
+          if(m.attributeName === 'class' && _pgCalc.classList.contains('active')){
+            const restored = window.loadDraft();
+            if(restored && typeof calc === 'function') calc();
+            const _ps = document.getElementById('projStart');
+            if(_ps && !_ps.value.trim()){
+              _ps.value = (typeof fmtFechaGT === 'function')
+                ? fmtFechaGT(new Date().toISOString().split('T')[0]) : '';
+            }
+            if(typeof recalcProjEnd === 'function' && !_projEndManual) recalcProjEnd();
           }
-          if(typeof recalcProjEnd === 'function' && !_projEndManual) recalcProjEnd();
-        }
-      };
+        });
+      });
+      _draftObs.observe(_pgCalc, { attributes:true, attributeFilter:['class'] });
     }
 
     /* 4. Carga inicial: restaurar borrador al abrir la página */
