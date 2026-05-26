@@ -1599,7 +1599,7 @@ input.narrow{width:88px}input.mid{width:108px}
         <div style="padding:5px 10px 3px;font-family:var(--font-display);font-size:8.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-3)">Ayuda</div>
         <button onclick="mostrarAtajos();toggleMenuConfig()" class="menu-config-item">⌨ Atajos de teclado</button>
         <div style="height:1px;background:rgba(255,255,255,0.06);margin:4px 0"></div>
-        <div style="padding:5px 10px 3px;font-family:var(--font-display);font-size:8.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-3)">Sincronización</div>
+        <div style="padding:5px 10px 3px;font-family:var(--font-display);font-size:8.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-3)">Datos</div>
         <button onclick="togglePanelNube();toggleMenuConfig()" class="menu-config-item" id="btnNube">☁ Nube <span id="syncStatusMenu" style="font-family:var(--font-mono);font-size:9px;color:var(--green);margin-left:4px"></span></button>
       </div>
     </div>
@@ -1796,9 +1796,12 @@ input.narrow{width:88px}input.mid{width:108px}
 </div>
 
 <div class="sc">
-  <span class="pl p4" style="margin-bottom:.75rem;display:inline-block">IVA</span>
+  <span class="pl p4" style="margin-bottom:.75rem;display:inline-block">IVA + ISR (Factura)</span>
   <div style="display:flex;align-items:center;gap:8px;margin:.6rem 0 .75rem">
-    <label class="tog"><input type="checkbox" id="ivaOn" onchange="calc()"><span class="tog-sl"></span></label>
+    <label class="tog" title="Al facturar se aplica IVA (12%) e ISR juntos">
+      <input type="checkbox" id="ivaOn" onchange="toggleFactura(this.checked)">
+      <span class="tog-sl"></span>
+    </label>
     <span class="lbl" style="margin:0">Aplicar IVA al cobro</span>
   </div>
   <div class="fr"><input type="range" id="ivaRate" min="1" max="25" step="1" value="12" oninput="calc()"><span class="fv" id="ivaRateV">12%</span></div>
@@ -2937,7 +2940,7 @@ input.narrow{width:88px}input.mid{width:108px}
 
 <script>
 // ═══════ ESTADO GLOBAL ═══════
-let cur = 'GTQ';
+var cur = 'GTQ';  // var = window property, accessible cross-script
 
 // ═══════ NUEVA ESTRUCTURA DE PLANIMETRÍAS (32 planos en 4 grupos) ═══════
 // Cada grupo tiene un costo unitario por default que el usuario puede ajustar
@@ -5035,6 +5038,316 @@ window.adminShowTab=function(tab){
   if(tab==='marketing') mktShowSub(_mktSub||'costos');
 };
 
+
+/* ══════════════════════════════════════════════════════════════
+   SYNC — Export/Import JSON (100% local, sin dependencias externas)
+   ══════════════════════════════════════════════════════════════ */
+
+function syncGetAllData(){
+  return {
+    _version:     Date.now(),
+    _app:         'avit-dashboard',
+    avit_cots:    localStorage.getItem('avit_cots')    || '[]',
+    avit_clients: localStorage.getItem('avit_clients') || '[]',
+    avit_admin:   localStorage.getItem('avit_admin')   || '{"costos":[],"runwayMeta":3}',
+    avit_sched:   localStorage.getItem('avit_sched')   || '[]',
+    avit_sprint_tracker: localStorage.getItem('avit_sprint_tracker') || '{}',
+    avit_recibos: localStorage.getItem('avit_recibos') || '{}',
+    avit_estrategias: localStorage.getItem('avit_estrategias') || '[]',
+    avit_calc:    localStorage.getItem('avit_calc')    || '{}',
+  };
+}
+
+function syncExportar(){
+  const datos = syncGetAllData();
+  const json  = JSON.stringify(datos, null, 2);
+  const blob  = new Blob([json], { type: 'application/json' });
+  const url   = URL.createObjectURL(blob);
+  const a     = document.createElement('a');
+  const fecha = new Date().toISOString().split('T')[0];
+  a.href     = url;
+  a.download = `avit-backup-${fecha}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  const msg = document.getElementById('nubeMsg');
+  if(msg){
+    msg.style.color = 'var(--green)';
+    msg.textContent = '✓ Backup descargado: avit-backup-'+fecha+'.json';
+  }
+  const ss = document.getElementById('syncStatus');
+  if(ss){ ss.textContent = '✦ Backup exportado'; setTimeout(()=>{ if(ss.textContent==='✦ Backup exportado') ss.textContent=''; }, 2500); }
+}
+
+function syncImportar(input){
+  const file = input.files[0];
+  if(!file) return;
+  const msg = document.getElementById('nubeMsg');
+  if(msg){ msg.style.color = 'var(--text-2)'; msg.textContent = 'Leyendo archivo…'; }
+
+  const reader = new FileReader();
+  reader.onload = function(e){
+    try {
+      const datos = JSON.parse(e.target.result);
+
+      // Verificar que es un backup de Avit
+      if(!datos._app && !datos.avit_cots){
+        throw new Error('El archivo no parece ser un backup de Estudio Avit.');
+      }
+
+      // Merge inteligente para cotizaciones
+      const cotsNube  = JSON.parse(datos.avit_cots || '[]');
+      const cotsLocal = loadCots ? loadCots() : JSON.parse(localStorage.getItem('avit_cots')||'[]');
+      const { resultado, stats } = mergeCotsInteligente(cotsLocal, cotsNube);
+
+      // Aplicar merge con modal de preview
+      mostrarModalMerge(stats, cotsNube.length, function(){
+        // Cotizaciones — merge
+        saveCots(resultado);
+
+        // Resto de datos — merge simple (más reciente gana por _version)
+        const vLocal = 0;
+        const vRemoto = datos._version || 0;
+
+        // Clientes — merge por id
+        if(datos.avit_clients){
+          try {
+            const cliNube  = JSON.parse(typeof datos.avit_clients==='string' ? datos.avit_clients : JSON.stringify(datos.avit_clients));
+            const cliLocal = JSON.parse(localStorage.getItem('avit_clients')||'[]');
+            const cliMap   = new Map(cliLocal.map(c=>[c.id,c]));
+            cliNube.forEach(c=>{ if(!cliMap.has(c.id)) cliMap.set(c.id,c); });
+            localStorage.setItem('avit_clients', JSON.stringify([...cliMap.values()]));
+          } catch(e){}
+        }
+
+        // Admin costos — agregar los que no existen localmente
+        if(datos.avit_admin){
+          try {
+            const admNube  = JSON.parse(typeof datos.avit_admin==='string' ? datos.avit_admin : JSON.stringify(datos.avit_admin));
+            const admLocal = adminLoad ? adminLoad() : JSON.parse(localStorage.getItem('avit_admin')||'{"costos":[]}');
+            const costoIds = new Set((admLocal.costos||[]).map(c=>c.id));
+            (admNube.costos||[]).forEach(c=>{ if(!costoIds.has(c.id)) admLocal.costos.push(c); });
+            localStorage.setItem('avit_admin', JSON.stringify(admLocal));
+          } catch(e){}
+        }
+
+        // Sched — agregar los que no existen
+        if(datos.avit_sched){
+          try {
+            const schedNube  = JSON.parse(typeof datos.avit_sched==='string' ? datos.avit_sched : JSON.stringify(datos.avit_sched));
+            const schedLocal = JSON.parse(localStorage.getItem('avit_sched')||'[]');
+            const schedIds   = new Set(schedLocal.map(s=>s.id));
+            schedNube.forEach(s=>{ if(!schedIds.has(s.id)) schedLocal.push(s); });
+            localStorage.setItem('avit_sched', JSON.stringify(schedLocal));
+          } catch(e){}
+        }
+
+        // Estrategias — agregar las que no existen
+        if(datos.avit_estrategias){
+          try {
+            const estNube  = JSON.parse(typeof datos.avit_estrategias==='string' ? datos.avit_estrategias : JSON.stringify(datos.avit_estrategias));
+            const estLocal = JSON.parse(localStorage.getItem('avit_estrategias')||'[]');
+            const estIds   = new Set(estLocal.map(s=>s.id));
+            estNube.forEach(s=>{ if(!estIds.has(s.id)) estLocal.push(s); });
+            localStorage.setItem('avit_estrategias', JSON.stringify(estLocal));
+          } catch(e){}
+        }
+
+        // Sprint tracker y recibos — sobreescribir si backup es más reciente
+        if(datos.avit_sprint_tracker) localStorage.setItem('avit_sprint_tracker', typeof datos.avit_sprint_tracker==='string'?datos.avit_sprint_tracker:JSON.stringify(datos.avit_sprint_tracker));
+        if(datos.avit_recibos)        localStorage.setItem('avit_recibos', typeof datos.avit_recibos==='string'?datos.avit_recibos:JSON.stringify(datos.avit_recibos));
+
+        // Refrescar UI
+        if(typeof renderIngresos==='function') renderIngresos();
+        if(document.getElementById('pg-est')?.classList.contains('active') && typeof renderEstatus==='function') renderEstatus();
+        if(typeof cliRenderList==='function' && document.getElementById('pg-clientes')?.classList.contains('active')) cliRenderList();
+
+        const ss = document.getElementById('syncStatus');
+        if(ss){ ss.textContent='✦ Datos importados'; setTimeout(()=>{ if(ss.textContent==='✦ Datos importados') ss.textContent=''; },2500); }
+      });
+
+    } catch(err) {
+      if(msg){ msg.style.color='var(--red)'; msg.textContent='✗ Error: '+err.message; }
+    }
+    // Reset file input
+    input.value='';
+  };
+  reader.readAsText(file);
+}
+
+window.syncExportar = syncExportar;
+window.syncImportar = syncImportar;
+
+
+/* ─── PDF Resumen del Programa Arquitectónico ─── */
+function genPDFPrograma(){
+  if(typeof estadoCalc === 'undefined' || !estadoCalc.programa){
+    alert('Primero configurá el programa arquitectónico.');
+    return;
+  }
+  const prog = estadoCalc.programa;
+  const rooms = prog.rooms || [];
+  const specials = prog.specials || [];
+  const fecha = new Date().toLocaleDateString('es-GT',{day:'2-digit',month:'long',year:'numeric'});
+
+  // Calcular totales por nivel y categoría
+  const byLevel = {};
+  const byCat = {};
+  rooms.forEach(r=>{
+    const lv = r.level || 1;
+    const cat = r.cat || 'otro';
+    byLevel[lv] = (byLevel[lv]||0) + (parseFloat(r.area)||0);
+    byCat[cat] = (byCat[cat]||0) + (parseFloat(r.area)||0);
+  });
+  const totalNet = Object.values(byLevel).reduce((s,v)=>s+v,0);
+  const fmtN = n => n.toLocaleString('es-GT',{minimumFractionDigits:2,maximumFractionDigits:2});
+
+  // Grupos por categoría para tabla
+  const CATS = typeof CALC_CATS !== 'undefined' ? CALC_CATS : {};
+  const catRows = Object.entries(byCat).map(([k,v])=>`
+    <tr>
+      <td style="padding:6px 10px;color:#555">${CATS[k]||k}</td>
+      <td style="padding:6px 10px;text-align:right;font-family:monospace;color:#1a1a18;font-weight:500">${fmtN(v)} m²</td>
+      <td style="padding:6px 10px;text-align:right;color:#888;font-size:11px">${totalNet>0?Math.round(v/totalNet*100):0}%</td>
+    </tr>`).join('');
+
+  // Tabla por ambiente
+  const roomRows = rooms.map(r=>`
+    <tr>
+      <td style="padding:5px 10px;color:#333">${r.name||'—'}</td>
+      <td style="padding:5px 10px;text-align:center;color:#888;font-size:11px">N${r.level||1}</td>
+      <td style="padding:5px 10px;color:#888;font-size:11px">${CATS[r.cat]||r.cat||'—'}</td>
+      <td style="padding:5px 10px;text-align:right;font-family:monospace;color:#1a1a18">${fmtN(parseFloat(r.area)||0)} m²</td>
+    </tr>`).join('');
+
+  // Niveles
+  const lvRows = Object.entries(byLevel).sort().map(([lv,a])=>`
+    <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:0.5px solid #f0f0f0">
+      <span style="color:#555">Nivel ${lv}</span>
+      <span style="font-family:monospace;font-weight:500">${fmtN(a)} m²</span>
+    </div>`).join('');
+
+  const html = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">
+<title>Programa Arquitectónico — Estudio AVIT</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#1a1a18;font-size:12px;line-height:1.7;background:#fff}
+.page{max-width:780px;margin:0 auto;padding:36px 44px 48px}
+/* Running header/footer */
+.pdf-ph{position:fixed;top:0;left:0;right:0;height:52px;background:#fff;border-bottom:1.5px solid #1a1a18;
+  display:flex;align-items:center;justify-content:space-between;padding:0 44px;z-index:100}
+.pdf-pf{position:fixed;bottom:0;left:0;right:0;height:40px;background:#fff;border-top:0.5px solid #ddd;
+  display:flex;align-items:center;justify-content:space-between;padding:0 44px;z-index:100}
+@media screen{.pdf-ph,.pdf-pf{display:none}}
+@media print{
+  body{margin:0!important}
+  .page{padding-top:64px!important;padding-bottom:52px!important}
+  .pdf-ph,.pdf-pf{display:flex!important}
+  @page{margin:0;size:A4}
+  .no-break{page-break-inside:avoid}
+}
+.hdr{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:14px;border-bottom:2px solid #1a1a18;margin-bottom:20px}
+.hdr-title{font-size:18px;font-weight:300;letter-spacing:-.3px}
+.hdr-sub{font-size:10px;color:#888;margin-top:3px;text-transform:uppercase;letter-spacing:.08em}
+.hdr-brand{text-align:right;font-size:11px;color:#888}
+.hdr-brand strong{display:block;font-size:13px;font-weight:500;color:#1a1a18;margin-bottom:2px}
+.sec-title{font-size:9.5px;text-transform:uppercase;letter-spacing:.12em;color:#888;padding-bottom:6px;border-bottom:1px solid #e8e8e8;margin:18px 0 8px;font-weight:500}
+.kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}
+.kpi{padding:10px 14px;border:1px solid #e8e8e8;border-radius:6px}
+.kpi-val{font-size:20px;font-weight:400;color:#1a1a18}
+.kpi-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:#888;margin-top:2px}
+table{width:100%;border-collapse:collapse;font-size:11.5px}
+th{text-align:left;padding:6px 10px;font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:#888;font-weight:500;border-bottom:1px solid #ddd}
+th:last-child,td:last-child{text-align:right}
+tr:nth-child(even) td{background:#fafafa}
+.total-row td{border-top:1px solid #1a1a18;font-weight:500;padding-top:8px}
+.summary-box{background:#f8f8f8;border-radius:8px;padding:12px 16px;margin-top:8px}
+.footer{margin-top:32px;padding-top:12px;border-top:0.5px solid #e8e8e8;display:flex;justify-content:space-between}
+.footer-l{font-size:9px;color:#bbb;line-height:1.8}
+</style></head><body>
+
+<div class="pdf-ph">
+  <div><span style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.5px">Estudio AVIT</span><br>
+  <span style="font-size:9px;color:#aaa">Arquitectura &amp; Interiorismo</span></div>
+  <span style="font-size:9px;color:#aaa">Programa Arquitectónico · ${fecha}</span>
+</div>
+<div class="pdf-pf">
+  <span style="font-size:9px;color:#bbb">Áreas sujetas a modificación según diseño final</span>
+  <span style="font-size:9px;color:#bbb">Estudio AVIT · www.estudioavit.com</span>
+</div>
+
+<div class="page">
+
+<div class="hdr">
+  <div>
+    <div class="hdr-title">Programa Arquitectónico</div>
+    <div class="hdr-sub">Resumen de áreas y ambientes</div>
+  </div>
+  <div class="hdr-brand">
+    <strong>Estudio AVIT</strong>
+    <span>Arquitectura &amp; Interiorismo</span><br>
+    <span style="margin-top:3px;display:block">${fecha}</span>
+  </div>
+</div>
+
+<div class="kpi-row">
+  <div class="kpi"><div class="kpi-val">${rooms.length}</div><div class="kpi-lbl">Ambientes</div></div>
+  <div class="kpi"><div class="kpi-val">${Object.keys(byLevel).length}</div><div class="kpi-lbl">Niveles</div></div>
+  <div class="kpi"><div class="kpi-val" style="color:#D4A843">${fmtN(totalNet)} m²</div><div class="kpi-lbl">Total neto</div></div>
+</div>
+
+<div class="sec-title">Distribución por nivel</div>
+<div class="summary-box">
+  ${lvRows}
+  <div style="display:flex;justify-content:space-between;padding:7px 0 0;margin-top:4px;border-top:1px solid #e8e8e8;font-weight:500">
+    <span>Total neto</span>
+    <span style="font-family:monospace;color:#D4A843">${fmtN(totalNet)} m²</span>
+  </div>
+</div>
+
+<div class="sec-title">Distribución por categoría</div>
+<table class="no-break">
+  <thead><tr><th>Categoría</th><th style="text-align:right">Área</th><th style="text-align:right">%</th></tr></thead>
+  <tbody>${catRows}
+    <tr class="total-row"><td>Total</td><td style="text-align:right;font-family:monospace">${fmtN(totalNet)} m²</td><td></td></tr>
+  </tbody>
+</table>
+
+<div class="sec-title" style="margin-top:20px">Lista de ambientes</div>
+<table>
+  <thead><tr><th>Ambiente</th><th style="text-align:center">Nivel</th><th>Categoría</th><th style="text-align:right">Área</th></tr></thead>
+  <tbody>${roomRows}
+    <tr class="total-row"><td colspan="3">Total neto</td><td style="text-align:right;font-family:monospace">${fmtN(totalNet)} m²</td></tr>
+  </tbody>
+</table>
+
+${specials.length ? `
+<div class="sec-title" style="margin-top:20px">Obras especiales</div>
+<table class="no-break">
+  <thead><tr><th>Descripción</th><th style="text-align:right">Costo est.</th></tr></thead>
+  <tbody>${specials.map(s=>`<tr><td style="padding:5px 10px;color:#333">${s.name||'—'}</td><td style="padding:5px 10px;text-align:right;font-family:monospace">GTQ ${fmtN(parseFloat(s.cost)||0)}</td></tr>`).join('')}</tbody>
+</table>` : ''}
+
+<div class="footer">
+  <div class="footer-l">
+    Programa Arquitectónico · Estudio AVIT · ${fecha}<br>
+    Las áreas indicadas son referenciales y sujetas a ajuste durante el proceso de diseño.
+  </div>
+  <div style="font-size:10px;color:#888;text-align:right">www.estudioavit.com</div>
+</div>
+
+</div>
+</body></html>`;
+
+  const w = window.open('','_blank');
+  w.document.write(html);
+  w.document.close();
+  setTimeout(()=>w.print(), 500);
+}
+window.genPDFPrograma = genPDFPrograma;
+
 function toggleMenuConfig(){
   const m = document.getElementById('menuConfig');
   if(!m) return;
@@ -5147,6 +5460,17 @@ function toggleCap(){
   body.style.opacity=on?'1':'.35';
   body.style.pointerEvents=on?'':'none';
   calc();
+}
+
+function toggleFactura(on){
+  // IVA e ISR siempre van juntos al facturar
+  const ivaEl = document.getElementById('ivaOn');
+  const isrEl = document.getElementById('isrOn');
+  if(ivaEl) ivaEl.checked = on;
+  if(isrEl) isrEl.checked = on;
+  if(typeof toggleIsr==='function') toggleIsr();
+  if(typeof calc==='function') calc();
+  if(typeof saveDraft==='function') saveDraft();
 }
 
 function toggleIsr(){
@@ -6005,7 +6329,7 @@ function switchView(v){
   });
 }
 
-let _projEndManual = false;
+window._projEndManual = false;  // cross-script accessible
 
 function calcProjEndDate(){
   // Use getSprintDates() to find the real end date (respects overlap)
@@ -6050,6 +6374,14 @@ function genCotizacion(){
   const today=new Date();
   const fecha=today.toLocaleDateString('es-GT',{day:'2-digit',month:'long',year:'numeric'});
   const cotNum='COT-'+today.getFullYear()+String(today.getMonth()+1).padStart(2,'0')+String(today.getDate()).padStart(2,'0');
+  // Resumen del programa arquitectónico (si está configurado)
+  let progResumen = '';
+  if(typeof estadoCalc !== 'undefined' && estadoCalc.programa && estadoCalc.programa.rooms && estadoCalc.programa.rooms.length){
+    const rooms = estadoCalc.programa.rooms;
+    const totalNet = rooms.reduce((s,r)=>s+(parseFloat(r.area)||0),0);
+    const nLevels = [...new Set(rooms.map(r=>r.level||1))].length;
+    progResumen = `El proyecto contempla un programa de ${rooms.length} ambiente${rooms.length!==1?'s':''} distribuidos en ${nLevels} nivel${nLevels!==1?'es':''}, con un área neta total de <strong>${totalNet.toLocaleString('es-GT',{maximumFractionDigits:0})} m²</strong>.`;
+  }
   let planosText='';
   if(s.f2){
     PLANO_NAMES.forEach((n,i)=>{
@@ -6115,12 +6447,49 @@ body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#1a1a18;font-
 .ft-sep{height:1px;background:#ddd;margin:20px 0 0}
 .ft{padding:14px 0 44px}
 .ft p{font-size:9.5px;color:#bbb;line-height:1.6}
-@media print{body{background-attachment:fixed;background-size:100% 100%}.page{padding:0}.pb-a,.pb-m,.pb-s{-webkit-print-color-adjust:exact;print-color-adjust:exact}@page{margin:0;size:A4}}
-</style></head><body><div class="page">
+
+/* PDF running header/footer */
+.pdf-ph{position:fixed;top:0;left:0;right:0;height:60px;background:#fff;border-bottom:1.5px solid #1a1a18;
+  display:flex;align-items:center;justify-content:space-between;padding:0 40px;
+  font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;z-index:100;
+  -webkit-print-color-adjust:exact;print-color-adjust:exact}
+.pdf-pf{position:fixed;bottom:0;left:0;right:0;height:44px;background:#fff;border-top:0.5px solid #ddd;
+  display:flex;align-items:center;justify-content:space-between;padding:0 40px;
+  font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;z-index:100;
+  -webkit-print-color-adjust:exact;print-color-adjust:exact}
+
+@media screen{.pdf-ph,.pdf-pf{display:none}}
+@media print{
+  body{margin:0!important}
+  .page{padding-top:72px!important;padding-bottom:56px!important}
+  .pdf-ph,.pdf-pf{display:flex!important}
+  @page{margin:0;size:A4}
+}
+</style></head><body>
+<!-- Running header -->
+<div class="pdf-ph">
+  <div style="display:flex;flex-direction:column">
+    <span style="font-size:11px;font-weight:500;color:#1a1a18;letter-spacing:.5px;text-transform:uppercase">Estudio AVIT</span>
+    <span style="font-size:9px;color:#aaa;letter-spacing:.3px">Arquitectura &amp; Interiorismo</span>
+  </div>
+  <div style="text-align:right">
+    <span style="font-size:9px;color:#aaa;font-family:monospace" id="pdf-cotnum-h"></span>
+  </div>
+</div>
+<!-- Running footer -->
+<div class="pdf-pf">
+  <span style="font-size:9px;color:#bbb">Servicios de diseño arquitectónico · No incluye gastos de construcción ni permisos</span>
+  <span style="font-size:9px;color:#bbb">Vigencia 30 días · Trabajo adicional requiere aprobación escrita</span>
+</div>
+<div class="page">
 <div class="bw">
 <div class="cb"><div><div class="cl">Presentado a</div><div class="cn2">${cn}</div><div class="pn">${pt}</div></div><div style="text-align:right"><div class="badge" style="margin-bottom:4px">${s.m2||150} m²</div><span style="font-size:9px;font-family:monospace;text-transform:uppercase;letter-spacing:1px;color:#aaa">${cotNum}</span><br><span style="font-size:9px;color:#bbb">${fecha}</span></div></div>
 <p style="font-size:13px;margin-bottom:8px">Estimado/a ${cn},</p>
-<p style="font-size:12px;color:#555;line-height:1.8;margin-bottom:28px">Por medio de la presente, me es grato presentarle la cotización formal de servicios ${s.f1&&s.f2?'de diseño arquitectónico y planos constructivos':s.f1?'de diseño arquitectónico':'de planos constructivos'} para el proyecto <strong>${pt}</strong>.${pd?' '+pd+'.':''} A continuación encontrará el detalle de los servicios propuestos y las condiciones de contratación.</p>
+<p style="font-size:12px;color:#555;line-height:1.8;margin-bottom:${progResumen?'14px':'28px'}">Por medio de la presente, me es grato presentarle la cotización formal de servicios ${s.f1&&s.f2?'de diseño arquitectónico y planos constructivos':s.f1?'de diseño arquitectónico':'de planos constructivos'} para el proyecto <strong>${pt}</strong>.${pd?' '+pd+'.':''} A continuación encontrará el detalle de los servicios propuestos y las condiciones de contratación.</p>
+${progResumen ? `<div style="margin-bottom:24px;padding:12px 16px;background:#f8f8f8;border-radius:6px;border-left:3px solid #D4A843">
+  <div style="font-size:9.5px;text-transform:uppercase;letter-spacing:.1em;color:#888;font-weight:500;margin-bottom:4px">Programa arquitectónico</div>
+  <p style="font-size:11.5px;color:#555;line-height:1.7">${progResumen}</p>
+</div>` : ''}
 ${s.f1?`<div class="sec"><div class="sl">Anteproyecto</div><p class="sd">Desarrollo integral del diseño arquitectónico para un área de <strong>${s.m2} m²</strong>, incluyendo concepto, modelado 3D, visualización y documentación de planos de presentación.</p><div><div class="svc"><div><div class="sn">Diseño arquitectónico e imagen del proyecto</div><div class="snt">Modelado 3D, renderización y planos de presentación</div></div><div class="sa">${f(s.fee1)}</div></div></div></div>`:''}
 ${s.f2?`<div class="sec"><div class="sl">Planimetrías</div><p class="sd">Elaboración del juego completo de planos técnicos: ${planosText}.</p><div><div class="svc"><div><div class="sn">Documentación técnica constructiva</div><div class="snt">Juego completo de planos para ejecución de obra</div></div><div class="sa">${f(s.fee2)}</div></div></div></div>`:''}
 ${calRows?`<div class="sec"><div class="sl">Plan de entregas</div><table style="width:100%;border-collapse:collapse">${calRows}</table></div>`:''}
@@ -6156,7 +6525,12 @@ ${calRows?`<div class="sec"><div class="sl">Plan de entregas</div><table style="
 </div>
 
 </body></html>`;
-  const w=window.open('','_blank');w.document.write(html);w.document.close();setTimeout(()=>w.print(),500);
+  const w=window.open('','_blank');w.document.write(html);w.document.close();
+  setTimeout(()=>{
+    const hEl=w.document.getElementById('pdf-cotnum-h');
+    if(hEl) hEl.textContent=cotNum;
+    w.print();
+  },500);
 }
 
 /* ──────────────────────────────────────────────────────────
@@ -6237,8 +6611,39 @@ body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#1a1a18;font-
 .ft-sep{height:1px;background:#ddd;margin:20px 0 0}
 .ft{padding:14px 0 44px}
 .ft p{font-size:9.5px;color:#bbb;line-height:1.6}
-@media print{body{background-attachment:fixed;background-size:100% 100%}.page{padding:0}.pb-a,.pb-m,.pb-s{-webkit-print-color-adjust:exact;print-color-adjust:exact}@page{margin:0;size:A4}}
-</style></head><body><div class="page">
+
+/* PDF running header/footer */
+.pdf-ph{position:fixed;top:0;left:0;right:0;height:60px;background:#fff;border-bottom:1.5px solid #1a1a18;
+  display:flex;align-items:center;justify-content:space-between;padding:0 40px;
+  font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;z-index:100;
+  -webkit-print-color-adjust:exact;print-color-adjust:exact}
+.pdf-pf{position:fixed;bottom:0;left:0;right:0;height:44px;background:#fff;border-top:0.5px solid #ddd;
+  display:flex;align-items:center;justify-content:space-between;padding:0 40px;
+  font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;z-index:100;
+  -webkit-print-color-adjust:exact;print-color-adjust:exact}
+
+@media screen{.pdf-ph,.pdf-pf{display:none}}
+@media print{
+  body{margin:0!important}
+  .page{padding-top:72px!important;padding-bottom:56px!important}
+  .pdf-ph,.pdf-pf{display:flex!important}
+  @page{margin:0;size:A4}
+}
+</style></head><body>
+<div class="pdf-ph">
+  <div style="display:flex;flex-direction:column">
+    <span style="font-size:11px;font-weight:500;color:#1a1a18;letter-spacing:.5px;text-transform:uppercase">Estudio AVIT</span>
+    <span style="font-size:9px;color:#aaa;letter-spacing:.3px">Arquitectura &amp; Interiorismo</span>
+  </div>
+  <div style="text-align:right">
+    <span style="font-size:9px;color:#aaa;font-family:monospace" id="pdf-cotnum-h"></span>
+  </div>
+</div>
+<div class="pdf-pf">
+  <span style="font-size:9px;color:#bbb">Servicios de diseño arquitectónico · No incluye gastos de construcción ni permisos</span>
+  <span style="font-size:9px;color:#bbb">Vigencia 30 días · Trabajo adicional requiere aprobación escrita</span>
+</div>
+<div class="page">
 <div class="bw">
 <div class="cb"><div><div class="cl">Presentado a</div><div class="cn2">${cn}</div><div class="pn">${pt}</div></div>${m2?`<div class="badge">${m2} m²</div>`:''}<div style="text-align:right"><span style="font-size:9px;font-family:monospace;text-transform:uppercase;letter-spacing:1px;color:#aaa">${cotNum}</span><br><span style="font-size:9px;color:#bbb">${fecha}</span></div></div>
 <p style="font-size:13px;margin-bottom:8px">Estimado/a ${cn},</p>
@@ -8855,51 +9260,54 @@ function mostrarAtajos(){
 
 <!-- Panel Nube (Netlify Blobs) -->
 <div id="panelNube" class="modal-overlay" style="display:none" onclick="if(event.target===this)cerrarNube()">
-  <div class="modal-box" style="max-width:420px">
+  <div class="modal-box" style="max-width:440px">
     <div class="modal-title">
-      <span>☁ Sincronización en la nube</span>
+      <span>💾 Exportar / Importar datos</span>
       <button class="modal-close" onclick="cerrarNube()">×</button>
     </div>
-    <p style="font-size:12px;color:var(--text-2);margin-bottom:1rem;line-height:1.6">
-      Guarda tus datos en la nube para acceder desde cualquier dispositivo o navegador. Tus datos se identifican por una clave personal que solo tú conoces.
-    </p>
-    <div style="margin-bottom:.75rem">
-      <label class="lbl">Tu clave personal (no la olvides)</label>
-      <input type="password" id="nubeKey" placeholder="Ej: mi-avit-2024" style="margin-bottom:.5rem">
 
-      <p style="font-size:10px;color:var(--text-3);margin:0">Esta clave identifica tus datos en la nube. Usa la misma en todos tus dispositivos.</p>
-    </div>
-
-    <!-- Toggle de auto-sync -->
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;margin-bottom:.5rem;background:rgba(212,168,67,0.06);border:1px solid var(--border-accent);border-radius:var(--r-md)">
-      <div style="flex:1;min-width:0">
-        <label for="autoSyncToggle" style="font-size:12px;font-weight:500;color:var(--text);cursor:pointer;display:block">⚡ Sincronización automática</label>
-        <p style="font-size:10px;color:var(--text-3);margin:2px 0 0 0;line-height:1.4">Sube los cambios a la nube automáticamente cuando edites cotizaciones o el Kanban.</p>
-      </div>
-      <input type="checkbox" id="autoSyncToggle" onchange="toggleAutoSync(this.checked)" style="width:18px;height:18px;cursor:pointer;flex-shrink:0;margin-left:10px">
-    </div>
-
-    <!-- Toggle de cifrado -->
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;margin-bottom:.75rem;background:rgba(212,168,67,0.06);border:1px solid var(--border-accent);border-radius:var(--r-md)">
-      <div style="flex:1;min-width:0">
-        <label for="cryptoToggle" style="font-size:12px;font-weight:500;color:var(--text);cursor:pointer;display:block">🔐 Cifrar datos en la nube</label>
-        <p style="font-size:10px;color:var(--text-3);margin:2px 0 0 0;line-height:1.4">Tus datos viajan cifrados (AES-256). Si perdés la password son irrecuperables.</p>
-        <div id="cryptoStatus" style="font-size:10px;color:var(--text-3);margin-top:4px;font-family:var(--font-mono)"></div>
-      </div>
-      <input type="checkbox" id="cryptoToggle" onchange="toggleCifrado(this.checked)" style="width:18px;height:18px;cursor:pointer;flex-shrink:0;margin-left:10px">
-    </div>
-
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:.75rem">
-      <button onclick="subirNube()" style="padding:9px;font-size:13px;font-weight:500;border:none;border-radius:var(--r-md);background:var(--blue);color:#fff;cursor:pointer">⬆ Subir a la nube</button>
-      <button onclick="bajarNube()" style="padding:9px;font-size:13px;font-weight:500;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:var(--surface);color:var(--text);cursor:pointer">⬇ Bajar de la nube</button>
-    </div>
-    <div id="nubeMsg" style="font-size:12px;color:var(--text-2);min-height:24px;text-align:center"></div>
-    <div style="background:rgba(255,255,255,0.03);border-radius:var(--r-md);padding:.85rem 1rem;margin-top:.75rem">
-      <p style="font-size:11px;font-weight:500;margin-bottom:.35rem">¿Cómo funciona?</p>
-      <p style="font-size:10px;color:var(--text-3);line-height:1.6;margin:0">
-        Al subir, tus datos se guardan en la nube compartida del estudio. En cualquier dispositivo, con la misma clave personal, podés bajar y restaurar todo. Con sincronización automática los cambios se suben solos. Con cifrado activado, los datos viajan ilegibles sin tu password.
+    <!-- EXPORTAR -->
+    <div style="margin-bottom:14px">
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:.10em;color:var(--text-3);font-weight:500;margin-bottom:8px">📤 Exportar</div>
+      <p style="font-size:12px;color:var(--text-2);margin-bottom:10px;line-height:1.6">
+        Descarga todos tus datos como un archivo <code style="font-family:var(--font-mono);background:rgba(255,255,255,0.07);padding:1px 5px;border-radius:3px">.json</code>. Guardalo en Drive, USB o donde quieras.
       </p>
+      <button onclick="syncExportar()" style="width:100%;padding:10px;font-size:13px;font-weight:500;border:1px solid var(--accent);border-radius:var(--r-md);background:var(--accent);color:var(--text-on-accent);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">
+        <span style="font-size:16px">⬇</span> Descargar backup (.json)
+      </button>
     </div>
+
+    <div style="height:1px;background:rgba(255,255,255,0.07);margin:14px 0"></div>
+
+    <!-- IMPORTAR -->
+    <div style="margin-bottom:14px">
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:.10em;color:var(--text-3);font-weight:500;margin-bottom:8px">📥 Importar</div>
+      <p style="font-size:12px;color:var(--text-2);margin-bottom:10px;line-height:1.6">
+        Cargá un archivo de backup exportado previamente. Hace un merge inteligente: los datos más recientes ganan. Nunca se borran datos locales.
+      </p>
+      <label style="display:block;width:100%;padding:10px;font-size:13px;font-weight:500;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:var(--surface);color:var(--text);cursor:pointer;text-align:center">
+        <span style="font-size:16px">⬆</span> Seleccionar archivo .json
+        <input type="file" id="syncImportFile" accept=".json" onchange="syncImportar(this)" style="display:none">
+      </label>
+    </div>
+
+    <div id="nubeMsg" style="font-size:12px;min-height:20px;text-align:center;margin-top:8px"></div>
+
+    <div style="background:rgba(255,255,255,0.03);border-radius:var(--r-md);padding:.85rem 1rem;margin-top:12px">
+      <p style="font-size:11px;font-weight:500;margin-bottom:.35rem">¿Cómo sincronizar entre dispositivos?</p>
+      <ol style="font-size:10px;color:var(--text-3);line-height:1.9;margin:0;padding-left:16px">
+        <li>En el dispositivo A → <strong style="color:var(--text-2)">Descargar backup</strong></li>
+        <li>Copiá el archivo a Google Drive, USB o email</li>
+        <li>En el dispositivo B → <strong style="color:var(--text-2)">Seleccionar archivo .json</strong></li>
+        <li>Los datos se fusionan automáticamente</li>
+      </ol>
+    </div>
+
+    <!-- inputs ocultos de compatibilidad -->
+    <input type="hidden" id="nubeKey">
+    <input type="hidden" id="autoSyncToggle">
+    <input type="hidden" id="cryptoToggle">
+    <input type="hidden" id="cryptoStatus">
   </div>
 </div>
 
@@ -9028,7 +9436,7 @@ function importarJSON(evt){
 
 // ═══════ OPCIÓN 2: NUBE CON NPOINT.IO ═══════
 /* ── npoint.io sync (no API key, no allowlist) ── */
-const NPOINT_URL = 'https://api.npoint.io/206c417a61104c9e5257';
+const NPOINT_URL = 'https://api.npoint.io/9e6590a5d8c0df6b0d60';
 
 // ═══════ CIFRADO AES-GCM 256-BIT (solo nube) ═══════
 // Password mantenida solo en memoria — se pierde al cerrar la pestaña
@@ -9853,6 +10261,13 @@ function renderPrograma(){
       byLevel[lv] = (byLevel[lv] || 0) + (parseFloat(r.area) || 0);
     });
     const totalNet = Object.values(byLevel).reduce((s,v)=>s+v,0);
+    // Sincronizar m2 del Cotizador con el Total neto del Programa Arquitectónico
+    const m2SEl = document.getElementById('m2S');
+    if(m2SEl && totalNet > 0){
+      m2SEl.value = Math.round(totalNet * 100) / 100;
+      if(typeof syncM2 === 'function') syncM2(m2SEl.value);
+      else if(typeof calc === 'function') calc();
+    }
     sums.innerHTML = [
       ...Object.entries(byLevel).sort().map(([lv,a])=>`
         <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-md);padding:8px 12px;font-family:var(--font-mono);font-size:11px">
@@ -10208,7 +10623,7 @@ if(typeof window !== 'undefined'){
         NUM_FIELDS.forEach(  id => { draft[id] = gv(id); });
         CHECK_FIELDS.forEach(id => { draft[id] = gc(id); });
 
-        draft.cur      = (typeof cur !== 'undefined') ? cur : 'GTQ';
+        draft.cur      = (typeof window.cur !== 'undefined') ? window.cur : 'GTQ';
         draft.projStart = gv('projStart');
         /* isrMode: valor del radio activo */
         const isrModeEl = document.querySelector('input[name="isrMode"]:checked');
@@ -10217,7 +10632,7 @@ if(typeof window !== 'undefined'){
         const capRateEl = document.getElementById('capRate');
         draft.capRate = capRateEl ? capRateEl.value : '12';
         draft.projEnd = gv('projEnd');
-        draft._projEndManual = _projEndManual;
+        draft._projEndManual = window._projEndManual;
 
         /* Tabla de planos: cantidad + costo unitario qp1..qpN / cp1..cpN */
         draft.planos = [];
@@ -10227,7 +10642,7 @@ if(typeof window !== 'undefined'){
 
         localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
         _showBadge(now);
-      } catch(e){}
+      } catch(e){ console.warn('[autosave] Error guardando borrador:', e); }
     }, DEBOUNCE_MS);
   };
 
@@ -10249,7 +10664,7 @@ if(typeof window !== 'undefined'){
         sv('projStart', _iso ? fmtFechaGT(_iso) : d.projStart);
       }
       if(d.projEnd) sv('projEnd', d.projEnd);
-      if(d._projEndManual !== undefined) _projEndManual = !!d._projEndManual;
+      if(d._projEndManual !== undefined) window._projEndManual = !!d._projEndManual;
 
       /* Restaurar modo ISR */
       if(d.isrMode){
@@ -10332,7 +10747,7 @@ if(typeof window !== 'undefined'){
               _ps.value = (typeof fmtFechaGT === 'function')
                 ? fmtFechaGT(new Date().toISOString().split('T')[0]) : '';
             }
-            if(typeof recalcProjEnd === 'function' && !_projEndManual) recalcProjEnd();
+            if(typeof recalcProjEnd === 'function' && !window._projEndManual) recalcProjEnd();
           }
         });
       });
@@ -10351,7 +10766,7 @@ if(typeof window !== 'undefined'){
     }
 
     /* 6. Calcular projEnd automáticamente al iniciar */
-    if(typeof recalcProjEnd === 'function' && !_projEndManual) recalcProjEnd();
+    if(typeof recalcProjEnd === 'function' && !window._projEndManual) recalcProjEnd();
     if(typeof renderAll === 'function') renderAll();
 
   }, false /* captura = false → después del DOMContentLoaded principal */ );
