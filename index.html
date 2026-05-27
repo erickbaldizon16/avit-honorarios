@@ -1796,18 +1796,59 @@ input.narrow{width:88px}input.mid{width:108px}
 </div>
 
 <div class="sc">
-  <span class="pl p4" style="margin-bottom:.75rem;display:inline-block">IVA + ISR (Factura)</span>
-  <div style="display:flex;align-items:center;gap:8px;margin:.6rem 0 .75rem">
-    <label class="tog" title="Al facturar se aplica IVA (12%) e ISR juntos">
-      <input type="checkbox" id="ivaOn" onchange="toggleFactura(this.checked)">
+  <!-- Header: título + toggle único -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem">
+    <div>
+      <span class="pl p4" style="display:inline-block">Factura · IVA + ISR</span>
+      <p class="nt" style="margin:.25rem 0 0">Activá si vas a emitir factura — IVA e ISR van siempre juntos</p>
+    </div>
+    <label class="tog" title="Activar IVA e ISR juntos al facturar">
+      <input type="checkbox" id="ivaOn" onchange="toggleFactura(this.checked);if(typeof saveDraft==='function')saveDraft()">
       <span class="tog-sl"></span>
     </label>
-    <span class="lbl" style="margin:0">Aplicar IVA al cobro</span>
   </div>
-  <div class="fr"><input type="range" id="ivaRate" min="1" max="25" step="1" value="12" oninput="calc()"><span class="fv" id="ivaRateV">12%</span></div>
-  <p class="nt">Guatemala: 12% · El Salvador: 13%</p>
+
+  <!-- Cuerpo colapsable -->
+  <div id="facturaBody" style="opacity:.35;pointer-events:none">
+
+    <!-- IVA -->
+    <div style="padding:10px 14px;background:rgba(255,255,255,0.03);border:0.5px solid var(--border);border-radius:var(--r-md);margin-bottom:10px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <span style="font-size:11px;font-weight:500;color:var(--text)">IVA</span>
+        <span style="font-size:10px;color:var(--text-3)">Guatemala 12% · El Salvador 13%</span>
+      </div>
+      <div class="fr"><input type="range" id="ivaRate" min="1" max="25" step="1" value="12" oninput="calc()"><span class="fv" id="ivaRateV">12%</span></div>
+      <div class="metric" style="margin-top:6px"><p class="ml">IVA a cobrar al cliente</p><p class="mv" id="ivaAmtDisplay" style="color:var(--blue)">—</p></div>
+    </div>
+
+    <!-- ISR -->
+    <div style="padding:10px 14px;background:rgba(255,255,255,0.03);border:0.5px solid var(--border);border-radius:var(--r-md)">
+      <div style="font-size:11px;font-weight:500;color:var(--text);margin-bottom:8px">ISR — Régimen fiscal</div>
+      <div style="display:flex;gap:8px;margin-bottom:.75rem">
+        <label style="flex:1;display:flex;align-items:center;gap:7px;padding:8px 10px;border:1px solid rgba(255,255,255,0.08);border-radius:var(--r-md);cursor:pointer;background:rgba(255,255,255,0.03);transition:border-color .15s" id="isrOpt7Label">
+          <input type="radio" name="isrMode" id="isr7" value="7" checked onchange="calc()" style="accent-color:var(--accent)">
+          <div>
+            <div style="font-size:11px;font-weight:500;color:var(--text)">7% s/ingresos</div>
+            <div style="font-size:9.5px;color:var(--text-3);margin-top:1px">Pequeño contribuyente</div>
+          </div>
+        </label>
+        <label style="flex:1;display:flex;align-items:center;gap:7px;padding:8px 10px;border:1px solid rgba(255,255,255,0.08);border-radius:var(--r-md);cursor:pointer;background:rgba(255,255,255,0.03);transition:border-color .15s" id="isrOpt25Label">
+          <input type="radio" name="isrMode" id="isr25" value="25" onchange="calc()" style="accent-color:var(--accent)">
+          <div>
+            <div style="font-size:11px;font-weight:500;color:var(--text)">25% s/utilidad</div>
+            <div style="font-size:9.5px;color:var(--text-3);margin-top:1px">Régimen sobre utilidades</div>
+          </div>
+        </label>
+      </div>
+      <div class="metric"><p class="ml">ISR estimado a pagar</p><p class="mv" id="isrAmtDisplay" style="color:var(--red)">—</p></div>
+      <p class="nt" style="margin-top:.4rem">Se deduce de tu ingreso — no afecta lo que cobra el cliente.</p>
+    </div>
+
+  </div>
 </div>
 
+<!-- input hidden para compatibilidad con autosave que referencia isrOn -->
+<input type="hidden" id="isrOn" value="0">
 
 <div class="sc" id="capSection">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem">
@@ -2077,7 +2118,13 @@ input.narrow{width:88px}input.mid{width:108px}
 <div class="page" id="pg-programa">
 
 <div class="sc">
-  <div class="sc-title">Programa arquitectónico</div>
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.5rem;gap:10px;flex-wrap:wrap">
+    <div class="sc-title" style="margin:0">Programa arquitectónico</div>
+    <div style="display:flex;gap:6px;flex-shrink:0">
+      <button onclick="exportarProgramaJSON()" style="padding:5px 12px;font-size:10px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text-3);cursor:pointer;font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase;transition:all .15s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='';this.style.color=''">📤 Exportar JSON</button>
+      <button onclick="genPDFPrograma()" style="padding:5px 12px;font-size:10px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text-3);cursor:pointer;font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase;transition:all .15s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='';this.style.color=''">📄 PDF Resumen</button>
+    </div>
+  </div>
   <p class="nt" style="margin-bottom:1rem">Presupuesto integral por ambientes, nivel y categoría. Incluye obras especiales, terreno e indirectos.</p>
 
   <!-- Tabla de ambientes -->
@@ -5184,158 +5231,327 @@ window.syncImportar = syncImportar;
 /* ─── PDF Resumen del Programa Arquitectónico ─── */
 function genPDFPrograma(){
   if(typeof estadoCalc === 'undefined' || !estadoCalc.programa){
-    alert('Primero configurá el programa arquitectónico.');
-    return;
+    alert('Primero configurá el programa arquitectónico.'); return;
   }
-  const prog = estadoCalc.programa;
-  const rooms = prog.rooms || [];
+  const prog     = estadoCalc.programa;
+  const rooms    = prog.rooms || [];
   const specials = prog.specials || [];
-  const fecha = new Date().toLocaleDateString('es-GT',{day:'2-digit',month:'long',year:'numeric'});
+  const fecha    = new Date().toLocaleDateString('es-GT',{day:'2-digit',month:'long',year:'numeric'});
+  const fmtN     = n => (n||0).toLocaleString('es-GT',{minimumFractionDigits:2,maximumFractionDigits:2});
+  const fmtQ     = n => 'GTQ '+fmtN(n);
+  const CATS     = typeof CALC_CATS !== 'undefined' ? CALC_CATS : {};
 
-  // Calcular totales por nivel y categoría
-  const byLevel = {};
-  const byCat = {};
+  // ── Totales ────────────────────────────────────────────────────
+  const byLevel = {}, byCat = {};
   rooms.forEach(r=>{
-    const lv = r.level || 1;
-    const cat = r.cat || 'otro';
-    byLevel[lv] = (byLevel[lv]||0) + (parseFloat(r.area)||0);
-    byCat[cat] = (byCat[cat]||0) + (parseFloat(r.area)||0);
+    const lv=r.level||1, cat=r.cat||'otro';
+    byLevel[lv]=(byLevel[lv]||0)+(parseFloat(r.area)||0);
+    byCat[cat]=(byCat[cat]||0)+(parseFloat(r.area)||0);
   });
-  const totalNet = Object.values(byLevel).reduce((s,v)=>s+v,0);
-  const fmtN = n => n.toLocaleString('es-GT',{minimumFractionDigits:2,maximumFractionDigits:2});
+  const totalNet   = Object.values(byLevel).reduce((s,v)=>s+v,0);
+  const tL         = parseFloat(prog.tL)||0;
+  const tA         = parseFloat(prog.tA)||0;
+  const terrArea   = tL*tA;
+  const n1Area     = rooms.filter(r=>(r.level||1)===1).reduce((s,r)=>s+(parseFloat(r.area)||0),0);
+  const fos        = terrArea>0 ? Math.round(n1Area/terrArea*100) : 0;
+  const obraGris   = parseFloat(prog.obraGris||3500);
+  const totalObra  = totalNet * obraGris;
+  const totalEsp   = specials.reduce((s,r)=>s+(parseFloat(r.cost)||0),0);
+  const totalPres  = totalObra + totalEsp;
 
-  // Grupos por categoría para tabla
-  const CATS = typeof CALC_CATS !== 'undefined' ? CALC_CATS : {};
-  const catRows = Object.entries(byCat).map(([k,v])=>`
+  // ── Terrain SVG (light theme for print) ───────────────────────
+  let terrainSVG = '<p style="color:#aaa;font-size:11px;text-align:center;padding:20px 0">Datos del terreno no configurados.</p>';
+  if(tL && tA){
+    const svgW=300, svgH=160, pad=28;
+    const asp = tA/tL;
+    let tW, tH;
+    if(asp>(svgH-2*pad)/(svgW-2*pad)){ tH=svgH-2*pad; tW=tH/asp; }
+    else { tW=svgW-2*pad; tH=tW*asp; }
+    const tX=(svgW-tW)/2, tY=(svgH-tH)/2;
+    const sc=Math.sqrt(Math.min(n1Area/terrArea,1));
+    const fW=tW*sc, fH=tH*sc;
+    const fX=tX+(tW-fW)/2, fY=tY+(tH-fH)/2;
+    const col = n1Area>terrArea ? '#c0392b' : '#B8861A';
+    const fWc=Math.min(fW,tW), fHc=Math.min(fH,tH);
+    terrainSVG = `
+      <svg viewBox="0 0 ${svgW} ${svgH}" width="${svgW}" height="${svgH}"
+           style="display:block;margin:0 auto;font-family:monospace"
+           xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+            <line x1="0" y1="0" x2="0" y2="6" stroke="${col}" stroke-width="1.5" opacity="0.6"/>
+          </pattern>
+        </defs>
+        <!-- Terreno perimetral -->
+        <rect x="${tX}" y="${tY}" width="${tW}" height="${tH}"
+              fill="#f9f7f0" stroke="#8B7355" stroke-width="1.5" stroke-dasharray="6,3" rx="2"/>
+        <!-- Etiqueta largo (norte) -->
+        <text x="${tX+tW/2}" y="${tY-7}" text-anchor="middle" font-size="9" fill="#999">←  ${tL} m  →</text>
+        <!-- Etiqueta ancho (oeste) -->
+        <text x="${tX-8}" y="${tY+tH/2+3}" text-anchor="middle" font-size="9" fill="#999"
+              transform="rotate(-90,${tX-8},${tY+tH/2})">${tA} m</text>
+        <!-- Área total terreno -->
+        <text x="${tX+tW}" y="${tY+tH+13}" text-anchor="end" font-size="8" fill="#bbb">
+          Terreno: ${fmtN(terrArea)} m²
+        </text>
+        <!-- Área construida N1 (proporcional) -->
+        ${fWc>2&&fHc>2?`
+        <rect x="${fX}" y="${fY}" width="${fWc}" height="${fHc}"
+              fill="url(#hatch)" stroke="${col}" stroke-width="1.5" rx="1"/>
+        <text x="${fX+fWc/2}" y="${fY+fHc/2+3}" text-anchor="middle" font-size="9"
+              fill="${col}" font-weight="600">
+          ${fmtN(n1Area)} m²
+        </text>`:``}
+        <!-- Leyenda -->
+        <rect x="${tX}" y="${tY+tH+18}" width="10" height="8" fill="#f9f7f0" stroke="#8B7355" stroke-width="1" stroke-dasharray="3,2"/>
+        <text x="${tX+13}" y="${tY+tH+25}" font-size="8" fill="#888">Terreno: ${fmtN(terrArea)} m²</text>
+        ${fWc>2&&fHc>2?`
+        <rect x="${tX+90}" y="${tY+tH+18}" width="10" height="8" fill="url(#hatch)" stroke="${col}" stroke-width="1"/>
+        <text x="${tX+103}" y="${tY+tH+25}" font-size="8" fill="${col}">Planta N1: ${fmtN(n1Area)} m² (FOS ${fos}%)</text>`:``}
+      </svg>`;
+  }
+
+  // ── CSS profesional sin header/footer fijo ─────────────────────
+  // Usar @page con margins correctos + contenido normal (NO position:fixed)
+  // El browser nativo maneja header/footer de impresión
+  const CSS = `
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:210mm}
+body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#1a1a18;
+     font-size:11.5px;line-height:1.7;background:#fff;
+     -webkit-print-color-adjust:exact;print-color-adjust:exact}
+@page{
+  size:A4;
+  margin:18mm 14mm 22mm 14mm;
+  @top-left{
+    content:'ESTUDIO AVIT · Arquitectura & Interiorismo';
+    font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
+    font-size:8pt;color:#aaa;letter-spacing:.05em;
+  }
+  @top-right{
+    content:'Programa Arquitectónico · ${fecha.replace(/'/g,"\'")}';
+    font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
+    font-size:8pt;color:#aaa;
+  }
+  @bottom-center{
+    content:'Estudio AVIT · www.estudioavit.com — Página ' counter(page) ' de ' counter(pages);
+    font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
+    font-size:8pt;color:#aaa;
+  }
+}
+.page{max-width:182mm;margin:0 auto;padding:0}
+/* Portada / header del doc */
+.doc-header{display:flex;justify-content:space-between;align-items:flex-start;
+  padding-bottom:12px;border-bottom:2px solid #1a1a18;margin-bottom:18px}
+.doc-title{font-size:20px;font-weight:300;letter-spacing:-.4px;color:#1a1a18}
+.doc-sub{font-size:9.5px;color:#888;margin-top:4px;text-transform:uppercase;letter-spacing:.08em}
+.brand-name{font-size:13px;font-weight:500;color:#1a1a18;display:block;margin-bottom:2px}
+.brand-sub{font-size:9.5px;color:#888}
+/* KPIs */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}
+.kpi{padding:10px 12px;border:1px solid #e5e5e5;border-radius:5px}
+.kpi-val{font-size:17px;font-weight:400;color:#1a1a18;line-height:1.2}
+.kpi-lbl{font-size:8.5px;text-transform:uppercase;letter-spacing:.08em;color:#888;margin-top:3px}
+.kpi-accent{color:#B8861A}
+/* Secciones */
+.sec{margin-bottom:22px;page-break-inside:avoid}
+.sec-h{font-size:9px;text-transform:uppercase;letter-spacing:.14em;color:#888;font-weight:600;
+  padding-bottom:5px;border-bottom:1px solid #e8e8e8;margin-bottom:10px}
+/* Tablas */
+table{width:100%;border-collapse:collapse;font-size:11px}
+th{text-align:left;padding:5px 8px;font-size:8.5px;text-transform:uppercase;
+   letter-spacing:.08em;color:#888;font-weight:500;border-bottom:1px solid #ccc;
+   background:#fafafa}
+td{padding:6px 8px;border-bottom:0.5px solid #f0f0f0;color:#333;vertical-align:middle}
+.td-r{text-align:right;font-family:'Courier New',monospace;white-space:nowrap}
+tr:nth-child(even) td{background:#fafafa}
+.tr-total td{border-top:1.5px solid #1a1a18;font-weight:600;color:#1a1a18;
+  border-bottom:none;padding-top:7px;background:#fff}
+/* Cajas info */
+.info-box{background:#f8f8f4;border-radius:5px;padding:12px 14px;margin-bottom:8px}
+.info-row{display:flex;justify-content:space-between;align-items:center;
+  padding:4px 0;border-bottom:0.5px solid #eee;font-size:11px}
+.info-row:last-child{border-bottom:none}
+.info-total{display:flex;justify-content:space-between;align-items:center;
+  padding:7px 0 0;margin-top:4px;border-top:1.5px solid #1a1a18;
+  font-weight:600;font-size:11.5px}
+/* Diagrama terreno */
+.terrain-wrap{border:1px solid #e5e5e5;border-radius:5px;padding:14px;background:#fff;
+  display:flex;flex-direction:column;align-items:center}
+.terrain-note{font-size:9.5px;color:#aaa;text-align:center;margin-top:8px;font-style:italic;line-height:1.5}
+/* Distribución barras */
+.dist-row{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.dist-lbl{font-size:11px;color:#555;min-width:120px}
+.dist-bar-wrap{flex:1;height:5px;background:#f0f0f0;border-radius:3px;overflow:hidden}
+.dist-bar-fill{height:100%;border-radius:3px;background:#B8861A}
+.dist-val{font-size:10.5px;color:#888;min-width:80px;text-align:right;font-family:monospace}
+/* Footer del doc */
+.doc-footer{margin-top:28px;padding-top:10px;border-top:0.5px solid #ddd;
+  display:flex;justify-content:space-between;font-size:9px;color:#bbb;line-height:1.8}
+/* Nota */
+.nota{font-size:9.5px;color:#aaa;font-style:italic;margin-top:6px;line-height:1.6}
+`;
+
+  // ── Rows de tabla de ambientes ─────────────────────────────────
+  const roomRows = rooms.map((r,i)=>`
     <tr>
-      <td style="padding:6px 10px;color:#555">${CATS[k]||k}</td>
-      <td style="padding:6px 10px;text-align:right;font-family:monospace;color:#1a1a18;font-weight:500">${fmtN(v)} m²</td>
-      <td style="padding:6px 10px;text-align:right;color:#888;font-size:11px">${totalNet>0?Math.round(v/totalNet*100):0}%</td>
+      <td style="color:#888;font-size:10px;text-align:center;width:28px">${i+1}</td>
+      <td style="font-weight:500">${r.name||'—'}</td>
+      <td style="text-align:center;color:#888;width:50px">N${r.level||1}</td>
+      <td style="color:#888">${CATS[r.cat]||r.cat||'—'}</td>
+      <td class="td-r">${fmtN(parseFloat(r.area)||0)} m²</td>
     </tr>`).join('');
 
-  // Tabla por ambiente
-  const roomRows = rooms.map(r=>`
-    <tr>
-      <td style="padding:5px 10px;color:#333">${r.name||'—'}</td>
-      <td style="padding:5px 10px;text-align:center;color:#888;font-size:11px">N${r.level||1}</td>
-      <td style="padding:5px 10px;color:#888;font-size:11px">${CATS[r.cat]||r.cat||'—'}</td>
-      <td style="padding:5px 10px;text-align:right;font-family:monospace;color:#1a1a18">${fmtN(parseFloat(r.area)||0)} m²</td>
-    </tr>`).join('');
-
-  // Niveles
+  // ── Distribución por nivel ─────────────────────────────────────
   const lvRows = Object.entries(byLevel).sort().map(([lv,a])=>`
-    <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:0.5px solid #f0f0f0">
-      <span style="color:#555">Nivel ${lv}</span>
-      <span style="font-family:monospace;font-weight:500">${fmtN(a)} m²</span>
+    <div class="dist-row">
+      <div class="dist-lbl">Nivel ${lv}</div>
+      <div class="dist-bar-wrap"><div class="dist-bar-fill" style="width:${totalNet>0?Math.round(a/totalNet*100):0}%"></div></div>
+      <div class="dist-val">${fmtN(a)} m²  ${totalNet>0?'('+Math.round(a/totalNet*100)+'%)':''}</div>
     </div>`).join('');
 
-  const html = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">
+  const html = `<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8">
 <title>Programa Arquitectónico — Estudio AVIT</title>
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#1a1a18;font-size:12px;line-height:1.7;background:#fff}
-.page{max-width:780px;margin:0 auto;padding:36px 44px 48px}
-/* Running header/footer */
-.pdf-ph{position:fixed;top:0;left:0;right:0;height:52px;background:#fff;border-bottom:1.5px solid #1a1a18;
-  display:flex;align-items:center;justify-content:space-between;padding:0 44px;z-index:100}
-.pdf-pf{position:fixed;bottom:0;left:0;right:0;height:40px;background:#fff;border-top:0.5px solid #ddd;
-  display:flex;align-items:center;justify-content:space-between;padding:0 44px;z-index:100}
-@media screen{.pdf-ph,.pdf-pf{display:none}}
-@media print{
-  body{margin:0!important}
-  .page{padding-top:64px!important;padding-bottom:52px!important}
-  .pdf-ph,.pdf-pf{display:flex!important}
-  @page{margin:0;size:A4}
-  .no-break{page-break-inside:avoid}
-}
-.hdr{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:14px;border-bottom:2px solid #1a1a18;margin-bottom:20px}
-.hdr-title{font-size:18px;font-weight:300;letter-spacing:-.3px}
-.hdr-sub{font-size:10px;color:#888;margin-top:3px;text-transform:uppercase;letter-spacing:.08em}
-.hdr-brand{text-align:right;font-size:11px;color:#888}
-.hdr-brand strong{display:block;font-size:13px;font-weight:500;color:#1a1a18;margin-bottom:2px}
-.sec-title{font-size:9.5px;text-transform:uppercase;letter-spacing:.12em;color:#888;padding-bottom:6px;border-bottom:1px solid #e8e8e8;margin:18px 0 8px;font-weight:500}
-.kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}
-.kpi{padding:10px 14px;border:1px solid #e8e8e8;border-radius:6px}
-.kpi-val{font-size:20px;font-weight:400;color:#1a1a18}
-.kpi-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:#888;margin-top:2px}
-table{width:100%;border-collapse:collapse;font-size:11.5px}
-th{text-align:left;padding:6px 10px;font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:#888;font-weight:500;border-bottom:1px solid #ddd}
-th:last-child,td:last-child{text-align:right}
-tr:nth-child(even) td{background:#fafafa}
-.total-row td{border-top:1px solid #1a1a18;font-weight:500;padding-top:8px}
-.summary-box{background:#f8f8f8;border-radius:8px;padding:12px 16px;margin-top:8px}
-.footer{margin-top:32px;padding-top:12px;border-top:0.5px solid #e8e8e8;display:flex;justify-content:space-between}
-.footer-l{font-size:9px;color:#bbb;line-height:1.8}
-</style></head><body>
-
-<div class="pdf-ph">
-  <div><span style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.5px">Estudio AVIT</span><br>
-  <span style="font-size:9px;color:#aaa">Arquitectura &amp; Interiorismo</span></div>
-  <span style="font-size:9px;color:#aaa">Programa Arquitectónico · ${fecha}</span>
-</div>
-<div class="pdf-pf">
-  <span style="font-size:9px;color:#bbb">Áreas sujetas a modificación según diseño final</span>
-  <span style="font-size:9px;color:#bbb">Estudio AVIT · www.estudioavit.com</span>
-</div>
-
+<style>${CSS}</style>
+</head><body>
 <div class="page">
 
-<div class="hdr">
+<!-- Encabezado del documento -->
+<div class="doc-header">
   <div>
-    <div class="hdr-title">Programa Arquitectónico</div>
-    <div class="hdr-sub">Resumen de áreas y ambientes</div>
+    <div class="doc-title">Programa Arquitectónico</div>
+    <div class="doc-sub">Resumen de áreas, obras y presupuesto estimado</div>
   </div>
-  <div class="hdr-brand">
-    <strong>Estudio AVIT</strong>
-    <span>Arquitectura &amp; Interiorismo</span><br>
-    <span style="margin-top:3px;display:block">${fecha}</span>
+  <div style="text-align:right">
+    <span class="brand-name">Estudio AVIT</span>
+    <span class="brand-sub">Arquitectura &amp; Interiorismo<br>${fecha}</span>
   </div>
 </div>
 
-<div class="kpi-row">
+<!-- KPIs resumen -->
+<div class="kpi-grid">
   <div class="kpi"><div class="kpi-val">${rooms.length}</div><div class="kpi-lbl">Ambientes</div></div>
   <div class="kpi"><div class="kpi-val">${Object.keys(byLevel).length}</div><div class="kpi-lbl">Niveles</div></div>
-  <div class="kpi"><div class="kpi-val" style="color:#D4A843">${fmtN(totalNet)} m²</div><div class="kpi-lbl">Total neto</div></div>
+  <div class="kpi"><div class="kpi-val kpi-accent">${fmtN(totalNet)} m²</div><div class="kpi-lbl">Área neta total</div></div>
+  <div class="kpi"><div class="kpi-val">${fmtQ(totalPres)}</div><div class="kpi-lbl">Presupuesto estimado</div></div>
 </div>
 
-<div class="sec-title">Distribución por nivel</div>
-<div class="summary-box">
-  ${lvRows}
-  <div style="display:flex;justify-content:space-between;padding:7px 0 0;margin-top:4px;border-top:1px solid #e8e8e8;font-weight:500">
-    <span>Total neto</span>
-    <span style="font-family:monospace;color:#D4A843">${fmtN(totalNet)} m²</span>
+<!-- ── 1. Lista de ambientes ── -->
+<div class="sec">
+  <div class="sec-h">1. Lista de ambientes</div>
+  <table>
+    <thead>
+      <tr>
+        <th style="width:28px;text-align:center">#</th>
+        <th>Ambiente</th>
+        <th style="width:50px;text-align:center">Nivel</th>
+        <th>Categoría</th>
+        <th class="td-r" style="width:90px">Área (m²)</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${roomRows}
+      <tr class="tr-total">
+        <td colspan="4">Total neto de área</td>
+        <td class="td-r">${fmtN(totalNet)} m²</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ── 2. Distribución por nivel ── -->
+<div class="sec">
+  <div class="sec-h">2. Distribución por nivel</div>
+  <div class="info-box">
+    ${lvRows}
+    <div class="info-total">
+      <span>Total</span><span style="font-family:monospace">${fmtN(totalNet)} m²</span>
+    </div>
   </div>
 </div>
 
-<div class="sec-title">Distribución por categoría</div>
-<table class="no-break">
-  <thead><tr><th>Categoría</th><th style="text-align:right">Área</th><th style="text-align:right">%</th></tr></thead>
-  <tbody>${catRows}
-    <tr class="total-row"><td>Total</td><td style="text-align:right;font-family:monospace">${fmtN(totalNet)} m²</td><td></td></tr>
-  </tbody>
-</table>
+<!-- ── 3. Diagrama del terreno ── -->
+<div class="sec">
+  <div class="sec-h">3. Diagrama del terreno — referencia gráfica</div>
+  <div class="terrain-wrap">
+    ${terrainSVG}
+    <div class="terrain-note">
+      Diagrama proporcional con fines ilustrativos.<br>
+      La zona sombreada representa la huella proyectada de construcción en planta N1.<br>
+      ${tL&&tA?`Terreno: ${tL} × ${tA} m = ${fmtN(terrArea)} m²  ·  Factor de ocupación del suelo (FOS): ${fos}%`:''}
+    </div>
+  </div>
+</div>
 
-<div class="sec-title" style="margin-top:20px">Lista de ambientes</div>
-<table>
-  <thead><tr><th>Ambiente</th><th style="text-align:center">Nivel</th><th>Categoría</th><th style="text-align:right">Área</th></tr></thead>
-  <tbody>${roomRows}
-    <tr class="total-row"><td colspan="3">Total neto</td><td style="text-align:right;font-family:monospace">${fmtN(totalNet)} m²</td></tr>
-  </tbody>
-</table>
+<!-- ── 4. Obras especiales ── -->
+<div class="sec">
+  <div class="sec-h">4. Obras especiales</div>
+  ${specials.length ? `
+  <table>
+    <thead><tr><th>Descripción</th><th class="td-r">Costo estimado (GTQ)</th></tr></thead>
+    <tbody>
+      ${specials.map(s=>`<tr>
+        <td>${s.name||'—'}</td>
+        <td class="td-r">${fmtQ(parseFloat(s.cost)||0)}</td>
+      </tr>`).join('')}
+      <tr class="tr-total">
+        <td>Total obras especiales</td>
+        <td class="td-r">${fmtQ(totalEsp)}</td>
+      </tr>
+    </tbody>
+  </table>` :
+  '<p style="font-size:11px;color:#aaa">Sin obras especiales registradas.</p>'}
+</div>
 
-${specials.length ? `
-<div class="sec-title" style="margin-top:20px">Obras especiales</div>
-<table class="no-break">
-  <thead><tr><th>Descripción</th><th style="text-align:right">Costo est.</th></tr></thead>
-  <tbody>${specials.map(s=>`<tr><td style="padding:5px 10px;color:#333">${s.name||'—'}</td><td style="padding:5px 10px;text-align:right;font-family:monospace">GTQ ${fmtN(parseFloat(s.cost)||0)}</td></tr>`).join('')}</tbody>
-</table>` : ''}
+<!-- ── 5. Datos del terreno ── -->
+<div class="sec">
+  <div class="sec-h">5. Datos del terreno</div>
+  ${tL&&tA ? `
+  <div class="info-box">
+    <div class="info-row"><span>Largo del terreno</span><span style="font-family:monospace">${fmtN(tL)} m</span></div>
+    <div class="info-row"><span>Ancho del terreno</span><span style="font-family:monospace">${fmtN(tA)} m</span></div>
+    <div class="info-row"><span>Área total del terreno</span><span style="font-family:monospace">${fmtN(terrArea)} m²</span></div>
+    <div class="info-row"><span>Área construida nivel 1</span><span style="font-family:monospace">${fmtN(n1Area)} m²</span></div>
+    <div class="info-row"><span>Área total construida (todos los niveles)</span><span style="font-family:monospace">${fmtN(totalNet)} m²</span></div>
+    <div class="info-total">
+      <span>Factor de ocupación del suelo (FOS)</span>
+      <span style="font-family:monospace;color:${fos>70?'#c0392b':'#2d6a3f'}">${fos}%${fos>70?' ⚠ Revisar normativa':''}</span>
+    </div>
+  </div>` :
+  '<p style="font-size:11px;color:#aaa;padding:6px 0">Ingresá largo y ancho del terreno para ver este análisis.</p>'}
+</div>
 
-<div class="footer">
-  <div class="footer-l">
+<!-- ── 6. Resumen del presupuesto ── -->
+<div class="sec">
+  <div class="sec-h">6. Resumen del presupuesto estimado</div>
+  <table>
+    <thead><tr><th>Concepto</th><th class="td-r">Monto estimado (GTQ)</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Obra gris · ${fmtQ(obraGris)}/m² × ${fmtN(totalNet)} m²</td>
+        <td class="td-r">${fmtQ(totalObra)}</td>
+      </tr>
+      ${specials.length ? `<tr>
+        <td>Obras especiales</td>
+        <td class="td-r">${fmtQ(totalEsp)}</td>
+      </tr>` : ''}
+      <tr class="tr-total">
+        <td>Total estimado de construcción</td>
+        <td class="td-r">${fmtQ(totalPres)}</td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="nota">* Presupuesto referencial basado en costo de obra gris. No incluye acabados, equipamiento, permisos, honorarios profesionales ni imprevistos. Se recomienda un factor de contingencia del 10–15%.</p>
+</div>
+
+<!-- Footer del documento -->
+<div class="doc-footer">
+  <div>
     Programa Arquitectónico · Estudio AVIT · ${fecha}<br>
-    Las áreas indicadas son referenciales y sujetas a ajuste durante el proceso de diseño.
+    Las áreas son referenciales y sujetas a ajuste durante el proceso de diseño.
   </div>
-  <div style="font-size:10px;color:#888;text-align:right">www.estudioavit.com</div>
+  <div style="text-align:right">www.estudioavit.com</div>
 </div>
 
 </div>
@@ -5344,9 +5560,12 @@ ${specials.length ? `
   const w = window.open('','_blank');
   w.document.write(html);
   w.document.close();
-  setTimeout(()=>w.print(), 500);
+  setTimeout(()=>w.print(), 600);
 }
 window.genPDFPrograma = genPDFPrograma;
+
+window.exportarProgramaJSON = exportarProgramaJSON;
+
 
 function toggleMenuConfig(){
   const m = document.getElementById('menuConfig');
@@ -5463,14 +5682,15 @@ function toggleCap(){
 }
 
 function toggleFactura(on){
-  // IVA e ISR siempre van juntos al facturar
   const ivaEl = document.getElementById('ivaOn');
   const isrEl = document.getElementById('isrOn');
   if(ivaEl) ivaEl.checked = on;
-  if(isrEl) isrEl.checked = on;
-  if(typeof toggleIsr==='function') toggleIsr();
-  if(typeof calc==='function') calc();
-  if(typeof saveDraft==='function') saveDraft();
+  if(isrEl){ isrEl.checked = on; isrEl.value = on?'1':'0'; }
+  const body = document.getElementById('facturaBody');
+  if(body){ body.style.opacity = on?'1':'.35'; body.style.pointerEvents = on?'':'none'; }
+  if(typeof toggleIsr === 'function') toggleIsr();
+  if(typeof calc === 'function') calc();
+  if(typeof saveDraft === 'function') saveDraft();
 }
 
 function toggleIsr(){
@@ -5624,6 +5844,9 @@ function calc(){
     document.getElementById('isrLabel').textContent=isrMode==='7'?'ISR (7% s/ingresos)':'ISR (25% s/utilidad)';
   }
   document.getElementById('rowIsr').style.display=isrOn?'flex':'none';
+  // IVA amount display in merged card
+  const ivaAmt = document.getElementById('ivaAmtDisplay');
+  if(ivaAmt) ivaAmt.textContent = iOn ? fmt(ia) : '—';
 
   // ── Capitalización Opción B: % sobre (sub − colab − oh − ISR) ──
   const capOn=document.getElementById('capOn').checked;
@@ -6448,39 +6671,18 @@ body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#1a1a18;font-
 .ft{padding:14px 0 44px}
 .ft p{font-size:9.5px;color:#bbb;line-height:1.6}
 
-/* PDF running header/footer */
-.pdf-ph{position:fixed;top:0;left:0;right:0;height:60px;background:#fff;border-bottom:1.5px solid #1a1a18;
-  display:flex;align-items:center;justify-content:space-between;padding:0 40px;
-  font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;z-index:100;
-  -webkit-print-color-adjust:exact;print-color-adjust:exact}
-.pdf-pf{position:fixed;bottom:0;left:0;right:0;height:44px;background:#fff;border-top:0.5px solid #ddd;
-  display:flex;align-items:center;justify-content:space-between;padding:0 40px;
-  font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;z-index:100;
-  -webkit-print-color-adjust:exact;print-color-adjust:exact}
-
-@media screen{.pdf-ph,.pdf-pf{display:none}}
+/* PDF header/footer via @page (browser-native, no content overlap) */
+.pdf-ph,.pdf-pf{display:none!important}
 @media print{
-  body{margin:0!important}
-  .page{padding-top:72px!important;padding-bottom:56px!important}
-  .pdf-ph,.pdf-pf{display:flex!important}
-  @page{margin:0;size:A4}
+  html,body{width:210mm;margin:0;background:#fff!important}
+  .page{padding:0!important;max-width:182mm;margin:0 auto}
+  -webkit-print-color-adjust:exact;print-color-adjust:exact;
+}
+@page{
+  size:A4;
+  margin:18mm 14mm 20mm 14mm;
 }
 </style></head><body>
-<!-- Running header -->
-<div class="pdf-ph">
-  <div style="display:flex;flex-direction:column">
-    <span style="font-size:11px;font-weight:500;color:#1a1a18;letter-spacing:.5px;text-transform:uppercase">Estudio AVIT</span>
-    <span style="font-size:9px;color:#aaa;letter-spacing:.3px">Arquitectura &amp; Interiorismo</span>
-  </div>
-  <div style="text-align:right">
-    <span style="font-size:9px;color:#aaa;font-family:monospace" id="pdf-cotnum-h"></span>
-  </div>
-</div>
-<!-- Running footer -->
-<div class="pdf-pf">
-  <span style="font-size:9px;color:#bbb">Servicios de diseño arquitectónico · No incluye gastos de construcción ni permisos</span>
-  <span style="font-size:9px;color:#bbb">Vigencia 30 días · Trabajo adicional requiere aprobación escrita</span>
-</div>
 <div class="page">
 <div class="bw">
 <div class="cb"><div><div class="cl">Presentado a</div><div class="cn2">${cn}</div><div class="pn">${pt}</div></div><div style="text-align:right"><div class="badge" style="margin-bottom:4px">${s.m2||150} m²</div><span style="font-size:9px;font-family:monospace;text-transform:uppercase;letter-spacing:1px;color:#aaa">${cotNum}</span><br><span style="font-size:9px;color:#bbb">${fecha}</span></div></div>
@@ -6622,13 +6824,9 @@ body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#1a1a18;font-
   font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;z-index:100;
   -webkit-print-color-adjust:exact;print-color-adjust:exact}
 
-@media screen{.pdf-ph,.pdf-pf{display:none}}
-@media print{
-  body{margin:0!important}
-  .page{padding-top:72px!important;padding-bottom:56px!important}
-  .pdf-ph,.pdf-pf{display:flex!important}
-  @page{margin:0;size:A4}
-}
+.pdf-ph,.pdf-pf{display:none!important}
+@media print{html,body{width:210mm;margin:0;background:#fff!important}.page{padding:0!important;max-width:182mm;margin:0 auto}}
+@page{size:A4;margin:18mm 14mm 20mm 14mm}
 </style></head><body>
 <div class="pdf-ph">
   <div style="display:flex;flex-direction:column">
@@ -7158,7 +7356,7 @@ body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#1a1a18;backg
   body{background:white}
   .page{padding:0;max-width:100%}
   .print-bar{display:none}
-  @page{margin:0;size:A4}
+  @page{size:A4;margin:15mm 12mm 18mm 12mm}
 }
 </style></head><body><button class="print-bar" onclick="window.print()">🖨 Imprimir / PDF</button><div class="page">
 <div class="lh"><img src="data:image/png;base64,${LOGO_B64}" alt="Estudio AVIT"><div class="lh-r"><div class="cn">Recibo No.</div><div class="num">${escapeHtmlBasic(numero)}</div></div></div>
