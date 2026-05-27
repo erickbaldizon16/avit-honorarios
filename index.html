@@ -5239,7 +5239,7 @@ function genPDFPrograma(){
   const fecha    = new Date().toLocaleDateString('es-GT',{day:'2-digit',month:'long',year:'numeric'});
   const fmtN     = n => (n||0).toLocaleString('es-GT',{minimumFractionDigits:2,maximumFractionDigits:2});
   const fmtQ     = n => 'GTQ '+fmtN(n);
-  const CATS     = typeof CALC_CATS !== 'undefined' ? CALC_CATS : {};
+  const CATS     = (typeof CALC_CATS !== 'undefined' ? CALC_CATS : {privada:'Área privada',servicio:'Servicio / técnico',social:'Área social',garaje:'Garaje',circulacion:'Circulación',otro:'Otro'});
 
   // ── Totales ────────────────────────────────────────────────────
   const byLevel = {}, byCat = {};
@@ -5564,6 +5564,70 @@ tr:nth-child(even) td{background:#fafafa}
 }
 window.genPDFPrograma = genPDFPrograma;
 
+/* ─── Exportar Programa como JSON ─── */
+function exportarProgramaJSON(){
+  if(typeof estadoCalc==='undefined'||!estadoCalc.programa){
+    alert('Primero configurá el programa arquitectónico.'); return;
+  }
+  const prog=estadoCalc.programa, rooms=prog.rooms||[], specials=prog.specials||[];
+  const CATS=(typeof CALC_CATS!=='undefined'?CALC_CATS:{privada:'Área privada',servicio:'Servicio / técnico',social:'Área social',garaje:'Garaje',circulacion:'Circulación',otro:'Otro'});
+  const byLevel={}, byCat={};
+  rooms.forEach(r=>{
+    const lv=r.level||1, cat=r.cat||'otro';
+    byLevel[lv]=(byLevel[lv]||0)+(parseFloat(r.area)||0);
+    byCat[cat]=(byCat[cat]||0)+(parseFloat(r.area)||0);
+  });
+  const totalNet=Object.values(byLevel).reduce((s,v)=>s+v,0);
+  const tL=parseFloat(prog.tL)||0, tA=parseFloat(prog.tA)||0;
+  const obraGris=parseFloat(prog.obraGris||3500);
+  const n1Area=rooms.filter(r=>(r.level||1)===1).reduce((s,r)=>s+(parseFloat(r.area)||0),0);
+  const terrArea=tL*tA;
+  const totalEsp=specials.reduce((s,r)=>s+(parseFloat(r.cost)||0),0);
+
+  const payload={
+    _exportado:new Date().toISOString(),
+    _fuente:'Estudio AVIT Dashboard',
+    resumen:{
+      totalAmbientes:rooms.length,
+      totalNiveles:Object.keys(byLevel).length,
+      areaNeta_m2:Math.round(totalNet*100)/100,
+      terreno_m2:tL&&tA?Math.round(terrArea*100)/100:null,
+      fos_pct:terrArea>0?Math.round(n1Area/terrArea*100):null,
+      presupuesto_estimado_gtq:Math.round(totalNet*obraGris+totalEsp)
+    },
+    terreno:{largo_m:tL||null,ancho_m:tA||null,area_m2:tL&&tA?Math.round(terrArea*100)/100:null},
+    ambientes:rooms.map(r=>({
+      id:r.id, nombre:r.name||'', nivel:r.level||1,
+      categoria:CATS[r.cat]||r.cat||'', cat_id:r.cat||'',
+      area_m2:parseFloat(r.area)||0
+    })),
+    distribucion_niveles:Object.entries(byLevel).sort(([a],[b])=>+a-+b).map(([lv,a])=>({
+      nivel:parseInt(lv), area_m2:Math.round(a*100)/100,
+      porcentaje:totalNet>0?Math.round(a/totalNet*100):0
+    })),
+    distribucion_categorias:Object.entries(byCat).map(([k,v])=>({
+      categoria:CATS[k]||k, cat_id:k, area_m2:Math.round(v*100)/100,
+      porcentaje:totalNet>0?Math.round(v/totalNet*100):0
+    })),
+    obras_especiales:specials.map(s=>({nombre:s.name||'',costo_gtq:parseFloat(s.cost)||0})),
+    presupuesto:{
+      obra_gris_por_m2:obraGris,
+      total_obra_gris:Math.round(totalNet*obraGris),
+      total_obras_especiales:Math.round(totalEsp),
+      total_estimado:Math.round(totalNet*obraGris+totalEsp)
+    }
+  };
+
+  const json=JSON.stringify(payload,null,2);
+  const blob=new Blob([json],{type:'application/json;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download='programa-arq-avit-'+new Date().toISOString().split('T')[0]+'.json';
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+  const ss=document.getElementById('syncStatus');
+  if(ss){ss.textContent='✦ JSON exportado';setTimeout(()=>{if(ss.textContent==='✦ JSON exportado')ss.textContent='';},2200);}
+}
 window.exportarProgramaJSON = exportarProgramaJSON;
 
 
@@ -10204,14 +10268,14 @@ async function bajarNube(){
 // Constantes de cálculo
 const CALC_ROOF  = { metalico:{label:"Techo metálico",adj:0}, losa:{label:"Losa de concreto",adj:.15}, mixto:{label:"Mixto",adj:.08} };
 const CALC_SLOPE = { plano:{label:"Plano",adj:0}, moderado:{label:"Moderado",adj:.10}, inclinado:{label:"Inclinado",adj:.22} };
-const CALC_CATS  = { privada:"Área privada", servicio:"Servicio / técnico", social:"Área social", garaje:"Garaje" };
-const CALC_CIRC  = { libre:{label:"4 muros libres",pct:20}, tres:{label:"3 muros colindantes",pct:15}, cuatro:{label:"4 muros colindantes",pct:12} };
+var CALC_CATS  = { privada:"Área privada", servicio:"Servicio / técnico", social:"Área social", garaje:"Garaje" };
+var CALC_CIRC  = { libre:{label:"4 muros libres",pct:20}, tres:{label:"3 muros colindantes",pct:15}, cuatro:{label:"4 muros colindantes",pct:12} };
 const CALC_FIN_F = { economico:0.10, medio:0.20, premium:0.50 };
 
 const fmtCalc = n => new Intl.NumberFormat("es-GT",{minimumFractionDigits:2,maximumFractionDigits:2}).format(n||0);
 
 // Estado persistido
-let estadoCalc = {
+var estadoCalc = {  /* var = window property, cross-script accessible */
   estimado: { area:"", cpm2:"" },
   programa: {
     rooms: [
