@@ -2651,12 +2651,9 @@ input.narrow{width:88px}input.mid{width:108px}
       </div>
     </div>
     <!-- Canvas del organigrama -->
-    <div id="orgWrap" style="position:relative;width:100%;height:520px;background:rgba(255,255,255,0.02);border:0.5px solid var(--border);border-radius:var(--r-lg);overflow:auto;cursor:default;user-select:none;scroll-behavior:smooth" onmousedown="orgPanStart(event)" onmousemove="orgPanMove(event)" onmouseup="orgPanEnd()" onmouseleave="orgPanEnd()">
-      <!-- Superficie interna de la pizarra (2000×1200px) -->
-      <div id="orgInner" style="position:relative;width:2000px;height:1200px;min-width:100%;min-height:100%">
-      <!-- SVG para las líneas de conexión -->
-      <svg id="orgSvg" style="position:absolute;inset:0;width:2000px;height:1200px;pointer-events:none;z-index:1"></svg>
-      </div><!-- /orgInner -->
+    <div id="orgWrap" style="position:relative;width:100%;height:520px;background:rgba(255,255,255,0.02);border:0.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden;cursor:default;user-select:none">
+      <!-- SVG de conexiones (z-index bajo, detrás de los nodos) -->
+      <svg id="orgSvg" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1;overflow:visible"></svg>
       <!-- Onda decorativa Avit -->
       <svg viewBox="0 0 600 14" style="position:absolute;bottom:14px;left:0;right:0;width:100%;opacity:.18;pointer-events:none;z-index:0">
         <path d="M0,7 C60,0 120,14 180,7 S300,0 360,7 S480,14 540,7 S600,4 620,7" stroke="#D4A843" stroke-width="1" fill="none"/>
@@ -4008,7 +4005,7 @@ window.adminSetRunwayMeta=adminSetRunwayMeta;
 
 /* ── Tab navigation ───────────────────────────────────────── */
 function adminShowTab(tab){
-  ['ingresos','colab','marketing','varios','analisis'].forEach(t=>{
+  ['ingresos','colab','marketing','varios','analisis','organigrama'].forEach(t=>{
     const body=document.getElementById('atab-body-'+t);
     const btn =document.getElementById('atab-'+t);
     if(body) body.style.display=t===tab?'block':'none';
@@ -5684,314 +5681,172 @@ window.exportarProgramaJSON = exportarProgramaJSON;
 
 /* ══════════════════════════════════════════════════════════════
    MÓDULO ORGANIGRAMA — Agile drag-and-drop org chart
-   localStorage['avit_organigrama'] = { nodes:[...], connMode:null }
-   Node: { id, nombre, rol, parentId, x, y, color }
    ══════════════════════════════════════════════════════════════ */
 
-/* ── Datos por defecto ────────────────────────────────────── */
 const ORG_DEFAULT = {nodes:[
-  {id:'n0',nombre:'Erick Baldizon',rol:'Director / Fundador',parentId:null,x:340,y:30,color:'#D4A843'},
-  {id:'n1',nombre:'Enrique Galindo',rol:'Colaborador',parentId:'n0',x:40,y:190},
-  {id:'n2',nombre:'Cristian Arauz',rol:'Colaborador',parentId:'n0',x:190,y:190},
-  {id:'n3',nombre:'Jefferson Salzbrener',rol:'Colaborador',parentId:'n0',x:340,y:190},
+  {id:'n0',nombre:'Erick Baldizon',rol:'Director / Fundador',parentId:null,x:320,y:30,color:'#D4A843'},
+  {id:'n1',nombre:'Enrique Galindo',rol:'Colaborador',parentId:'n0',x:20,y:190},
+  {id:'n2',nombre:'Cristian Arauz',rol:'Colaborador',parentId:'n0',x:175,y:190},
+  {id:'n3',nombre:'Jefferson Salzbrener',rol:'Colaborador',parentId:'n0',x:330,y:190},
   {id:'n4',nombre:'Miguel Soto',rol:'Colaborador',parentId:'n0',x:490,y:190},
-  {id:'n5',nombre:'Roberto Sinai',rol:'Colaborador',parentId:'n0',x:640,y:190},
-  {id:'n6',nombre:'Eunice Moran',rol:'Colaborador',parentId:'n0',x:115,y:330},
-  {id:'n7',nombre:'Mar de Baldizon',rol:'Colaborador',parentId:'n0',x:565,y:330},
+  {id:'n5',nombre:'Roberto Sinai',rol:'Colaborador',parentId:'n0',x:645,y:190},
+  {id:'n6',nombre:'Eunice Moran',rol:'Colaboradora',parentId:'n0',x:100,y:340},
+  {id:'n7',nombre:'Mar de Baldizon',rol:'Colaboradora',parentId:'n0',x:540,y:340},
 ]};
 
-/* ── Storage ──────────────────────────────────────────────── */
-function orgLoad(){
-  try{ return JSON.parse(localStorage.getItem('avit_organigrama')||'null')||JSON.parse(JSON.stringify(ORG_DEFAULT)); }
-  catch(e){ return JSON.parse(JSON.stringify(ORG_DEFAULT)); }
-}
-function orgSave(){
-  localStorage.setItem('avit_organigrama',JSON.stringify({nodes:_orgNodes}));
-  const ss=document.getElementById('syncStatus');
-  if(ss){ss.textContent='✦ Organigrama guardado';setTimeout(()=>{if(ss.textContent==='✦ Organigrama guardado')ss.textContent='';},2000);}
-}
+function orgLoad(){ try{ return JSON.parse(localStorage.getItem('avit_organigrama')||'null')||JSON.parse(JSON.stringify(ORG_DEFAULT)); }catch(e){ return JSON.parse(JSON.stringify(ORG_DEFAULT)); } }
+function orgSave(){ localStorage.setItem('avit_organigrama',JSON.stringify({nodes:_orgNodes})); }
 
-/* ── Estado ──────────────────────────────────────────────── */
-let _orgNodes=[];
-let _orgDrag=null;        // {id, ox, oy, startX, startY}
-let _orgConnMode=null;    // id del nodo origen para nueva conexión
-let _orgSelected=null;
-let _orgCtxOpen=null;
+var _orgNodes=[];
+var _orgDrag=null;
+var _orgSelected=null;
 
-/* ── Iniciales ────────────────────────────────────────────── */
-function orgInitials(nombre){
-  const w=(nombre||'?').trim().split(/\s+/);
-  return w.length>=2?(w[0][0]+w[w.length-1][0]).toUpperCase():nombre.slice(0,2).toUpperCase();
-}
+function orgInitials(n){ const w=(n||'?').trim().split(/\s+/); return w.length>=2?(w[0][0]+w[w.length-1][0]).toUpperCase():n.slice(0,2).toUpperCase(); }
+function orgColor(n){ return n.color||(!n.parentId?'#D4A843':'#5AABF0'); }
 
-/* ── Color por rol ────────────────────────────────────────── */
-function orgRolColor(node){
-  if(node.color) return node.color;
-  if(!node.parentId) return '#D4A843';
-  return '#5AABF0';
-}
-
-/* ── Render ─────────────────────────────────────────────────
-   Limpia el wrap, redibuja SVG y nodos HTML
-   ─────────────────────────────────────────────────────────── */
+/* ── Render completo ─────────────────────────────────────────── */
 function orgRender(){
-  const wrap=document.getElementById('orgWrap');
-  const svg =document.getElementById('orgSvg');
+  const wrap = document.getElementById('orgWrap');
+  const svg  = document.getElementById('orgSvg');
   if(!wrap||!svg) return;
 
-  const inner=document.getElementById('orgInner')||wrap;
-  // Limpiar nodos HTML (no el SVG ni la onda)
-  inner.querySelectorAll('.org-node').forEach(el=>el.remove());
+  // 1. Limpiar nodos previos (no el SVG)
+  wrap.querySelectorAll('.org-node').forEach(el=>el.remove());
 
-  // ── Líneas SVG ──────────────────────────────────────────
-  const nodeW=160, nodeH=76;
-  const cx=n=>n.x+nodeW/2, cy=n=>n.y+nodeH/2;
-  svg.innerHTML='';
-  // Defs: gradiente para las líneas
+  // 2. Líneas SVG con gradiente
+  const W=160,H=76;
   svg.innerHTML=`<defs>
-    <linearGradient id="orgLineGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="rgba(212,168,67,0.5)"/>
+    <linearGradient id="olg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="rgba(212,168,67,0.55)"/>
       <stop offset="100%" stop-color="rgba(90,171,240,0.3)"/>
-    </linearGradient>
-  </defs>`;
+    </linearGradient></defs>`;
   _orgNodes.forEach(n=>{
     if(!n.parentId) return;
-    const parent=_orgNodes.find(p=>p.id===n.parentId);
-    if(!parent) return;
-    const px=cx(parent), py=cy(parent)+nodeH/2-10;
-    const nx=cx(n),      ny=cy(n)-nodeH/2+10;
-    const midY=(py+ny)/2;
-    // Bezier curve
+    const p=_orgNodes.find(x=>x.id===n.parentId); if(!p) return;
+    const px=p.x+W/2, py=p.y+H-4;
+    const nx=n.x+W/2, ny=n.y+4;
+    const mid=(py+ny)/2;
     const path=document.createElementNS('http://www.w3.org/2000/svg','path');
-    path.setAttribute('d',`M${px},${py} C${px},${midY} ${nx},${midY} ${nx},${ny}`);
-    path.setAttribute('stroke','url(#orgLineGrad)');
-    path.setAttribute('stroke-width','1.5');
-    path.setAttribute('fill','none');
-    path.setAttribute('stroke-dasharray','0');
+    path.setAttribute('d',`M${px},${py} C${px},${mid} ${nx},${mid} ${nx},${ny}`);
+    path.setAttribute('stroke','url(#olg)'); path.setAttribute('stroke-width','1.5'); path.setAttribute('fill','none');
     svg.appendChild(path);
   });
 
-  // ── Nodos HTML ───────────────────────────────────────────
+  // 3. Nodos HTML
   _orgNodes.forEach(n=>{
-    const isRoot=!n.parentId;
-    const col=orgRolColor(n);
-    const initials=orgInitials(n.nombre);
-    const div=document.createElement('div');
-    div.className='org-node'+(isRoot?' org-node-root':'');
-    div.dataset.id=n.id;
-    div.style.left=n.x+'px';
-    div.style.top=n.y+'px';
-    div.style.width='160px';
-    div.innerHTML=`
+    const col=orgColor(n);
+    const ini=orgInitials(n.nombre);
+    const d=document.createElement('div');
+    d.className='org-node'+(!n.parentId?' org-node-root':'');
+    d.dataset.id=n.id;
+    d.style.cssText=`position:absolute;left:${n.x}px;top:${n.y}px;width:160px;z-index:10;cursor:grab;user-select:none`;
+    d.innerHTML=`
       <div class="org-node-inner${_orgSelected===n.id?' selected':''}">
-        <div class="org-avatar" style="background:${col}22;color:${col};border-color:${col}44">${initials}</div>
-        <div class="org-name" title="${n.nombre}">${n.nombre}</div>
-        <div class="org-rol" title="${n.rol||''}">${n.rol||'—'}</div>
+        <div class="org-avatar" style="background:${col}22;color:${col};border-color:${col}44">${ini}</div>
+        <div class="org-name" title="${escapeHtmlK(n.nombre)}">${escapeHtmlK(n.nombre)}</div>
+        <div class="org-rol">${escapeHtmlK(n.rol||'')}</div>
       </div>
       <div class="org-node-badge" onclick="event.stopPropagation();orgCtxOpen(event,'${n.id}')">⋮</div>`;
-    // Drag
-    div.addEventListener('mousedown',orgDragStart,{passive:false});
-    // Doble clic = editar
-    div.addEventListener('dblclick',e=>{e.stopPropagation();orgEditNode(n.id);});
-    // Clic derecho = menú
-    div.addEventListener('contextmenu',e=>{e.preventDefault();e.stopPropagation();orgCtxOpen(e,n.id);});
-    // Clic simple = seleccionar
-    div.addEventListener('click',e=>{e.stopPropagation();orgSelect(n.id);});
-    inner.appendChild(div);
+    d.addEventListener('mousedown', orgDragStart, false);
+    d.addEventListener('dblclick',  e=>{ e.stopPropagation(); orgEditNode(n.id); }, false);
+    d.addEventListener('contextmenu',e=>{ e.preventDefault(); e.stopPropagation(); orgCtxOpen(e,n.id); }, false);
+    d.addEventListener('click',     e=>{ e.stopPropagation(); _orgSelected=(_orgSelected===n.id?null:n.id); orgRender(); }, false);
+    wrap.appendChild(d);
   });
 }
 
-/* ── Selección ───────────────────────────────────────────── */
-function orgSelect(id){
-  _orgSelected=_orgSelected===id?null:id;
-  orgRender();
-}
-
-/* ── Drag & Drop — fluido con pan del canvas ─────────────── */
-let _orgPan=null;   // pan del canvas {ox,oy,sx,sy}
-let _orgViewX=0, _orgViewY=0;  // offset de scroll de la pizarra
-
-function orgDragStart(e){
-  if(e.button!==0) return;
-  e.preventDefault();
-  e.stopPropagation();
-  const div=e.currentTarget;
-  const id=div.dataset.id;
-  const node=_orgNodes.find(n=>n.id===id);
-  if(!node) return;
-  // offset relativo al canvas
-  const wrap=document.getElementById('orgWrap');
-  const rect=wrap.getBoundingClientRect();
-  _orgDrag={
-    id,
-    ox: (e.clientX - rect.left + wrap.scrollLeft) - node.x,
-    oy: (e.clientY - rect.top  + wrap.scrollTop)  - node.y,
-  };
-  // Elevar visualmente el nodo
-  div.style.zIndex='20';
-  div.querySelector('.org-node-inner').style.transform='scale(1.04)';
-  div.querySelector('.org-node-inner').style.boxShadow='0 12px 40px rgba(0,0,0,0.6),0 0 0 2px rgba(212,168,67,0.35)';
-  document.body.style.userSelect='none';
-  document.addEventListener('mousemove',orgDragMove,{passive:false});
-  document.addEventListener('mouseup',orgDragEnd);
-}
-
-function orgDragMove(e){
-  if(!_orgDrag) return;
-  e.preventDefault();
-  const wrap=document.getElementById('orgWrap');
-  const inner=document.getElementById('orgInner')||wrap;
-  const rect=wrap.getBoundingClientRect();
-  const node=_orgNodes.find(n=>n.id===_orgDrag.id);
-  if(!node) return;
-  // Posición relativa al inner (incluye scroll del wrap)
-  const nx=(e.clientX - rect.left + wrap.scrollLeft) - _orgDrag.ox;
-  const ny=(e.clientY - rect.top  + wrap.scrollTop)  - _orgDrag.oy;
-  node.x=Math.max(-10, nx);
-  node.y=Math.max(-10, ny);
-  // Mover el div SIN re-render completo (ultra fluido)
-  const div=document.querySelector(`.org-node[data-id="${_orgDrag.id}"]`);
-  if(div){ div.style.left=node.x+'px'; div.style.top=node.y+'px'; }
-  // Solo redibuja líneas (sin reconstruir nodos HTML)
-  orgRenderLines();
-}
-
-function orgDragEnd(e){
-  if(_orgDrag){
-    // Restaurar estilo
-    const div=document.querySelector(`.org-node[data-id="${_orgDrag.id}"]`);
-    if(div){
-      div.style.zIndex='10';
-      const inner=div.querySelector('.org-node-inner');
-      if(inner){ inner.style.transform=''; inner.style.boxShadow=''; }
-    }
-    _orgDrag=null;
-    document.body.style.userSelect='';
-    orgSave();
-  }
-  document.removeEventListener('mousemove',orgDragMove);
-  document.removeEventListener('mouseup',orgDragEnd);
-}
-
-/* ── Pan del canvas (arrastrar el fondo) ─────────────────── */
-function orgPanStart(e){
-  if(e.target.closest('.org-node')) return;  // no interferir con nodos
-  if(e.button!==0) return;
-  const wrap=document.getElementById('orgWrap');
-  _orgPan={startX:e.clientX, startY:e.clientY, initSX:wrap.scrollLeft, initSY:wrap.scrollTop};
-  wrap.style.cursor='grabbing';
-}
-function orgPanMove(e){
-  if(!_orgPan) return;
-  const wrap=document.getElementById('orgWrap');
-  wrap.scrollLeft=_orgPan.initSX - (e.clientX - _orgPan.startX);
-  wrap.scrollTop =_orgPan.initSY - (e.clientY - _orgPan.startY);
-}
-function orgPanEnd(){
-  if(_orgPan){ _orgPan=null; const w=document.getElementById('orgWrap'); if(w) w.style.cursor='default'; }
-}
-function orgRenderLines(){
-  const svg=document.getElementById('orgSvg');
-  if(!svg) return;
-  const nodeW=160,nodeH=76;
-  const cx=n=>n.x+nodeW/2, cy=n=>n.y+nodeH/2;
-  // Keep defs, replace paths
+/* ── Redibuja solo las líneas (sin reconstruir nodos) ─────────── */
+function orgRedrawLines(){
+  const svg=document.getElementById('orgSvg'); if(!svg) return;
+  const W=160,H=76;
+  // Preserve defs
   const defs=svg.querySelector('defs');
-  svg.innerHTML='';
-  if(defs) svg.appendChild(defs);
-  else svg.innerHTML=`<defs><linearGradient id="orgLineGrad" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="rgba(212,168,67,0.5)"/><stop offset="100%" stop-color="rgba(90,171,240,0.3)"/></linearGradient></defs>`;
+  while(svg.lastChild && svg.lastChild!==defs) svg.removeChild(svg.lastChild);
   _orgNodes.forEach(n=>{
     if(!n.parentId) return;
-    const parent=_orgNodes.find(p=>p.id===n.parentId);
-    if(!parent) return;
-    const px=cx(parent),py=cy(parent)+nodeH/2-10;
-    const nx=cx(n),ny=cy(n)-nodeH/2+10;
-    const midY=(py+ny)/2;
+    const p=_orgNodes.find(x=>x.id===n.parentId); if(!p) return;
+    const px=p.x+W/2, py=p.y+H-4, nx=n.x+W/2, ny=n.y+4, mid=(py+ny)/2;
     const path=document.createElementNS('http://www.w3.org/2000/svg','path');
-    path.setAttribute('d',`M${px},${py} C${px},${midY} ${nx},${midY} ${nx},${ny}`);
-    path.setAttribute('stroke','url(#orgLineGrad)');
-    path.setAttribute('stroke-width','1.5');
-    path.setAttribute('fill','none');
+    path.setAttribute('d',`M${px},${py} C${px},${mid} ${nx},${mid} ${nx},${ny}`);
+    path.setAttribute('stroke','url(#olg)'); path.setAttribute('stroke-width','1.5'); path.setAttribute('fill','none');
     svg.appendChild(path);
   });
 }
 
-/* ── Auto-layout ─────────────────────────────────────────── */
-function orgAutoLayout(){
-  // BFS por niveles
-  const nodeW=160,gapX=24,gapY=110,padX=20,padY=30;
-  // Construir árbol
-  const children={};
-  _orgNodes.forEach(n=>{
-    if(!children[n.parentId||'root']) children[n.parentId||'root']=[];
-    children[n.parentId||'root'].push(n.id);
-  });
-  const levels=[];
-  let queue=[...(children['root']||[])];
-  while(queue.length){
-    levels.push([...queue]);
-    const next=[];
-    queue.forEach(id=>{ if(children[id]) next.push(...children[id]); });
-    queue=next;
-  }
-  // Posicionar
-  levels.forEach((lvl,li)=>{
-    const totalW=lvl.length*(nodeW+gapX)-gapX;
+/* ── Drag ────────────────────────────────────────────────────── */
+function orgDragStart(e){
+  if(e.button!==0) return;
+  e.preventDefault(); e.stopPropagation();
+  const node=_orgNodes.find(n=>n.id===e.currentTarget.dataset.id); if(!node) return;
+  const wrap=document.getElementById('orgWrap');
+  const r=wrap.getBoundingClientRect();
+  _orgDrag={ id:node.id, ox:e.clientX-r.left-node.x, oy:e.clientY-r.top-node.y };
+  e.currentTarget.style.zIndex='30'; e.currentTarget.style.cursor='grabbing';
+  const inner=e.currentTarget.querySelector('.org-node-inner');
+  if(inner){ inner.style.transform='scale(1.04)'; inner.style.boxShadow='0 12px 36px rgba(0,0,0,0.6),0 0 0 2px rgba(212,168,67,0.4)'; }
+  document.addEventListener('mousemove', orgDragMove, false);
+  document.addEventListener('mouseup',   orgDragEnd,   false);
+}
+function orgDragMove(e){
+  if(!_orgDrag) return;
+  const wrap=document.getElementById('orgWrap'); if(!wrap) return;
+  const r=wrap.getBoundingClientRect();
+  const node=_orgNodes.find(n=>n.id===_orgDrag.id); if(!node) return;
+  node.x=Math.max(0,Math.min(wrap.clientWidth-165,  e.clientX-r.left-_orgDrag.ox));
+  node.y=Math.max(0,Math.min(wrap.clientHeight-82, e.clientY-r.top -_orgDrag.oy));
+  const el=wrap.querySelector(`.org-node[data-id="${_orgDrag.id}"]`);
+  if(el){ el.style.left=node.x+'px'; el.style.top=node.y+'px'; }
+  orgRedrawLines();
+}
+function orgDragEnd(){
+  if(_orgDrag){
     const wrap=document.getElementById('orgWrap');
-    const wrapW=wrap?wrap.offsetWidth:800;
-    const startX=Math.max(padX,(wrapW-totalW)/2);
-    lvl.forEach((id,i)=>{
-      const n=_orgNodes.find(x=>x.id===id);
-      if(n){ n.x=startX+i*(nodeW+gapX); n.y=padY+li*(76+gapY); }
-    });
-  });
-  orgRender();
-  orgSave();
+    const el=wrap&&wrap.querySelector(`.org-node[data-id="${_orgDrag.id}"]`);
+    if(el){ el.style.zIndex='10'; el.style.cursor='grab';
+      const inner=el.querySelector('.org-node-inner');
+      if(inner){ inner.style.transform=''; inner.style.boxShadow=''; }
+    }
+    _orgDrag=null; orgSave();
+  }
+  document.removeEventListener('mousemove',orgDragMove);
+  document.removeEventListener('mouseup',  orgDragEnd);
 }
 
-/* ── Menú contextual ─────────────────────────────────────── */
+/* ── Context menu ─────────────────────────────────────────────── */
 function orgCtxOpen(e,id){
-  orgCtxClose();
+  document.getElementById('orgCtxMenu')?.remove();
   _orgSelected=id;
-  const node=_orgNodes.find(n=>n.id===id);
-  if(!node) return;
   const menu=document.createElement('div');
-  menu.className='org-ctx';
-  menu.id='orgCtxMenu';
-  menu.style.left=e.clientX+'px';
-  menu.style.top=e.clientY+'px';
+  menu.className='org-ctx'; menu.id='orgCtxMenu';
+  menu.style.left=e.clientX+'px'; menu.style.top=e.clientY+'px';
   menu.innerHTML=`
     <div class="org-ctx-item" onclick="orgEditNode('${id}');orgCtxClose()">✎ &nbsp;Editar nombre / rol</div>
-    <div class="org-ctx-item" onclick="orgAddChild('${id}');orgCtxClose()">+ &nbsp;Agregar colaborador hijo</div>
+    <div class="org-ctx-item" onclick="orgAddChild('${id}');orgCtxClose()">+ &nbsp;Agregar hijo</div>
     <div class="org-ctx-item" onclick="orgChangeParent('${id}');orgCtxClose()">↕ &nbsp;Cambiar superior</div>
     <div class="org-ctx-sep"></div>
-    <div class="org-ctx-item" onclick="orgPickColor('${id}');orgCtxClose()">🎨 &nbsp;Color del nodo</div>
+    <div class="org-ctx-item" onclick="orgPickColor('${id}');orgCtxClose()">🎨 &nbsp;Color</div>
     <div class="org-ctx-sep"></div>
-    <div class="org-ctx-item" style="color:var(--red)" onclick="orgDeleteNode('${id}');orgCtxClose()">✕ &nbsp;Eliminar nodo</div>`;
+    <div class="org-ctx-item" style="color:var(--red)" onclick="orgDeleteNode('${id}');orgCtxClose()">✕ &nbsp;Eliminar</div>`;
   document.body.appendChild(menu);
-  // Adjust if off screen
   const r=menu.getBoundingClientRect();
-  if(r.right>window.innerWidth) menu.style.left=(e.clientX-r.width)+'px';
+  if(r.right>window.innerWidth)  menu.style.left=(e.clientX-r.width)+'px';
   if(r.bottom>window.innerHeight) menu.style.top=(e.clientY-r.height)+'px';
   setTimeout(()=>document.addEventListener('click',orgCtxClose,{once:true}),10);
 }
-function orgCtxClose(){
-  document.getElementById('orgCtxMenu')?.remove();
-}
+function orgCtxClose(){ document.getElementById('orgCtxMenu')?.remove(); }
 window.orgCtxClose=orgCtxClose;
 
-/* ── Editar nodo ─────────────────────────────────────────── */
+/* ── Editar ───────────────────────────────────────────────────── */
 function orgEditNode(id){
-  const node=_orgNodes.find(n=>n.id===id);
-  if(!node) return;
+  const n=_orgNodes.find(x=>x.id===id); if(!n) return;
   const m=document.createElement('div');
   m.id='orgEditModal';
   m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:9990;display:flex;align-items:center;justify-content:center;padding:20px';
   m.onclick=e=>{if(e.target===m)m.remove();};
-  m.innerHTML=`<div style="background:var(--bg-surface-2,#1a1b1e);border:1px solid var(--border-accent);border-radius:var(--r-lg);padding:22px 26px;width:100%;max-width:360px" onclick="event.stopPropagation()">
+  m.innerHTML=`<div style="background:var(--bg-surface-2,#1a1b1e);border:1px solid var(--border-accent);border-radius:var(--r-lg);padding:22px 26px;width:100%;max-width:340px" onclick="event.stopPropagation()">
     <div style="font-family:var(--font-display);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:14px">Editar colaborador</div>
-    <div style="margin-bottom:.65rem"><label class="lbl">Nombre</label><input type="text" id="orgEName" value="${node.nombre||''}" style="font-family:var(--font-body)"></div>
-    <div style="margin-bottom:1rem"><label class="lbl">Rol / Cargo</label><input type="text" id="orgERol" value="${node.rol||''}" placeholder="Arquitecto, Diseñador, Coordinador..."></div>
+    <div style="margin-bottom:.65rem"><label class="lbl">Nombre</label><input type="text" id="orgEName" value="${n.nombre||''}"></div>
+    <div style="margin-bottom:1rem"><label class="lbl">Rol / Cargo</label><input type="text" id="orgERol" value="${n.rol||''}" placeholder="Arquitecto, Diseñador..."></div>
     <div style="display:flex;justify-content:flex-end;gap:8px">
       <button onclick="document.getElementById('orgEditModal').remove()" style="padding:6px 13px;font-size:11px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text-2);cursor:pointer;font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase">Cancelar</button>
       <button onclick="orgSaveEdit('${id}')" style="padding:6px 16px;font-size:11px;border:1px solid var(--accent);border-radius:var(--r-md);background:var(--accent);color:var(--text-on-accent);cursor:pointer;font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase">Guardar</button>
@@ -6001,110 +5856,107 @@ function orgEditNode(id){
   setTimeout(()=>document.getElementById('orgEName')?.select(),60);
 }
 function orgSaveEdit(id){
-  const node=_orgNodes.find(n=>n.id===id);
-  if(!node) return;
-  node.nombre=(document.getElementById('orgEName')?.value||'').trim()||node.nombre;
-  node.rol=(document.getElementById('orgERol')?.value||'').trim();
+  const n=_orgNodes.find(x=>x.id===id); if(!n) return;
+  n.nombre=(document.getElementById('orgEName')?.value||'').trim()||n.nombre;
+  n.rol=(document.getElementById('orgERol')?.value||'').trim();
   document.getElementById('orgEditModal')?.remove();
   orgRender(); orgSave();
 }
 window.orgSaveEdit=orgSaveEdit;
 
-/* ── Agregar nodo ────────────────────────────────────────── */
+/* ── Agregar ─────────────────────────────────────────────────── */
 function orgAddNode(){
-  const wrap=document.getElementById('orgWrap');
   const id='n'+Date.now();
-  _orgNodes.push({id,nombre:'Nuevo colaborador',rol:'Cargo',parentId:_orgSelected||(_orgNodes[0]?.id||null),x:Math.random()*400+80,y:Math.random()*200+200});
+  const px=_orgSelected?(_orgNodes.find(n=>n.id===_orgSelected)?.x||200):200;
+  const py=_orgSelected?(_orgNodes.find(n=>n.id===_orgSelected)?.y||100)+140:300;
+  _orgNodes.push({id,nombre:'Nuevo colaborador',rol:'Cargo',parentId:_orgSelected||(_orgNodes[0]?.id||null),x:px,y:py});
   orgRender(); orgEditNode(id);
 }
 function orgAddChild(parentId){
-  const parent=_orgNodes.find(n=>n.id===parentId);
+  const p=_orgNodes.find(n=>n.id===parentId);
   const id='n'+Date.now();
-  _orgNodes.push({id,nombre:'Nuevo colaborador',rol:'Cargo',parentId,x:(parent?.x||200)+20,y:(parent?.y||100)+120});
+  _orgNodes.push({id,nombre:'Nuevo colaborador',rol:'Cargo',parentId,x:(p?.x||200)+20,y:(p?.y||100)+140});
   orgRender(); orgEditNode(id);
 }
 window.orgAddNode=orgAddNode; window.orgAddChild=orgAddChild;
 
-/* ── Cambiar superior ────────────────────────────────────── */
+/* ── Cambiar superior ─────────────────────────────────────────── */
 function orgChangeParent(id){
-  const node=_orgNodes.find(n=>n.id===id);
-  if(!node) return;
   const others=_orgNodes.filter(n=>n.id!==id);
   const m=document.createElement('div');
   m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:9990;display:flex;align-items:center;justify-content:center;padding:20px';
   m.onclick=e=>{if(e.target===m)m.remove();};
-  m.innerHTML=`<div style="background:var(--bg-surface-2,#1a1b1e);border:1px solid var(--border-accent);border-radius:var(--r-lg);padding:22px 26px;width:100%;max-width:340px" onclick="event.stopPropagation()">
+  m.innerHTML=`<div style="background:var(--bg-surface-2,#1a1b1e);border:1px solid var(--border-accent);border-radius:var(--r-lg);padding:22px 26px;width:100%;max-width:320px" onclick="event.stopPropagation()">
     <div style="font-family:var(--font-display);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:12px">Seleccioná el nuevo superior</div>
     <div style="display:flex;flex-direction:column;gap:5px;max-height:260px;overflow-y:auto;margin-bottom:12px">
-      <button onclick="orgSetParent('${id}',null);this.closest('[style]').remove()" style="padding:8px 12px;text-align:left;font-size:12px;border:0.5px solid rgba(212,168,67,0.3);border-radius:var(--r-md);background:rgba(212,168,67,0.06);color:var(--accent);cursor:pointer">Sin superior (raíz)</button>
-      ${others.map(n=>`<button onclick="orgSetParent('${id}','${n.id}');this.closest('[style]').remove()" style="padding:8px 12px;text-align:left;font-size:12px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text-2);cursor:pointer">${n.nombre}</button>`).join('')}
+      <button onclick="orgSetParent('${id}',null);this.closest('[style*=inset]').remove()" style="padding:8px 12px;text-align:left;font-size:12px;border:0.5px solid rgba(212,168,67,0.3);border-radius:var(--r-md);background:rgba(212,168,67,0.06);color:var(--accent);cursor:pointer">Sin superior (raíz)</button>
+      ${others.map(n=>`<button onclick="orgSetParent('${id}','${n.id}');this.closest('[style*=inset]').remove()" style="padding:8px 12px;text-align:left;font-size:12px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text-2);cursor:pointer">${escapeHtmlK(n.nombre)}</button>`).join('')}
     </div>
   </div>`;
   document.body.appendChild(m);
 }
-function orgSetParent(id,parentId){
-  const node=_orgNodes.find(n=>n.id===id);
-  if(node){ node.parentId=parentId; orgRender(); orgSave(); }
-}
+function orgSetParent(id,parentId){ const n=_orgNodes.find(x=>x.id===id); if(n){n.parentId=parentId; orgRender(); orgSave();} }
 window.orgChangeParent=orgChangeParent; window.orgSetParent=orgSetParent;
 
-/* ── Color del nodo ─────────────────────────────────────── */
+/* ── Color ────────────────────────────────────────────────────── */
 function orgPickColor(id){
-  const colors=['#D4A843','#5AABF0','#4CAF72','#E05A5A','#E8973A','#A78BFA','#F9A8D4','#6EE7B7'];
-  const node=_orgNodes.find(n=>n.id===id);
-  if(!node) return;
+  const colors=['#D4A843','#5AABF0','#4CAF72','#E05A5A','#E8973A','#A78BFA','#34D399','#F9A8D4'];
+  const n=_orgNodes.find(x=>x.id===id); if(!n) return;
   const m=document.createElement('div');
   m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9990;display:flex;align-items:center;justify-content:center';
   m.onclick=e=>{if(e.target===m)m.remove();};
   m.innerHTML=`<div style="background:var(--bg-surface-2,#1a1b1e);border:1px solid var(--border-accent);border-radius:var(--r-lg);padding:18px 22px" onclick="event.stopPropagation()">
     <div style="font-size:11px;color:var(--text-3);margin-bottom:10px;font-family:var(--font-display);letter-spacing:.1em;text-transform:uppercase">Color del nodo</div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;max-width:220px">
-      ${colors.map(c=>`<button onclick="orgSetColor('${id}','${c}');this.closest('[style]').remove()" style="width:32px;height:32px;border-radius:50%;background:${c};border:2px solid ${c===node.color?'#fff':'transparent'};cursor:pointer;transition:transform .15s" onmouseover="this.style.transform='scale(1.15)'" onmouseout="this.style.transform=''"></button>`).join('')}
+      ${colors.map(c=>`<button onclick="orgSetColor('${id}','${c}');this.closest('[style*=inset]').remove()" style="width:32px;height:32px;border-radius:50%;background:${c};border:2px solid ${c===n.color?'#fff':'transparent'};cursor:pointer;transition:transform .15s" onmouseover="this.style.transform='scale(1.15)'" onmouseout="this.style.transform=''"></button>`).join('')}
     </div>
   </div>`;
   document.body.appendChild(m);
 }
-function orgSetColor(id,color){
-  const node=_orgNodes.find(n=>n.id===id);
-  if(node){ node.color=color; orgRender(); orgSave(); }
-}
+function orgSetColor(id,color){ const n=_orgNodes.find(x=>x.id===id); if(n){n.color=color; orgRender(); orgSave();} }
 window.orgPickColor=orgPickColor; window.orgSetColor=orgSetColor;
 
-/* ── Eliminar nodo ───────────────────────────────────────── */
+/* ── Eliminar ─────────────────────────────────────────────────── */
 function orgDeleteNode(id){
-  if(!confirm('¿Eliminar este nodo? Sus hijos quedarán sin superior.')) return;
+  if(!confirm('¿Eliminar este nodo?')) return;
   _orgNodes=_orgNodes.filter(n=>n.id!==id);
-  // Desconectar hijos
   _orgNodes.forEach(n=>{if(n.parentId===id) n.parentId=null;});
   if(_orgSelected===id) _orgSelected=null;
   orgRender(); orgSave();
 }
 window.orgDeleteNode=orgDeleteNode;
 
-/* ── Auto-layout export ─────────────────────────────────── */
+/* ── Auto-layout ─────────────────────────────────────────────── */
+function orgAutoLayout(){
+  const W=160, gX=20, gY=110, padX=16, padY=24;
+  const children={};
+  _orgNodes.forEach(n=>{ const k=n.parentId||'root'; if(!children[k]) children[k]=[]; children[k].push(n.id); });
+  const levels=[]; let q=[...(children['root']||[])];
+  while(q.length){ levels.push([...q]); const nx=[]; q.forEach(id=>{if(children[id])nx.push(...children[id]);}); q=nx; }
+  const wrap=document.getElementById('orgWrap');
+  const wW=wrap?wrap.clientWidth:800;
+  levels.forEach((lvl,li)=>{
+    const tot=lvl.length*(W+gX)-gX;
+    const sx=Math.max(padX,(wW-tot)/2);
+    lvl.forEach((id,i)=>{ const n=_orgNodes.find(x=>x.id===id); if(n){n.x=sx+i*(W+gX); n.y=padY+li*(76+gY);} });
+  });
+  orgRender(); orgSave();
+}
 window.orgAutoLayout=orgAutoLayout;
-window.orgPanStart=orgPanStart;
-window.orgPanMove=orgPanMove;
-window.orgPanEnd=orgPanEnd;
-window.orgSave=orgSave;
 
-/* ── Hook en adminShowTab ───────────────────────────────── */
-const _adminOrgOrig = window.adminShowTab;
+/* ── Guardar públicamente ─────────────────────────────────────── */
+window.orgSave=function(){ orgSave(); const ss=document.getElementById('syncStatus'); if(ss){ss.textContent='✦ Organigrama guardado';setTimeout(()=>{if(ss.textContent==='✦ Organigrama guardado')ss.textContent='';},2000);} };
+
+/* ── Inicializar al abrir la tab ─────────────────────────────── */
+/* El adminShowTab ya incluye 'organigrama' — orgRender se llama desde adminShowTab hook */
+const _adminOrgTabOrig = window.adminShowTab;
 window.adminShowTab = function(tab){
-  _adminOrgOrig.apply(this, arguments);
+  _adminOrgTabOrig.apply(this, arguments);
   if(tab==='organigrama'){
-    const d=orgLoad();
-    _orgNodes=d.nodes||[];
-    orgRender();
+    const d=orgLoad(); _orgNodes=d.nodes||[];
+    requestAnimationFrame(orgRender);
   }
 };
-
-/* ── Hook en showPage para cargar al entrar al admin ─────── */
-document.addEventListener('DOMContentLoaded',()=>{
-  // Precargar datos
-  const d=orgLoad();
-  _orgNodes=d.nodes||[];
-},false);
 
 function toggleMenuConfig(){
   const m = document.getElementById('menuConfig');
