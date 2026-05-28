@@ -1532,6 +1532,53 @@ input.narrow{width:88px}input.mid{width:108px}
 .mkt-eval-kpi{background:var(--surface);border-radius:var(--r-md);padding:10px 12px;text-align:center}
 .mkt-eval-val{font-size:18px;font-weight:500}
 .mkt-eval-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.07em;color:var(--text-3);margin-top:2px}
+
+/* ═══ ORGANIGRAMA ══════════════════════════════════════════════ */
+.org-node{position:absolute;z-index:10;cursor:grab;user-select:none;
+  animation:fadeUp .25s var(--ease-out) both}
+.org-node:active{cursor:grabbing}
+.org-node-inner{
+  background:rgba(255,255,255,0.05);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,0.10);
+  border-radius:12px;padding:10px 14px;min-width:110px;max-width:150px;
+  text-align:center;box-shadow:0 4px 16px rgba(0,0,0,0.4);
+  transition:border-color .2s,box-shadow .2s,transform .15s;
+}
+.org-node-inner:hover{
+  border-color:rgba(212,168,67,0.45);
+  box-shadow:0 6px 24px rgba(0,0,0,0.5),0 0 0 1px rgba(212,168,67,0.15);
+  transform:translateY(-1px);
+}
+.org-node-inner.selected{
+  border-color:rgba(212,168,67,0.7)!important;
+  box-shadow:0 6px 24px rgba(0,0,0,0.5),0 0 0 2px rgba(212,168,67,0.25)!important;
+}
+.org-node-root .org-node-inner{
+  background:rgba(212,168,67,0.10);
+  border-color:rgba(212,168,67,0.35);
+}
+.org-avatar{width:36px;height:36px;border-radius:50%;margin:0 auto 7px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:600;font-family:var(--font-display);
+  background:rgba(212,168,67,0.15);color:var(--accent);border:1px solid rgba(212,168,67,0.25)}
+.org-name{font-size:11px;font-weight:500;color:var(--text);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3}
+.org-rol{font-size:9.5px;color:var(--text-3);margin-top:2px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:var(--font-body)}
+.org-node-badge{position:absolute;top:-5px;right:-5px;width:16px;height:16px;
+  border-radius:50%;background:var(--accent);color:var(--text-on-accent);
+  font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;opacity:0;transition:opacity .15s}
+.org-node:hover .org-node-badge{opacity:1}
+/* Context menu */
+.org-ctx{position:fixed;background:var(--bg-surface-2,#1a1b1e);border:1px solid var(--border-accent);
+  border-radius:var(--r-md);padding:5px;z-index:9999;min-width:170px;
+  box-shadow:0 10px 40px rgba(0,0,0,0.5);animation:popIn .12s var(--ease-out)}
+.org-ctx-item{padding:7px 12px;font-size:11px;color:var(--text-2);cursor:pointer;
+  border-radius:5px;display:flex;align-items:center;gap:8px;transition:background .1s}
+.org-ctx-item:hover{background:rgba(255,255,255,0.06);color:var(--text)}
+.org-ctx-sep{height:1px;background:rgba(255,255,255,0.06);margin:3px 0}
 </style>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 </head>
@@ -1877,33 +1924,7 @@ input.narrow{width:88px}input.mid{width:108px}
   </div>
 </div>
 
-<div class="sc">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem">
-    <span class="pl p6" style="display:inline-block">ISR</span>
-    <label class="tog"><input type="checkbox" id="isrOn" onchange="toggleIsr();if(typeof saveDraft==='function')saveDraft()"><span class="tog-sl"></span></label>
-  </div>
-  <div id="isrBody" style="opacity:.35;pointer-events:none">
-    <!-- Selector de régimen -->
-    <div style="display:flex;gap:8px;margin-bottom:.8rem">
-      <label style="flex:1;display:flex;align-items:center;gap:8px;padding:9px 12px;border:1px solid rgba(255,255,255,0.08);border-radius:var(--r-md);cursor:pointer;background:rgba(255,255,255,0.03);transition:border-color .15s" id="isrOpt7Label">
-        <input type="radio" name="isrMode" id="isr7" value="7" checked onchange="calc()" style="accent-color:var(--accent)">
-        <div>
-          <div style="font-size:12px;font-weight:500;color:var(--text)">7% sobre ingresos</div>
-          <div style="font-size:10px;color:var(--text-3);margin-top:1px">Régimen simplificado / Pequeño contribuyente</div>
-        </div>
-      </label>
-      <label style="flex:1;display:flex;align-items:center;gap:8px;padding:9px 12px;border:1px solid rgba(255,255,255,0.08);border-radius:var(--r-md);cursor:pointer;background:rgba(255,255,255,0.03);transition:border-color .15s" id="isrOpt25Label">
-        <input type="radio" name="isrMode" id="isr25" value="25" onchange="calc()" style="accent-color:var(--accent)">
-        <div>
-          <div style="font-size:12px;font-weight:500;color:var(--text)">25% sobre utilidad</div>
-          <div style="font-size:10px;color:var(--text-3);margin-top:1px">Régimen sobre utilidades — SAT Guatemala</div>
-        </div>
-      </label>
-    </div>
-    <div class="metric"><p class="ml">ISR estimado a pagar</p><p class="mv" id="isrAmtDisplay" style="color:var(--red)">—</p></div>
-    <p class="nt" style="margin-top:.5rem">Se deduce de tu ingreso — no afecta lo que cobra el cliente.</p>
-  </div>
-</div>
+
 
 <div class="sc">
   <span class="pl p6" style="margin-bottom:.75rem;display:inline-block">Anticipo y saldo</span>
@@ -2438,6 +2459,7 @@ input.narrow{width:88px}input.mid{width:108px}
     <button onclick="adminShowTab('marketing')" class="admin-tab" id="atab-marketing">📲 Marketing</button>
     <button onclick="adminShowTab('varios')" class="admin-tab" id="atab-varios">📦 Costos varios</button>
     <button onclick="adminShowTab('analisis')" class="admin-tab" id="atab-analisis">📊 Análisis</button>
+        <button onclick="adminShowTab('organigrama')" class="admin-tab" id="atab-organigrama">🏛 Organigrama</button>
   </div>
 
   <!-- Tab: Ingresos -->
@@ -2617,6 +2639,34 @@ input.narrow{width:88px}input.mid{width:108px}
     <div class="sc" id="admin-metricas-box"></div>
   </div>
 
+
+  <!-- Tab: Organigrama -->
+  <div id="atab-body-organigrama" class="admin-tab-body" style="display:none">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+      <span style="font-size:11px;color:var(--text-3)">Arrastrá los nodos para moverlos · Arrastrá el fondo para navegar la pizarra · Doble clic para editar · Clic derecho para opciones</span>
+      <div style="display:flex;gap:6px">
+        <button onclick="orgAddNode()" style="padding:5px 11px;font-size:10px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text-3);cursor:pointer;font-family:var(--font-display);letter-spacing:.07em;text-transform:uppercase;transition:all .15s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='';this.style.color=''">+ Nodo</button>
+        <button onclick="orgAutoLayout()" style="padding:5px 11px;font-size:10px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text-3);cursor:pointer;font-family:var(--font-display);letter-spacing:.07em;text-transform:uppercase;transition:all .15s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='';this.style.color=''">↻ Auto-layout</button>
+        <button onclick="orgSave()" style="padding:5px 12px;font-size:10px;border:1px solid var(--accent);border-radius:var(--r-md);background:transparent;color:var(--accent);cursor:pointer;font-family:var(--font-display);letter-spacing:.07em;text-transform:uppercase">Guardar</button>
+      </div>
+    </div>
+    <!-- Canvas del organigrama -->
+    <div id="orgWrap" style="position:relative;width:100%;height:520px;background:rgba(255,255,255,0.02);border:0.5px solid var(--border);border-radius:var(--r-lg);overflow:auto;cursor:default;user-select:none;scroll-behavior:smooth" onmousedown="orgPanStart(event)" onmousemove="orgPanMove(event)" onmouseup="orgPanEnd()" onmouseleave="orgPanEnd()">
+      <!-- Superficie interna de la pizarra (2000×1200px) -->
+      <div id="orgInner" style="position:relative;width:2000px;height:1200px;min-width:100%;min-height:100%">
+      <!-- SVG para las líneas de conexión -->
+      <svg id="orgSvg" style="position:absolute;inset:0;width:2000px;height:1200px;pointer-events:none;z-index:1"></svg>
+      </div><!-- /orgInner -->
+      <!-- Onda decorativa Avit -->
+      <svg viewBox="0 0 600 14" style="position:absolute;bottom:14px;left:0;right:0;width:100%;opacity:.18;pointer-events:none;z-index:0">
+        <path d="M0,7 C60,0 120,14 180,7 S300,0 360,7 S480,14 540,7 S600,4 620,7" stroke="#D4A843" stroke-width="1" fill="none"/>
+      </svg>
+      <!-- Nodos se generan aquí vía JS -->
+    </div>
+    <p style="font-size:10px;color:var(--text-3);margin-top:8px;text-align:center">
+      Doble clic en un nodo para editar · Clic derecho para conectar, agregar hijo o eliminar · Los cambios se guardan en <code style="font-family:var(--font-mono);background:rgba(255,255,255,0.05);padding:1px 5px;border-radius:3px">avit_organigrama</code>
+    </p>
+  </div>
   <!-- Modal formulario costo -->
   <div id="adminCostoModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:9990;align-items:center;justify-content:center;padding:20px">
     <div style="background:var(--bg-surface-2,#1a1b1e);border:1px solid var(--border-accent);border-radius:var(--r-lg);padding:22px 26px;width:100%;max-width:440px" onclick="event.stopPropagation()">
@@ -5631,6 +5681,431 @@ function exportarProgramaJSON(){
 window.exportarProgramaJSON = exportarProgramaJSON;
 
 
+
+/* ══════════════════════════════════════════════════════════════
+   MÓDULO ORGANIGRAMA — Agile drag-and-drop org chart
+   localStorage['avit_organigrama'] = { nodes:[...], connMode:null }
+   Node: { id, nombre, rol, parentId, x, y, color }
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Datos por defecto ────────────────────────────────────── */
+const ORG_DEFAULT = {nodes:[
+  {id:'n0',nombre:'Erick Baldizon',rol:'Director / Fundador',parentId:null,x:340,y:30,color:'#D4A843'},
+  {id:'n1',nombre:'Enrique Galindo',rol:'Colaborador',parentId:'n0',x:40,y:190},
+  {id:'n2',nombre:'Cristian Arauz',rol:'Colaborador',parentId:'n0',x:190,y:190},
+  {id:'n3',nombre:'Jefferson Salzbrener',rol:'Colaborador',parentId:'n0',x:340,y:190},
+  {id:'n4',nombre:'Miguel Soto',rol:'Colaborador',parentId:'n0',x:490,y:190},
+  {id:'n5',nombre:'Roberto Sinai',rol:'Colaborador',parentId:'n0',x:640,y:190},
+  {id:'n6',nombre:'Eunice Moran',rol:'Colaborador',parentId:'n0',x:115,y:330},
+  {id:'n7',nombre:'Mar de Baldizon',rol:'Colaborador',parentId:'n0',x:565,y:330},
+]};
+
+/* ── Storage ──────────────────────────────────────────────── */
+function orgLoad(){
+  try{ return JSON.parse(localStorage.getItem('avit_organigrama')||'null')||JSON.parse(JSON.stringify(ORG_DEFAULT)); }
+  catch(e){ return JSON.parse(JSON.stringify(ORG_DEFAULT)); }
+}
+function orgSave(){
+  localStorage.setItem('avit_organigrama',JSON.stringify({nodes:_orgNodes}));
+  const ss=document.getElementById('syncStatus');
+  if(ss){ss.textContent='✦ Organigrama guardado';setTimeout(()=>{if(ss.textContent==='✦ Organigrama guardado')ss.textContent='';},2000);}
+}
+
+/* ── Estado ──────────────────────────────────────────────── */
+let _orgNodes=[];
+let _orgDrag=null;        // {id, ox, oy, startX, startY}
+let _orgConnMode=null;    // id del nodo origen para nueva conexión
+let _orgSelected=null;
+let _orgCtxOpen=null;
+
+/* ── Iniciales ────────────────────────────────────────────── */
+function orgInitials(nombre){
+  const w=(nombre||'?').trim().split(/\s+/);
+  return w.length>=2?(w[0][0]+w[w.length-1][0]).toUpperCase():nombre.slice(0,2).toUpperCase();
+}
+
+/* ── Color por rol ────────────────────────────────────────── */
+function orgRolColor(node){
+  if(node.color) return node.color;
+  if(!node.parentId) return '#D4A843';
+  return '#5AABF0';
+}
+
+/* ── Render ─────────────────────────────────────────────────
+   Limpia el wrap, redibuja SVG y nodos HTML
+   ─────────────────────────────────────────────────────────── */
+function orgRender(){
+  const wrap=document.getElementById('orgWrap');
+  const svg =document.getElementById('orgSvg');
+  if(!wrap||!svg) return;
+
+  const inner=document.getElementById('orgInner')||wrap;
+  // Limpiar nodos HTML (no el SVG ni la onda)
+  inner.querySelectorAll('.org-node').forEach(el=>el.remove());
+
+  // ── Líneas SVG ──────────────────────────────────────────
+  const nodeW=160, nodeH=76;
+  const cx=n=>n.x+nodeW/2, cy=n=>n.y+nodeH/2;
+  svg.innerHTML='';
+  // Defs: gradiente para las líneas
+  svg.innerHTML=`<defs>
+    <linearGradient id="orgLineGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="rgba(212,168,67,0.5)"/>
+      <stop offset="100%" stop-color="rgba(90,171,240,0.3)"/>
+    </linearGradient>
+  </defs>`;
+  _orgNodes.forEach(n=>{
+    if(!n.parentId) return;
+    const parent=_orgNodes.find(p=>p.id===n.parentId);
+    if(!parent) return;
+    const px=cx(parent), py=cy(parent)+nodeH/2-10;
+    const nx=cx(n),      ny=cy(n)-nodeH/2+10;
+    const midY=(py+ny)/2;
+    // Bezier curve
+    const path=document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('d',`M${px},${py} C${px},${midY} ${nx},${midY} ${nx},${ny}`);
+    path.setAttribute('stroke','url(#orgLineGrad)');
+    path.setAttribute('stroke-width','1.5');
+    path.setAttribute('fill','none');
+    path.setAttribute('stroke-dasharray','0');
+    svg.appendChild(path);
+  });
+
+  // ── Nodos HTML ───────────────────────────────────────────
+  _orgNodes.forEach(n=>{
+    const isRoot=!n.parentId;
+    const col=orgRolColor(n);
+    const initials=orgInitials(n.nombre);
+    const div=document.createElement('div');
+    div.className='org-node'+(isRoot?' org-node-root':'');
+    div.dataset.id=n.id;
+    div.style.left=n.x+'px';
+    div.style.top=n.y+'px';
+    div.style.width='160px';
+    div.innerHTML=`
+      <div class="org-node-inner${_orgSelected===n.id?' selected':''}">
+        <div class="org-avatar" style="background:${col}22;color:${col};border-color:${col}44">${initials}</div>
+        <div class="org-name" title="${n.nombre}">${n.nombre}</div>
+        <div class="org-rol" title="${n.rol||''}">${n.rol||'—'}</div>
+      </div>
+      <div class="org-node-badge" onclick="event.stopPropagation();orgCtxOpen(event,'${n.id}')">⋮</div>`;
+    // Drag
+    div.addEventListener('mousedown',orgDragStart,{passive:false});
+    // Doble clic = editar
+    div.addEventListener('dblclick',e=>{e.stopPropagation();orgEditNode(n.id);});
+    // Clic derecho = menú
+    div.addEventListener('contextmenu',e=>{e.preventDefault();e.stopPropagation();orgCtxOpen(e,n.id);});
+    // Clic simple = seleccionar
+    div.addEventListener('click',e=>{e.stopPropagation();orgSelect(n.id);});
+    inner.appendChild(div);
+  });
+}
+
+/* ── Selección ───────────────────────────────────────────── */
+function orgSelect(id){
+  _orgSelected=_orgSelected===id?null:id;
+  orgRender();
+}
+
+/* ── Drag & Drop — fluido con pan del canvas ─────────────── */
+let _orgPan=null;   // pan del canvas {ox,oy,sx,sy}
+let _orgViewX=0, _orgViewY=0;  // offset de scroll de la pizarra
+
+function orgDragStart(e){
+  if(e.button!==0) return;
+  e.preventDefault();
+  e.stopPropagation();
+  const div=e.currentTarget;
+  const id=div.dataset.id;
+  const node=_orgNodes.find(n=>n.id===id);
+  if(!node) return;
+  // offset relativo al canvas
+  const wrap=document.getElementById('orgWrap');
+  const rect=wrap.getBoundingClientRect();
+  _orgDrag={
+    id,
+    ox: (e.clientX - rect.left + wrap.scrollLeft) - node.x,
+    oy: (e.clientY - rect.top  + wrap.scrollTop)  - node.y,
+  };
+  // Elevar visualmente el nodo
+  div.style.zIndex='20';
+  div.querySelector('.org-node-inner').style.transform='scale(1.04)';
+  div.querySelector('.org-node-inner').style.boxShadow='0 12px 40px rgba(0,0,0,0.6),0 0 0 2px rgba(212,168,67,0.35)';
+  document.body.style.userSelect='none';
+  document.addEventListener('mousemove',orgDragMove,{passive:false});
+  document.addEventListener('mouseup',orgDragEnd);
+}
+
+function orgDragMove(e){
+  if(!_orgDrag) return;
+  e.preventDefault();
+  const wrap=document.getElementById('orgWrap');
+  const inner=document.getElementById('orgInner')||wrap;
+  const rect=wrap.getBoundingClientRect();
+  const node=_orgNodes.find(n=>n.id===_orgDrag.id);
+  if(!node) return;
+  // Posición relativa al inner (incluye scroll del wrap)
+  const nx=(e.clientX - rect.left + wrap.scrollLeft) - _orgDrag.ox;
+  const ny=(e.clientY - rect.top  + wrap.scrollTop)  - _orgDrag.oy;
+  node.x=Math.max(-10, nx);
+  node.y=Math.max(-10, ny);
+  // Mover el div SIN re-render completo (ultra fluido)
+  const div=document.querySelector(`.org-node[data-id="${_orgDrag.id}"]`);
+  if(div){ div.style.left=node.x+'px'; div.style.top=node.y+'px'; }
+  // Solo redibuja líneas (sin reconstruir nodos HTML)
+  orgRenderLines();
+}
+
+function orgDragEnd(e){
+  if(_orgDrag){
+    // Restaurar estilo
+    const div=document.querySelector(`.org-node[data-id="${_orgDrag.id}"]`);
+    if(div){
+      div.style.zIndex='10';
+      const inner=div.querySelector('.org-node-inner');
+      if(inner){ inner.style.transform=''; inner.style.boxShadow=''; }
+    }
+    _orgDrag=null;
+    document.body.style.userSelect='';
+    orgSave();
+  }
+  document.removeEventListener('mousemove',orgDragMove);
+  document.removeEventListener('mouseup',orgDragEnd);
+}
+
+/* ── Pan del canvas (arrastrar el fondo) ─────────────────── */
+function orgPanStart(e){
+  if(e.target.closest('.org-node')) return;  // no interferir con nodos
+  if(e.button!==0) return;
+  const wrap=document.getElementById('orgWrap');
+  _orgPan={startX:e.clientX, startY:e.clientY, initSX:wrap.scrollLeft, initSY:wrap.scrollTop};
+  wrap.style.cursor='grabbing';
+}
+function orgPanMove(e){
+  if(!_orgPan) return;
+  const wrap=document.getElementById('orgWrap');
+  wrap.scrollLeft=_orgPan.initSX - (e.clientX - _orgPan.startX);
+  wrap.scrollTop =_orgPan.initSY - (e.clientY - _orgPan.startY);
+}
+function orgPanEnd(){
+  if(_orgPan){ _orgPan=null; const w=document.getElementById('orgWrap'); if(w) w.style.cursor='default'; }
+}
+function orgRenderLines(){
+  const svg=document.getElementById('orgSvg');
+  if(!svg) return;
+  const nodeW=160,nodeH=76;
+  const cx=n=>n.x+nodeW/2, cy=n=>n.y+nodeH/2;
+  // Keep defs, replace paths
+  const defs=svg.querySelector('defs');
+  svg.innerHTML='';
+  if(defs) svg.appendChild(defs);
+  else svg.innerHTML=`<defs><linearGradient id="orgLineGrad" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="rgba(212,168,67,0.5)"/><stop offset="100%" stop-color="rgba(90,171,240,0.3)"/></linearGradient></defs>`;
+  _orgNodes.forEach(n=>{
+    if(!n.parentId) return;
+    const parent=_orgNodes.find(p=>p.id===n.parentId);
+    if(!parent) return;
+    const px=cx(parent),py=cy(parent)+nodeH/2-10;
+    const nx=cx(n),ny=cy(n)-nodeH/2+10;
+    const midY=(py+ny)/2;
+    const path=document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('d',`M${px},${py} C${px},${midY} ${nx},${midY} ${nx},${ny}`);
+    path.setAttribute('stroke','url(#orgLineGrad)');
+    path.setAttribute('stroke-width','1.5');
+    path.setAttribute('fill','none');
+    svg.appendChild(path);
+  });
+}
+
+/* ── Auto-layout ─────────────────────────────────────────── */
+function orgAutoLayout(){
+  // BFS por niveles
+  const nodeW=160,gapX=24,gapY=110,padX=20,padY=30;
+  // Construir árbol
+  const children={};
+  _orgNodes.forEach(n=>{
+    if(!children[n.parentId||'root']) children[n.parentId||'root']=[];
+    children[n.parentId||'root'].push(n.id);
+  });
+  const levels=[];
+  let queue=[...(children['root']||[])];
+  while(queue.length){
+    levels.push([...queue]);
+    const next=[];
+    queue.forEach(id=>{ if(children[id]) next.push(...children[id]); });
+    queue=next;
+  }
+  // Posicionar
+  levels.forEach((lvl,li)=>{
+    const totalW=lvl.length*(nodeW+gapX)-gapX;
+    const wrap=document.getElementById('orgWrap');
+    const wrapW=wrap?wrap.offsetWidth:800;
+    const startX=Math.max(padX,(wrapW-totalW)/2);
+    lvl.forEach((id,i)=>{
+      const n=_orgNodes.find(x=>x.id===id);
+      if(n){ n.x=startX+i*(nodeW+gapX); n.y=padY+li*(76+gapY); }
+    });
+  });
+  orgRender();
+  orgSave();
+}
+
+/* ── Menú contextual ─────────────────────────────────────── */
+function orgCtxOpen(e,id){
+  orgCtxClose();
+  _orgSelected=id;
+  const node=_orgNodes.find(n=>n.id===id);
+  if(!node) return;
+  const menu=document.createElement('div');
+  menu.className='org-ctx';
+  menu.id='orgCtxMenu';
+  menu.style.left=e.clientX+'px';
+  menu.style.top=e.clientY+'px';
+  menu.innerHTML=`
+    <div class="org-ctx-item" onclick="orgEditNode('${id}');orgCtxClose()">✎ &nbsp;Editar nombre / rol</div>
+    <div class="org-ctx-item" onclick="orgAddChild('${id}');orgCtxClose()">+ &nbsp;Agregar colaborador hijo</div>
+    <div class="org-ctx-item" onclick="orgChangeParent('${id}');orgCtxClose()">↕ &nbsp;Cambiar superior</div>
+    <div class="org-ctx-sep"></div>
+    <div class="org-ctx-item" onclick="orgPickColor('${id}');orgCtxClose()">🎨 &nbsp;Color del nodo</div>
+    <div class="org-ctx-sep"></div>
+    <div class="org-ctx-item" style="color:var(--red)" onclick="orgDeleteNode('${id}');orgCtxClose()">✕ &nbsp;Eliminar nodo</div>`;
+  document.body.appendChild(menu);
+  // Adjust if off screen
+  const r=menu.getBoundingClientRect();
+  if(r.right>window.innerWidth) menu.style.left=(e.clientX-r.width)+'px';
+  if(r.bottom>window.innerHeight) menu.style.top=(e.clientY-r.height)+'px';
+  setTimeout(()=>document.addEventListener('click',orgCtxClose,{once:true}),10);
+}
+function orgCtxClose(){
+  document.getElementById('orgCtxMenu')?.remove();
+}
+window.orgCtxClose=orgCtxClose;
+
+/* ── Editar nodo ─────────────────────────────────────────── */
+function orgEditNode(id){
+  const node=_orgNodes.find(n=>n.id===id);
+  if(!node) return;
+  const m=document.createElement('div');
+  m.id='orgEditModal';
+  m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:9990;display:flex;align-items:center;justify-content:center;padding:20px';
+  m.onclick=e=>{if(e.target===m)m.remove();};
+  m.innerHTML=`<div style="background:var(--bg-surface-2,#1a1b1e);border:1px solid var(--border-accent);border-radius:var(--r-lg);padding:22px 26px;width:100%;max-width:360px" onclick="event.stopPropagation()">
+    <div style="font-family:var(--font-display);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:14px">Editar colaborador</div>
+    <div style="margin-bottom:.65rem"><label class="lbl">Nombre</label><input type="text" id="orgEName" value="${node.nombre||''}" style="font-family:var(--font-body)"></div>
+    <div style="margin-bottom:1rem"><label class="lbl">Rol / Cargo</label><input type="text" id="orgERol" value="${node.rol||''}" placeholder="Arquitecto, Diseñador, Coordinador..."></div>
+    <div style="display:flex;justify-content:flex-end;gap:8px">
+      <button onclick="document.getElementById('orgEditModal').remove()" style="padding:6px 13px;font-size:11px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text-2);cursor:pointer;font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase">Cancelar</button>
+      <button onclick="orgSaveEdit('${id}')" style="padding:6px 16px;font-size:11px;border:1px solid var(--accent);border-radius:var(--r-md);background:var(--accent);color:var(--text-on-accent);cursor:pointer;font-family:var(--font-display);letter-spacing:.08em;text-transform:uppercase">Guardar</button>
+    </div>
+  </div>`;
+  document.body.appendChild(m);
+  setTimeout(()=>document.getElementById('orgEName')?.select(),60);
+}
+function orgSaveEdit(id){
+  const node=_orgNodes.find(n=>n.id===id);
+  if(!node) return;
+  node.nombre=(document.getElementById('orgEName')?.value||'').trim()||node.nombre;
+  node.rol=(document.getElementById('orgERol')?.value||'').trim();
+  document.getElementById('orgEditModal')?.remove();
+  orgRender(); orgSave();
+}
+window.orgSaveEdit=orgSaveEdit;
+
+/* ── Agregar nodo ────────────────────────────────────────── */
+function orgAddNode(){
+  const wrap=document.getElementById('orgWrap');
+  const id='n'+Date.now();
+  _orgNodes.push({id,nombre:'Nuevo colaborador',rol:'Cargo',parentId:_orgSelected||(_orgNodes[0]?.id||null),x:Math.random()*400+80,y:Math.random()*200+200});
+  orgRender(); orgEditNode(id);
+}
+function orgAddChild(parentId){
+  const parent=_orgNodes.find(n=>n.id===parentId);
+  const id='n'+Date.now();
+  _orgNodes.push({id,nombre:'Nuevo colaborador',rol:'Cargo',parentId,x:(parent?.x||200)+20,y:(parent?.y||100)+120});
+  orgRender(); orgEditNode(id);
+}
+window.orgAddNode=orgAddNode; window.orgAddChild=orgAddChild;
+
+/* ── Cambiar superior ────────────────────────────────────── */
+function orgChangeParent(id){
+  const node=_orgNodes.find(n=>n.id===id);
+  if(!node) return;
+  const others=_orgNodes.filter(n=>n.id!==id);
+  const m=document.createElement('div');
+  m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:9990;display:flex;align-items:center;justify-content:center;padding:20px';
+  m.onclick=e=>{if(e.target===m)m.remove();};
+  m.innerHTML=`<div style="background:var(--bg-surface-2,#1a1b1e);border:1px solid var(--border-accent);border-radius:var(--r-lg);padding:22px 26px;width:100%;max-width:340px" onclick="event.stopPropagation()">
+    <div style="font-family:var(--font-display);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:12px">Seleccioná el nuevo superior</div>
+    <div style="display:flex;flex-direction:column;gap:5px;max-height:260px;overflow-y:auto;margin-bottom:12px">
+      <button onclick="orgSetParent('${id}',null);this.closest('[style]').remove()" style="padding:8px 12px;text-align:left;font-size:12px;border:0.5px solid rgba(212,168,67,0.3);border-radius:var(--r-md);background:rgba(212,168,67,0.06);color:var(--accent);cursor:pointer">Sin superior (raíz)</button>
+      ${others.map(n=>`<button onclick="orgSetParent('${id}','${n.id}');this.closest('[style]').remove()" style="padding:8px 12px;text-align:left;font-size:12px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text-2);cursor:pointer">${n.nombre}</button>`).join('')}
+    </div>
+  </div>`;
+  document.body.appendChild(m);
+}
+function orgSetParent(id,parentId){
+  const node=_orgNodes.find(n=>n.id===id);
+  if(node){ node.parentId=parentId; orgRender(); orgSave(); }
+}
+window.orgChangeParent=orgChangeParent; window.orgSetParent=orgSetParent;
+
+/* ── Color del nodo ─────────────────────────────────────── */
+function orgPickColor(id){
+  const colors=['#D4A843','#5AABF0','#4CAF72','#E05A5A','#E8973A','#A78BFA','#F9A8D4','#6EE7B7'];
+  const node=_orgNodes.find(n=>n.id===id);
+  if(!node) return;
+  const m=document.createElement('div');
+  m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9990;display:flex;align-items:center;justify-content:center';
+  m.onclick=e=>{if(e.target===m)m.remove();};
+  m.innerHTML=`<div style="background:var(--bg-surface-2,#1a1b1e);border:1px solid var(--border-accent);border-radius:var(--r-lg);padding:18px 22px" onclick="event.stopPropagation()">
+    <div style="font-size:11px;color:var(--text-3);margin-bottom:10px;font-family:var(--font-display);letter-spacing:.1em;text-transform:uppercase">Color del nodo</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;max-width:220px">
+      ${colors.map(c=>`<button onclick="orgSetColor('${id}','${c}');this.closest('[style]').remove()" style="width:32px;height:32px;border-radius:50%;background:${c};border:2px solid ${c===node.color?'#fff':'transparent'};cursor:pointer;transition:transform .15s" onmouseover="this.style.transform='scale(1.15)'" onmouseout="this.style.transform=''"></button>`).join('')}
+    </div>
+  </div>`;
+  document.body.appendChild(m);
+}
+function orgSetColor(id,color){
+  const node=_orgNodes.find(n=>n.id===id);
+  if(node){ node.color=color; orgRender(); orgSave(); }
+}
+window.orgPickColor=orgPickColor; window.orgSetColor=orgSetColor;
+
+/* ── Eliminar nodo ───────────────────────────────────────── */
+function orgDeleteNode(id){
+  if(!confirm('¿Eliminar este nodo? Sus hijos quedarán sin superior.')) return;
+  _orgNodes=_orgNodes.filter(n=>n.id!==id);
+  // Desconectar hijos
+  _orgNodes.forEach(n=>{if(n.parentId===id) n.parentId=null;});
+  if(_orgSelected===id) _orgSelected=null;
+  orgRender(); orgSave();
+}
+window.orgDeleteNode=orgDeleteNode;
+
+/* ── Auto-layout export ─────────────────────────────────── */
+window.orgAutoLayout=orgAutoLayout;
+window.orgPanStart=orgPanStart;
+window.orgPanMove=orgPanMove;
+window.orgPanEnd=orgPanEnd;
+window.orgSave=orgSave;
+
+/* ── Hook en adminShowTab ───────────────────────────────── */
+const _adminOrgOrig = window.adminShowTab;
+window.adminShowTab = function(tab){
+  _adminOrgOrig.apply(this, arguments);
+  if(tab==='organigrama'){
+    const d=orgLoad();
+    _orgNodes=d.nodes||[];
+    orgRender();
+  }
+};
+
+/* ── Hook en showPage para cargar al entrar al admin ─────── */
+document.addEventListener('DOMContentLoaded',()=>{
+  // Precargar datos
+  const d=orgLoad();
+  _orgNodes=d.nodes||[];
+},false);
+
 function toggleMenuConfig(){
   const m = document.getElementById('menuConfig');
   if(!m) return;
@@ -5835,7 +6310,16 @@ function calc(){
   const p3D=gv('col3D'), pRd=gv('colRend'), pPl=gv('colPlanos');
   const c3D=f1?fee1*(p3D/100):0;
   const cRd=f1?fee1*(pRd/100):0;
-  const cPl=f2?fee2*(pPl/100):0;
+  // Timbres son un costo separado — el colaborador de planos solo
+  // gana % sobre el honorario de planos, NO sobre los timbres
+  let fee2_sinTimbres = fee2;
+  if(f2 && document.getElementById('timbresOn')?.checked){
+    const N=PLANO_NAMES.length;
+    let totalPlanos=0;
+    for(let i=1;i<=N;i++) totalPlanos+=gv('qp'+i);
+    fee2_sinTimbres = fee2 - (gv('timbreCosto')*totalPlanos);
+  }
+  const cPl=f2?Math.max(0,fee2_sinTimbres)*(pPl/100):0;
   const cTot=c3D+cRd+cPl;
   document.getElementById('colAmt3D').textContent=fmt(c3D);
   document.getElementById('colAmtRend').textContent=fmt(cRd);
