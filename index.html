@@ -2648,6 +2648,7 @@ input.narrow{width:88px}input.mid{width:108px}
         <button onclick="orgAddNode()" style="padding:5px 11px;font-size:10px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text-3);cursor:pointer;font-family:var(--font-display);letter-spacing:.07em;text-transform:uppercase;transition:all .15s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='';this.style.color=''">+ Nodo</button>
         <button onclick="orgAutoLayout()" style="padding:5px 11px;font-size:10px;border:0.5px solid var(--border-2);border-radius:var(--r-md);background:transparent;color:var(--text-3);cursor:pointer;font-family:var(--font-display);letter-spacing:.07em;text-transform:uppercase;transition:all .15s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='';this.style.color=''">↻ Auto-layout</button>
         <button onclick="orgSave()" style="padding:5px 12px;font-size:10px;border:1px solid var(--accent);border-radius:var(--r-md);background:transparent;color:var(--accent);cursor:pointer;font-family:var(--font-display);letter-spacing:.07em;text-transform:uppercase">Guardar</button>
+        <button onclick="orgGenPDF()" style="padding:5px 13px;font-size:10px;border:1px solid var(--accent);border-radius:var(--r-md);background:var(--accent);color:var(--text-on-accent);cursor:pointer;font-family:var(--font-display);letter-spacing:.07em;text-transform:uppercase">📄 Constancia PDF</button>
       </div>
     </div>
     <!-- Canvas del organigrama -->
@@ -5946,6 +5947,231 @@ window.orgAutoLayout=orgAutoLayout;
 
 /* ── Guardar públicamente ─────────────────────────────────────── */
 window.orgSave=function(){ orgSave(); const ss=document.getElementById('syncStatus'); if(ss){ss.textContent='✦ Organigrama guardado';setTimeout(()=>{if(ss.textContent==='✦ Organigrama guardado')ss.textContent='';},2000);} };
+
+
+/* ─── Constancia Oficial del Organigrama ─── */
+function orgGenPDF(){
+  const fecha   = new Date().toLocaleDateString('es-GT',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
+  const fechaS  = new Date().toLocaleDateString('es-GT',{day:'2-digit',month:'long',year:'numeric'});
+  const nodes   = _orgNodes || [];
+  const root    = nodes.find(n=>!n.parentId);
+
+  // Construir árbol por niveles para la tabla
+  const children = {};
+  nodes.forEach(n=>{ const k=n.parentId||'__root__'; if(!children[k]) children[k]=[]; children[k].push(n); });
+  function getLevel(id){
+    let lvl=0, cur=nodes.find(n=>n.id===id);
+    while(cur&&cur.parentId){ cur=nodes.find(n=>n.id===cur.parentId); lvl++; }
+    return lvl;
+  }
+
+  // Ordenar: raíz primero, luego por nivel
+  const sorted=[];
+  function walk(id){ sorted.push(nodes.find(n=>n.id===id)); (children[id]||[]).forEach(c=>walk(c.id)); }
+  if(root) walk(root.id);
+  nodes.filter(n=>!n.parentId&&n.id!==root?.id).forEach(n=>walk(n.id));
+
+  const totalColaboradores = nodes.length;
+  const niveles = [...new Set(nodes.map(n=>getLevel(n.id)))].length;
+
+  // ── CSS profesional ──────────────────────────────────────────
+  const CSS=`
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:210mm;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
+  color:#1a1a18;font-size:11.5px;line-height:1.6;background:#fff;
+  -webkit-print-color-adjust:exact;print-color-adjust:exact}
+@page{size:A4 portrait;margin:20mm 18mm 22mm 18mm}
+@media print{body{margin:0}}
+.page{max-width:174mm;margin:0 auto;padding:0}
+
+/* Sello / marca de agua */
+.watermark{position:fixed;bottom:60mm;right:18mm;font-size:72px;opacity:.035;
+  font-weight:800;letter-spacing:-2px;color:#D4A843;transform:rotate(-25deg);
+  pointer-events:none;z-index:0;font-family:Arial,sans-serif}
+
+/* Header oficial */
+.doc-header{border-bottom:3px solid #1a1a18;margin-bottom:20px;padding-bottom:14px;
+  display:flex;align-items:flex-end;justify-content:space-between}
+.brand{display:flex;flex-direction:column}
+.brand-estudio{font-size:8px;letter-spacing:.44em;color:#888;text-transform:uppercase;font-weight:300}
+.brand-avit{font-size:26px;font-weight:700;letter-spacing:.06em;color:#1a1a18;line-height:1}
+.brand-sub{font-size:9px;color:#aaa;margin-top:3px;letter-spacing:.08em}
+.doc-meta{text-align:right;font-size:9.5px;color:#888;line-height:1.8}
+.doc-meta strong{color:#1a1a18;font-size:10.5px}
+
+/* Onda de marca */
+.brand-wave{margin:14px 0}
+
+/* Título del documento */
+.doc-title-box{background:#f4f1e8;border-left:4px solid #D4A843;
+  padding:14px 18px;margin-bottom:18px;border-radius:0 6px 6px 0}
+.doc-title{font-size:15px;font-weight:600;color:#1a1a18;letter-spacing:-.2px}
+.doc-subtitle{font-size:10px;color:#888;margin-top:3px;text-transform:uppercase;letter-spacing:.10em}
+
+/* Considerandos */
+.considerandos{margin-bottom:18px}
+.considerando{display:flex;gap:12px;margin-bottom:10px;font-size:11px;color:#333;line-height:1.7}
+.considerando-num{font-weight:700;color:#D4A843;font-size:12px;min-width:20px;margin-top:1px}
+.por-tanto{margin:14px 0;padding:12px 16px;border:1.5px solid #D4A843;border-radius:6px;
+  font-size:11px;font-weight:600;color:#1a1a18;text-align:center;letter-spacing:.04em;
+  background:#faf8f0}
+
+/* Tabla de colaboradores */
+h3{font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:#888;
+  margin-bottom:10px;padding-bottom:5px;border-bottom:1px solid #e8e8e8;font-weight:600}
+table{width:100%;border-collapse:collapse;font-size:11px;page-break-inside:auto}
+th{background:#f8f8f8;padding:6px 10px;font-size:8.5px;text-transform:uppercase;
+   letter-spacing:.09em;color:#555;font-weight:600;border-bottom:1.5px solid #ccc;
+   text-align:left}
+td{padding:7px 10px;border-bottom:0.5px solid #f0f0f0;color:#333;vertical-align:middle}
+tr:nth-child(even) td{background:#fafafa}
+.tr-root td{background:#faf8f0!important;font-weight:600;color:#1a1a18}
+.level-pip{display:inline-block;background:#D4A843;border-radius:3px;
+  font-size:8.5px;font-weight:600;color:#1a1a18;padding:1px 7px;letter-spacing:.04em}
+.level-sub{display:inline-block;background:#e8e8e8;border-radius:3px;
+  font-size:8.5px;color:#555;padding:1px 7px}
+.indent{padding-left:calc(10px + var(--d,0)*18px)}
+
+/* Estadísticas */
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:18px 0}
+.stat{padding:10px 14px;border:1px solid #e8e8e8;border-radius:6px;text-align:center}
+.stat-val{font-size:22px;font-weight:400;color:#1a1a18}
+.stat-lbl{font-size:8.5px;text-transform:uppercase;letter-spacing:.09em;color:#888;margin-top:2px}
+
+/* Firma */
+.firma-section{margin-top:32px;padding-top:18px;border-top:1px solid #e8e8e8;
+  display:grid;grid-template-columns:1fr 1fr;gap:40px}
+.firma-box{text-align:center}
+.firma-line{border-top:1px solid #1a1a18;margin:40px 20px 6px;padding-top:7px}
+.firma-name{font-size:11px;font-weight:600;color:#1a1a18}
+.firma-rol{font-size:9.5px;color:#888;margin-top:2px}
+
+/* Footer */
+.doc-footer{margin-top:28px;padding-top:10px;border-top:0.5px solid #e0e0e0;
+  display:flex;justify-content:space-between;font-size:8.5px;color:#bbb;line-height:1.8}
+`;
+
+  // ── Tabla de colaboradores ────────────────────────────────────
+  const tableRows = sorted.map(n=>{
+    if(!n) return '';
+    const lvl = getLevel(n.id);
+    const isRoot = !n.parentId;
+    const parent = n.parentId ? nodes.find(x=>x.id===n.parentId) : null;
+    const badge = isRoot
+      ? `<span class="level-pip">Dirección</span>`
+      : `<span class="level-sub">Nivel ${lvl}</span>`;
+    return `<tr class="${isRoot?'tr-root':''}">
+      <td class="indent" style="--d:${lvl}">${isRoot?'►':lvl===1?'└─':'└──'} <strong>${n.nombre||'—'}</strong></td>
+      <td>${n.rol||'—'}</td>
+      <td>${parent?parent.nombre:'—'}</td>
+      <td style="text-align:center">${badge}</td>
+    </tr>`;
+  }).join('');
+
+  // ── SVG onda de marca ─────────────────────────────────────────
+  const wave=`<svg viewBox="0 0 500 14" style="width:100%;display:block">
+    <path d="M0,7 C50,0 100,14 150,7 S250,0 300,7 S400,14 450,7 S500,4 520,7"
+      stroke="#D4A843" stroke-width="1" fill="none" opacity="0.35"/>
+  </svg>`;
+
+  const html=`<!DOCTYPE html><html lang="es"><head>
+<meta charset="UTF-8"><title>Constancia Organigrama — Estudio AVIT</title>
+<style>${CSS}</style></head><body>
+
+<div class="watermark">AVIT</div>
+
+<div class="page">
+
+<!-- Encabezado oficial -->
+<div class="doc-header">
+  <div class="brand">
+    <span class="brand-estudio">Estudio</span>
+    <span class="brand-avit">AVIT</span>
+    <span class="brand-sub">Arquitectura &amp; Interiorismo</span>
+  </div>
+  <div class="doc-meta">
+    <strong>CONSTANCIA OFICIAL</strong><br>
+    No. ORG-${new Date().getFullYear()}-${String(new Date().getMonth()+1).padStart(2,'0')}<br>
+    Guatemala, ${fechaS}
+  </div>
+</div>
+
+<div class="brand-wave">${wave}</div>
+
+<!-- Título -->
+<div class="doc-title-box">
+  <div class="doc-title">Constancia de Organigrama Institucional</div>
+  <div class="doc-subtitle">Estructura organizacional de Estudio AVIT · Documento oficial</div>
+</div>
+
+<!-- Considerandos -->
+<div class="considerandos">
+  <div class="considerando">
+    <div class="considerando-num">I.</div>
+    <div>Que <strong>Estudio AVIT</strong>, firma dedicada a la arquitectura e interiorismo con sede en Guatemala, ha establecido formalmente su estructura organizacional para el correcto funcionamiento de sus operaciones y la asignación de responsabilidades entre sus colaboradores.</div>
+  </div>
+  <div class="considerando">
+    <div class="considerando-num">II.</div>
+    <div>Que el presente documento certifica la estructura vigente de la organización, indicando los niveles jerárquicos, roles y líneas de reporte de cada miembro del equipo de trabajo.</div>
+  </div>
+  <div class="considerando">
+    <div class="considerando-num">III.</div>
+    <div>Que esta constancia es emitida con fines informativos, administrativos y de transparencia institucional, y refleja el estado actual del organigrama a la fecha de su emisión.</div>
+  </div>
+  <div class="por-tanto">
+    POR TANTO, se extiende la presente constancia de organigrama oficial con fecha del día ${fecha}.
+  </div>
+</div>
+
+<!-- Estadísticas -->
+<div class="stats-row">
+  <div class="stat"><div class="stat-val">${totalColaboradores}</div><div class="stat-lbl">Colaboradores</div></div>
+  <div class="stat"><div class="stat-val">${niveles}</div><div class="stat-lbl">Niveles jerárquicos</div></div>
+  <div class="stat"><div class="stat-val">${children[root?.id||'']?.length||0}</div><div class="stat-lbl">Reportes directos</div></div>
+</div>
+
+<!-- Tabla de estructura -->
+<h3>Estructura organizacional detallada</h3>
+<table>
+  <thead><tr>
+    <th>Nombre del colaborador</th>
+    <th>Rol / Cargo</th>
+    <th>Reporta a</th>
+    <th style="text-align:center">Nivel</th>
+  </tr></thead>
+  <tbody>${tableRows}</tbody>
+</table>
+
+<!-- Firmas -->
+<div class="firma-section">
+  <div class="firma-box">
+    <div class="firma-line"></div>
+    <div class="firma-name">${root?root.nombre:'Director'}</div>
+    <div class="firma-rol">${root?root.rol:'Director / Fundador'} — Estudio AVIT</div>
+  </div>
+  <div class="firma-box">
+    <div class="firma-line"></div>
+    <div class="firma-name">Sello y firma</div>
+    <div class="firma-rol">Estudio AVIT — Guatemala</div>
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="doc-footer">
+  <div>Constancia emitida por el sistema de gestión de Estudio AVIT<br>
+  Documento generado el ${fecha}</div>
+  <div style="text-align:right">www.estudioavit.com<br>Guatemala, C.A.</div>
+</div>
+
+</div>
+</body></html>`;
+
+  const w=window.open('','_blank');
+  w.document.write(html);
+  w.document.close();
+  setTimeout(()=>w.print(),600);
+}
+window.orgGenPDF=orgGenPDF;
 
 /* ── Inicializar al abrir la tab ─────────────────────────────── */
 /* El adminShowTab ya incluye 'organigrama' — orgRender se llama desde adminShowTab hook */
